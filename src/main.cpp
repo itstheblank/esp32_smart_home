@@ -1,38 +1,66 @@
 #include <Arduino.h>
-#include <ETH.h>
+#include <WiFi.h>
 #include <PubSubClient.h>
 #include "config.h"
 
-#define ETH_PHY_TYPE ETH_PHY_LAN8720
-#define ETH_PHY_ADDR 1
-#define ETH_PHY_MDC 23
-#define ETH_PHY_MDIO 18
-#define ETH_PHY_POWER 16
-#define ETH_CLK_MODE ETH_CLOCK_GPIO0_IN
+bool wifi_connected = false;
+WiFiClient wifiClient;
+PubSubClient mqttClient(wifiClient);
 
-bool eth_connected = false;
-WiFiClient ethClient;
-PubSubClient mqttClient(ethClient);
-
-// Hàm Callback khi nhận tin nhắn từ MQTT (Dành cho Task M1-05 & M1-06)
+// MQTT Callback function (For Task M1-05 & M1-06)
 void mqttCallback(char *topic, byte *payload, unsigned int length)
 {
-  Serial.print("Message arrived [");
-  Serial.print(topic);
-  Serial.print("] ");
   String message;
   for (unsigned int i = 0; i < length; i++)
   {
     message += (char)payload[i];
   }
+
+  Serial.print("Message arrived [");
+  Serial.print(topic);
+  Serial.print("] : ");
   Serial.println(message);
+
+  // --- COMMAND PARSING FROM APP (Task M1-06) ---
+  
+  // Parse Light Commands
+  if (String(topic) == TOPIC_CMD_LIGHT) 
+  {
+    if (message == "ON") {
+      Serial.println("=> EXECUTE: Turn ON light!");
+      // TODO: Call light_on() from Member 3 here
+    } 
+    else if (message == "OFF") {
+      Serial.println("=> EXECUTE: Turn OFF light!");
+      // TODO: Call light_off() from Member 3 here
+    } 
+    else {
+      Serial.println("=> ERROR: Invalid light command, ignored!");
+    }
+  }
+  
+  // Parse Door Commands
+  else if (String(topic) == TOPIC_CMD_DOOR) 
+  {
+    if (message == "OPEN") {
+      Serial.println("=> EXECUTE: Open door!");
+      // TODO: Call door_open() from Member 3 here
+    } 
+    else if (message == "CLOSE") {
+      Serial.println("=> EXECUTE: Close door!");
+      // TODO: Call door_close() from Member 3 here
+    } 
+    else {
+      Serial.println("=> ERROR: Invalid door command, ignored!");
+    }
+  }
 }
 
-// Hàm duy trì và kết nối lại MQTT (M1-04)
+// Function to maintain and reconnect MQTT (M1-04)
 void reconnectMQTT()
 {
   static unsigned long lastAttempt = 0;
-  if (!eth_connected)
+  if (!wifi_connected)
     return;
 
   if (millis() - lastAttempt > 5000)
@@ -43,10 +71,10 @@ void reconnectMQTT()
     {
       Serial.println("connected");
 
-      // Publish trạng thái online (M1-07)
+      // Publish online state (M1-07)
       mqttClient.publish(TOPIC_STATE_ONLINE, "ONLINE", true);
 
-      // Đăng ký nhận lệnh (M1-05)
+      // Subscribe to command topics (M1-05)
       mqttClient.subscribe(TOPIC_CMD_LIGHT);
       mqttClient.subscribe(TOPIC_CMD_DOOR);
     }
@@ -59,58 +87,69 @@ void reconnectMQTT()
   }
 }
 
-// Bắt sự kiện mạng (M1-03)
+// Handle WiFi events (M1-03)
 void WiFiEvent(WiFiEvent_t event)
 {
   switch (event)
   {
-  case ARDUINO_EVENT_ETH_START:
-    Serial.println("=> Ethernet module has started!");
-    ETH.setHostname("smarthome-esp32");
+  case ARDUINO_EVENT_WIFI_STA_START:
+    Serial.println("=> WiFi module has started!");
     break;
-  case ARDUINO_EVENT_ETH_CONNECTED:
-    Serial.println("=> Ethernet connected!");
+  case ARDUINO_EVENT_WIFI_STA_CONNECTED:
+    Serial.println("=> WiFi connected!");
     break;
-  case ARDUINO_EVENT_ETH_GOT_IP:
-    Serial.println("=> Got IP: ");
-    Serial.println(ETH.localIP());
-    eth_connected = true;
+  case ARDUINO_EVENT_WIFI_STA_GOT_IP:
+    Serial.print("=> Got IP: ");
+    Serial.println(WiFi.localIP());
+    wifi_connected = true;
     break;
-  case ARDUINO_EVENT_ETH_DISCONNECTED:
-  case ARDUINO_EVENT_ETH_STOP:
-    Serial.println("=> Ethernet disconnected!");
-    eth_connected = false;
+  case ARDUINO_EVENT_WIFI_STA_DISCONNECTED:
+    Serial.println("=> WiFi disconnected!");
+    wifi_connected = false;
     break;
   default:
     break;
   }
 }
 
+unsigned long lastWifiAttempt = 0;
+
 void setup()
 {
   Serial.begin(115200);
   delay(1000);
 
-  Serial.println("Initializing Ethernet module...");
+  Serial.println("Initializing WiFi module...");
 
   WiFi.onEvent(WiFiEvent);
+  WiFi.mode(WIFI_STA);
+  WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
 
-  ETH.begin(ETH_PHY_ADDR, ETH_PHY_POWER, ETH_PHY_MDC, ETH_PHY_MDIO, ETH_PHY_TYPE, ETH_CLK_MODE);
-
-  // Thiết lập MQTT Broker
+  // Setup MQTT Broker
   mqttClient.setServer(MQTT_BROKER, MQTT_PORT);
   mqttClient.setCallback(mqttCallback);
 }
 
 void loop()
 {
-  // Nếu có mạng nhưng rớt MQTT thì tự động reconnect
-  if (eth_connected && !mqttClient.connected())
+  // Automatically reconnect WiFi if disconnected
+  if (!wifi_connected)
+  {
+    if (millis() - lastWifiAttempt > 5000)
+    {
+      Serial.println("Attempting WiFi connection...");
+      WiFi.disconnect();
+      WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
+      lastWifiAttempt = millis();
+    }
+  }
+  // Automatically reconnect MQTT if WiFi is connected but MQTT is dropped
+  else if (wifi_connected && !mqttClient.connected())
   {
     reconnectMQTT();
   }
 
-  // Vòng lặp duy trì MQTT
+  // Maintain MQTT connection
   if (mqttClient.connected())
   {
     mqttClient.loop();

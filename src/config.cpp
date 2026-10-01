@@ -1,9 +1,9 @@
 #include "config.h"
 
-const char *WIFI_SSID = "Your_SSID";
-const char *WIFI_PASSWORD = "Your_PASSWORD";
+const char *WIFI_SSID = "Blank";
+const char *WIFI_PASSWORD = "12345678";
 
-const char *MQTT_BROKER = "192.168.137.1"; // IP của máy tính chạy MQTT Broker (Member 5)
+const char *MQTT_BROKER = "192.168.137.1"; // IP of the computer running MQTT Broker (from Wireless LAN adapter Wi-Fi)
 const int MQTT_PORT = 1883;
 const char *MQTT_CLIENT_ID = "ESP32_SmartHome_Core";
 
