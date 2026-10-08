@@ -1,4 +1,4 @@
-#include <Arduino.h>
+﻿#include <Arduino.h>
 #include <WiFi.h>
 #include <PubSubClient.h>
 #include "config.h"
@@ -22,35 +22,41 @@ void mqttCallback(char *topic, byte *payload, unsigned int length)
   Serial.println(message);
 
   // --- COMMAND PARSING FROM APP (Task M1-06) ---
-  
+
   // Parse Light Commands
-  if (String(topic) == TOPIC_CMD_LIGHT) 
+  if (String(topic) == TOPIC_CMD_LIGHT)
   {
-    if (message == "ON") {
+    if (message == "ON")
+    {
       Serial.println("=> EXECUTE: Turn ON light!");
       // TODO: Call light_on() from Member 3 here
-    } 
-    else if (message == "OFF") {
+    }
+    else if (message == "OFF")
+    {
       Serial.println("=> EXECUTE: Turn OFF light!");
       // TODO: Call light_off() from Member 3 here
-    } 
-    else {
+    }
+    else
+    {
       Serial.println("=> ERROR: Invalid light command, ignored!");
     }
   }
-  
+
   // Parse Door Commands
-  else if (String(topic) == TOPIC_CMD_DOOR) 
+  else if (String(topic) == TOPIC_CMD_DOOR)
   {
-    if (message == "OPEN") {
+    if (message == "OPEN")
+    {
       Serial.println("=> EXECUTE: Open door!");
       // TODO: Call door_open() from Member 3 here
-    } 
-    else if (message == "CLOSE") {
+    }
+    else if (message == "CLOSE")
+    {
       Serial.println("=> EXECUTE: Close door!");
       // TODO: Call door_close() from Member 3 here
-    } 
-    else {
+    }
+    else
+    {
       Serial.println("=> ERROR: Invalid door command, ignored!");
     }
   }
