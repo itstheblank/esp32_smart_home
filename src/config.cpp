@@ -14,3 +14,5 @@ const char *TOPIC_STATE_LIGHT = "smarthome/state/light";
 const char *TOPIC_STATE_DOOR = "smarthome/state/door";
 const char *TOPIC_STATE_MOTION = "smarthome/state/motion";
 const char *TOPIC_STATE_ONLINE = "smarthome/state/online";
+
+const char *TOPIC_EVENT_ACCESS = "smarthome/event/access";

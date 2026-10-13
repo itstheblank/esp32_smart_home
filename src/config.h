@@ -25,4 +25,8 @@ extern const char *TOPIC_STATE_DOOR;
 extern const char *TOPIC_STATE_MOTION;
 extern const char *TOPIC_STATE_ONLINE;
 
+// ==========================================
+// MQTT EVENT TOPICS (ESP32 -> App)
+// ==========================================
+extern const char *TOPIC_EVENT_ACCESS;
 #endif // CONFIG_H

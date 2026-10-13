@@ -1,4 +1,4 @@
-﻿#include <Arduino.h>
+#include <Arduino.h>
 #include <WiFi.h>
 #include <PubSubClient.h>
 #include "config.h"
@@ -73,11 +73,13 @@ void reconnectMQTT()
   {
     lastAttempt = millis();
     Serial.print("Attempting MQTT connection...");
-    if (mqttClient.connect(MQTT_CLIENT_ID))
+    // Connect with Last Will and Testament (LWT) as specified in MQTT Contract v1.0.0:
+    // Topic: TOPIC_STATE_ONLINE, QoS: 0, Retain: true, Payload: "OFFLINE"
+    if (mqttClient.connect(MQTT_CLIENT_ID, TOPIC_STATE_ONLINE, 0, true, "OFFLINE"))
     {
       Serial.println("connected");
 
-      // Publish online state (M1-07)
+      // Publish online state (M1-07 / Contract M5-03)
       mqttClient.publish(TOPIC_STATE_ONLINE, "ONLINE", true);
 
       // Subscribe to command topics (M1-05)
@@ -134,6 +136,7 @@ void setup()
   // Setup MQTT Broker
   mqttClient.setServer(MQTT_BROKER, MQTT_PORT);
   mqttClient.setCallback(mqttCallback);
+  mqttClient.setKeepAlive(30); // Clean session, Keep Alive 30s as per Contract M5-03
 }
 
 void loop()

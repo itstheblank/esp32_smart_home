@@ -10,9 +10,13 @@ Dự án Firmware cho hệ thống nhà thông minh.
 5. Bấm nút **Upload** (biểu tượng mũi tên phải ➔ ở góc dưới bên trái VSCode) để biên dịch và nạp code.
 6. Bấm nút **Serial Monitor** (biểu tượng phích cắm 🔌) để xem log kết nối. Chắc chắn rằng baudrate được đặt là `115200`.
 
-## Tính năng đã hoàn thành
-- [x] **M1-01**: Cấu trúc project PlatformIO, setup Serial logging.
-- [x] **M1-03**: Khởi tạo kết nối Wi-Fi, tự động reconnect (không dùng delay chặn luồng chính quá lâu).
+## Tiến độ Firmware (Member 1)
+- [x] **M1-01**: Thiết lập cấu trúc project PlatformIO, cấu hình board, Serial logging (115200) và file config dùng chung.
+- [x] **M1-02**: Định nghĩa tập trung danh sách topic/payload trong `config.h` và `config.cpp`, khớp 100% với MQTT Contract v1.0.0 (`docs/mqtt-contract.md`).
+- [x] **M1-03**: Khởi tạo kết nối Wi-Fi (WIFI_STA), bắt sự kiện mạng (`WiFiEvent`) và tự động reconnect định kỳ không chặn luồng chính (non-blocking).
+- [x] **M1-04**: Kết nối tới MQTT Broker (EMQX), cấu hình Keep Alive 30s, tự động reconnect và đăng ký Last Will & Testament (`OFFLINE`, Retain true).
+- [x] **M1-05**: Đăng ký (Subscribe) các topic nhận lệnh điều khiển ngay sau khi kết nối/reconnect: `smarthome/cmd/light` và `smarthome/cmd/door`.
+- [x] **M1-06**: Phân tích cú pháp và kiểm tra tính hợp lệ của payload (`ON`/`OFF`, `OPEN`/`CLOSE`), ghi log thực thi và lọc bỏ lệnh không hợp lệ an toàn, chống crash firmware.
 
 ## Member 5: broker và kiểm tra kết nối
 
