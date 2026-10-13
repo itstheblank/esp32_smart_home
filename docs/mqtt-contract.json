@@ -1,0 +1,88 @@
+{
+  "version": "1.0.0",
+  "mqtt_version": "3.1.1",
+  "port": 1883,
+  "qos": 0,
+  "device_client_id": "ESP32_SmartHome_Core",
+  "keep_alive_seconds": 30,
+  "topics": [
+    {
+      "topic": "smarthome/cmd/light",
+      "type": "command",
+      "payloads": [
+        "ON",
+        "OFF"
+      ],
+      "retain": false
+    },
+    {
+      "topic": "smarthome/cmd/door",
+      "type": "command",
+      "payloads": [
+        "OPEN",
+        "CLOSE"
+      ],
+      "retain": false
+    },
+    {
+      "topic": "smarthome/state/light",
+      "type": "state",
+      "payloads": [
+        "ON",
+        "OFF"
+      ],
+      "retain": true
+    },
+    {
+      "topic": "smarthome/state/door",
+      "type": "state",
+      "payloads": [
+        "OPEN",
+        "CLOSED"
+      ],
+      "retain": true
+    },
+    {
+      "topic": "smarthome/state/motion",
+      "type": "state",
+      "payloads": [
+        "DETECTED",
+        "CLEAR"
+      ],
+      "retain": true
+    },
+    {
+      "topic": "smarthome/state/online",
+      "type": "state",
+      "payloads": [
+        "ONLINE",
+        "OFFLINE"
+      ],
+      "retain": true
+    },
+    {
+      "topic": "smarthome/event/access",
+      "type": "event",
+      "format": "json",
+      "fields": [
+        "uid",
+        "result"
+      ],
+      "results": [
+        "GRANTED",
+        "DENIED"
+      ],
+      "example": {
+        "uid": "A1B2C3D4",
+        "result": "GRANTED"
+      },
+      "max_payload_bytes": 128,
+      "retain": false
+    }
+  ],
+  "last_will": {
+    "topic": "smarthome/state/online",
+    "payload": "OFFLINE",
+    "retain": true
+  }
+}

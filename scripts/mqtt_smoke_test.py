@@ -17,17 +17,36 @@ import time
 import uuid
 
 
-COMMANDS = (
-    ("smarthome/cmd/light", b"ON"),
-    ("smarthome/cmd/light", b"OFF"),
-    ("smarthome/cmd/door", b"OPEN"),
-    ("smarthome/cmd/door", b"CLOSE"),
-)
+CONTRACT_PATH = Path(__file__).resolve().parents[1] / "docs" / "mqtt-contract.json"
 SAIGON = timezone(timedelta(hours=7))
 
 
 class MQTTError(Exception):
     """A broker packet did not satisfy the smoke-test contract."""
+
+
+def load_commands():
+    # Đọc topic và lệnh từ file chung để test đúng bản nhóm đang dùng.
+    contract = json.loads(CONTRACT_PATH.read_text(encoding="utf-8"))
+    if contract["qos"] != 0:
+        raise MQTTError("Bộ test này dùng QoS 0")
+
+    commands = []
+    for topic_info in contract["topics"]:
+        if topic_info["type"] != "command":
+            continue
+        if topic_info["retain"] is not False:
+            raise MQTTError("Lệnh điều khiển phải tắt Retain")
+
+        for payload in topic_info["payloads"]:
+            if not isinstance(payload, str) or not payload or payload.strip() != payload:
+                raise MQTTError("Lệnh không được có khoảng trắng hoặc xuống dòng đầu/cuối")
+            commands.append((topic_info["topic"], payload.encode("utf-8")))
+
+    # Đèn có ON/OFF, cửa có OPEN/CLOSE: tổng cộng bốn lệnh.
+    if len(commands) != 4:
+        raise MQTTError("File contract cần đủ bốn lệnh đèn/cửa")
+    return contract["version"], commands
 
 
 def timestamp():
@@ -168,12 +187,14 @@ def main():
         "tests": [],
     }
     try:
+        contract_version, commands = load_commands()
+        report["contract_version"] = contract_version
         with ExitStack() as stack:
             run_id = uuid.uuid4().hex[:12]
             observer = connect_client(stack, args.host, args.port, "m5obs" + run_id, args.timeout)
             subscribe(observer, args.timeout)
             sender = connect_client(stack, args.host, args.port, "m5send" + run_id, args.timeout)
-            for index, (topic, payload) in enumerate(COMMANDS, 1):
+            for index, (topic, payload) in enumerate(commands, 1):
                 result = {"topic": topic, "payload": payload.decode("ascii"), "qos": 0, "retain": False, "status": "FAIL"}
                 report["tests"].append(result)
                 send_packet(sender, 0x30, utf8_field(topic) + payload, args.timeout)
@@ -185,7 +206,7 @@ def main():
             for client in (sender, observer):
                 with suppress(OSError):
                     send_packet(client, 0xE0, b"", args.timeout)
-    except (OSError, MQTTError) as exc:
+    except (OSError, MQTTError, ValueError, KeyError, TypeError) as exc:
         report["status"] = "FAIL"
         report["error"] = str(exc)
         print(f"FAIL: {exc}", file=sys.stderr)

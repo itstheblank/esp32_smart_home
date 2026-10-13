@@ -1,0 +1,54 @@
+{
+  "started_at": "2026-10-13T10:00:08+07:00",
+  "broker": {
+    "host": "127.0.0.1",
+    "port": 1883
+  },
+  "mqtt_version": "3.1.1",
+  "subscription": "smarthome/cmd/+",
+  "status": "PASS",
+  "tests": [
+    {
+      "topic": "smarthome/cmd/light",
+      "payload": "ON",
+      "qos": 0,
+      "retain": false,
+      "status": "PASS"
+    },
+    {
+      "topic": "smarthome/cmd/light",
+      "payload": "OFF",
+      "qos": 0,
+      "retain": false,
+      "status": "PASS"
+    },
+    {
+      "topic": "smarthome/cmd/door",
+      "payload": "OPEN",
+      "qos": 0,
+      "retain": false,
+      "status": "PASS"
+    },
+    {
+      "topic": "smarthome/cmd/door",
+      "payload": "CLOSE",
+      "qos": 0,
+      "retain": false,
+      "status": "PASS"
+    }
+  ],
+  "contract_version": "1.0.0",
+  "finished_at": "2026-10-13T10:00:08+07:00",
+  "contract_checks": {
+    "six_firmware_topics_match": "PASS",
+    "four_command_payloads_match": "PASS",
+    "markdown_and_json_match": "PASS",
+    "rfid_json_examples_valid": "PASS",
+    "qos_retain_last_will_consistent": "PASS"
+  },
+  "pending": [
+    "Member 1, 2 and 4 review",
+    "ESP32 state and RFID integration",
+    "Last Will and reconnect test on ESP32"
+  ]
+}
