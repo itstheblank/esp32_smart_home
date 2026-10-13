@@ -1,0 +1,41 @@
+{
+  "started_at": "2026-10-12T23:02:48+07:00",
+  "broker": {
+    "host": "127.0.0.1",
+    "port": 1883
+  },
+  "mqtt_version": "3.1.1",
+  "subscription": "smarthome/cmd/+",
+  "status": "PASS",
+  "tests": [
+    {
+      "topic": "smarthome/cmd/light",
+      "payload": "ON",
+      "qos": 0,
+      "retain": false,
+      "status": "PASS"
+    },
+    {
+      "topic": "smarthome/cmd/light",
+      "payload": "OFF",
+      "qos": 0,
+      "retain": false,
+      "status": "PASS"
+    },
+    {
+      "topic": "smarthome/cmd/door",
+      "payload": "OPEN",
+      "qos": 0,
+      "retain": false,
+      "status": "PASS"
+    },
+    {
+      "topic": "smarthome/cmd/door",
+      "payload": "CLOSE",
+      "qos": 0,
+      "retain": false,
+      "status": "PASS"
+    }
+  ],
+  "finished_at": "2026-10-12T23:02:48+07:00"
+}
