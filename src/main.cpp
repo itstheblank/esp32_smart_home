@@ -1,11 +1,14 @@
 #include <Arduino.h>
 #include <WiFi.h>
 #include <PubSubClient.h>
+#include "actuator_bridge.h"
 #include "config.h"
+#include "member2_sensors_automation.h"
 
 bool wifi_connected = false;
 WiFiClient wifiClient;
 PubSubClient mqttClient(wifiClient);
+Member2SensorsAutomation member2Sensors(mqttClient);
 
 // MQTT Callback function (For Task M1-05 & M1-06)
 void mqttCallback(char *topic, byte *payload, unsigned int length)
@@ -29,12 +32,12 @@ void mqttCallback(char *topic, byte *payload, unsigned int length)
     if (message == "ON")
     {
       Serial.println("=> EXECUTE: Turn ON light!");
-      // TODO: Call light_on() from Member 3 here
+      member2Sensors.handleManualLightCommand(true);
     }
     else if (message == "OFF")
     {
       Serial.println("=> EXECUTE: Turn OFF light!");
-      // TODO: Call light_off() from Member 3 here
+      member2Sensors.handleManualLightCommand(false);
     }
     else
     {
@@ -48,12 +51,18 @@ void mqttCallback(char *topic, byte *payload, unsigned int length)
     if (message == "OPEN")
     {
       Serial.println("=> EXECUTE: Open door!");
-      // TODO: Call door_open() from Member 3 here
+      if (actuator::openDoor())
+        mqttClient.publish(TOPIC_STATE_DOOR, "OPEN", true);
+      else
+        Serial.println("=> ERROR: Door bridge failed; state unchanged.");
     }
     else if (message == "CLOSE")
     {
       Serial.println("=> EXECUTE: Close door!");
-      // TODO: Call door_close() from Member 3 here
+      if (actuator::closeDoor())
+        mqttClient.publish(TOPIC_STATE_DOOR, "CLOSED", true);
+      else
+        Serial.println("=> ERROR: Door bridge failed; state unchanged.");
     }
     else
     {
@@ -79,12 +88,14 @@ void reconnectMQTT()
     {
       Serial.println("connected");
 
-      // Publish online state (M1-07 / Contract M5-03)
-      mqttClient.publish(TOPIC_STATE_ONLINE, "ONLINE", true);
-
       // Subscribe to command topics (M1-05)
       mqttClient.subscribe(TOPIC_CMD_LIGHT);
       mqttClient.subscribe(TOPIC_CMD_DOOR);
+
+      // Retained state comes before ONLINE so a just-opened app can render a
+      // coherent view immediately after reconnect.
+      member2Sensors.publishCurrentState();
+      mqttClient.publish(TOPIC_STATE_ONLINE, "ONLINE", true);
     }
     else
     {
@@ -137,6 +148,7 @@ void setup()
   mqttClient.setServer(MQTT_BROKER, MQTT_PORT);
   mqttClient.setCallback(mqttCallback);
   mqttClient.setKeepAlive(30); // Clean session, Keep Alive 30s as per Contract M5-03
+  member2Sensors.begin();
 }
 
 void loop()
@@ -163,4 +175,8 @@ void loop()
   {
     mqttClient.loop();
   }
+
+  // Non-blocking PIR debounce/timer and RFID polling must run even while MQTT
+  // reconnects; state/event publishing resumes automatically when connected.
+  member2Sensors.update();
 }

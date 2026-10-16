@@ -5,7 +5,7 @@ Dự án Firmware cho hệ thống nhà thông minh.
 ## Cài đặt (Setup)
 1. Cài đặt **VSCode** và extension **PlatformIO IDE**.
 2. Mở thư mục này bằng PlatformIO.
-3. Mở file `src/config.cpp` và thay đổi `WIFI_SSID`, `WIFI_PASSWORD` bằng thông tin mạng Wi-Fi của bạn (hoặc mạng hotspot dùng để test).
+3. Mở file `src/config.cpp` và thay đổi `WIFI_SSID`, `WIFI_PASSWORD` bằng thông tin mạng Wi-Fi của bạn (hoặc mạng hotspot dùng để test). Không commit credential thật.
 4. Cắm mạch ESP32 vào máy tính qua cáp USB.
 5. Bấm nút **Upload** (biểu tượng mũi tên phải ➔ ở góc dưới bên trái VSCode) để biên dịch và nạp code.
 6. Bấm nút **Serial Monitor** (biểu tượng phích cắm 🔌) để xem log kết nối. Chắc chắn rằng baudrate được đặt là `115200`.
@@ -17,6 +17,14 @@ Dự án Firmware cho hệ thống nhà thông minh.
 - [x] **M1-04**: Kết nối tới MQTT Broker (EMQX), cấu hình Keep Alive 30s, tự động reconnect và đăng ký Last Will & Testament (`OFFLINE`, Retain true).
 - [x] **M1-05**: Đăng ký (Subscribe) các topic nhận lệnh điều khiển ngay sau khi kết nối/reconnect: `smarthome/cmd/light` và `smarthome/cmd/door`.
 - [x] **M1-06**: Phân tích cú pháp và kiểm tra tính hợp lệ của payload (`ON`/`OFF`, `OPEN`/`CLOSE`), ghi log thực thi và lọc bỏ lệnh không hợp lệ an toàn, chống crash firmware.
+
+## Member 2: Sensors & Automation
+
+Nhánh Member 2 thêm PIR, RC522, whitelist RFID và automation đèn; vẫn dùng
+đúng MQTT contract có sẵn. Xem [hướng dẫn wiring, rule ưu tiên manual và các
+bước test](docs/member2-sensors-automation.md). Phần LED/relay/servo hiện đi
+qua `src/actuator_bridge.cpp` dạng stub để build được trước khi Member 3 hoàn
+thiện hardware.
 
 ## Member 5: broker và kiểm tra kết nối
 
