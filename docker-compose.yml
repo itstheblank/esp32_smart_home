@@ -1,0 +1,24 @@
+services:
+  broker:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: smart-home-emqx:6.3.1
+    container_name: smart-home-emqx
+    hostname: broker.smart-home.local
+    restart: unless-stopped
+    environment:
+      - EMQX_NODE_NAME=emqx@broker.smart-home.local
+      - EMQX_SECURITY_PROFILE=legacy
+    ports:
+      - "1883:1883"               # MQTT TCP for ESP32, Android App, MQTTX
+      - "127.0.0.1:18083:18083"   # EMQX Dashboard (access via http://localhost:18083)
+    volumes:
+      - smart-home-emqx-data:/opt/emqx/data
+      - smart-home-emqx-log:/opt/emqx/log
+
+volumes:
+  smart-home-emqx-data:
+    name: smart-home-emqx-data
+  smart-home-emqx-log:
+    name: smart-home-emqx-log

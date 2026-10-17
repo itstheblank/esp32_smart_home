@@ -18,6 +18,26 @@ Dự án Firmware cho hệ thống nhà thông minh.
 - [x] **M1-05**: Đăng ký (Subscribe) các topic nhận lệnh điều khiển ngay sau khi kết nối/reconnect: `smarthome/cmd/light` và `smarthome/cmd/door`.
 - [x] **M1-06**: Phân tích cú pháp và kiểm tra tính hợp lệ của payload (`ON`/`OFF`, `OPEN`/`CLOSE`), ghi log thực thi và lọc bỏ lệnh không hợp lệ an toàn, chống crash firmware.
 
+## Chạy MQTT Broker với Docker (Dành cho cả nhóm)
+
+Mọi thành viên đều có thể khởi động Broker EMQX nhanh chóng bằng Docker:
+
+1. **Khởi động bằng Docker Compose (Khuyên dùng):**
+   ```powershell
+   docker compose up -d
+   ```
+2. **Dừng Broker:**
+   ```powershell
+   docker compose down
+   ```
+3. **Hoặc tự build image từ Dockerfile:**
+   ```powershell
+   docker build -t smart-home-emqx:6.3.1 .
+   ```
+
+* Dashboard EMQX: [http://localhost:18083](http://localhost:18083) (User: `admin`, Pass: `public`).
+* Cổng MQTT: `1883` (Hỗ trợ kết nối không cần xác thực cho mạng lab nội bộ).
+
 ## Member 5: broker và kiểm tra kết nối
 
 Xem [hướng dẫn M5-01](docs/m5-01-broker-setup.md) để chạy EMQX, cấu hình MQTTX và kiểm tra Android/ESP32 trên mạng nội bộ.
