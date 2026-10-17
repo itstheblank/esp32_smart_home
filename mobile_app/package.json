@@ -1,0 +1,41 @@
+{
+  "name": "mobile_app",
+  "version": "1.0.0",
+  "main": "index.js",
+  "dependencies": {
+    "@expo/vector-icons": "^15.0.2",
+    "@react-native-async-storage/async-storage": "2.2.0",
+    "expo": "^58.0.14",
+    "expo-font": "~58.0.8",
+    "expo-haptics": "~58.0.7",
+    "expo-notifications": "~58.1.5",
+    "expo-status-bar": "~58.0.3",
+    "paho-mqtt": "^1.1.0",
+    "react": "19.3.0",
+    "react-native": "^0.88.0"
+  },
+  "scripts": {
+    "start": "expo start",
+    "android": "expo start --android",
+    "ios": "expo start --ios",
+    "web": "expo start --web",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "test": "vitest run",
+    "doctor": "expo-doctor",
+    "validate:contract": "node scripts/validate-contract.js",
+    "build:apk": "eas build -p android --profile preview",
+    "build:bundle": "eas build -p android --profile production",
+    "check:all": "npm run doctor && npm run lint && npm run format:check && npm run validate:contract && npm test"
+  },
+  "private": true,
+  "devDependencies": {
+    "eslint": "^9.0.0",
+    "eslint-config-expo": "~58.0.4",
+    "expo-doctor": "^1.21.5",
+    "prettier": "^3.9.10",
+    "vitest": "^5.0.5"
+  }
+}
