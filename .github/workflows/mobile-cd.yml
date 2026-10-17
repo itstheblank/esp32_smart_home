@@ -1,0 +1,69 @@
+name: Mobile CD (EAS Cloud Build)
+
+on:
+  workflow_dispatch:
+    inputs:
+      profile:
+        description: "EAS build profile (preview: APK cài trực tiếp, production: AAB)"
+        required: true
+        default: "preview"
+        type: choice
+        options:
+          - preview
+          - production
+      platform:
+        description: "Nền tảng build"
+        required: true
+        default: "android"
+        type: choice
+        options:
+          - android
+          - ios
+          - all
+  push:
+    tags:
+      - "v*.*.*"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: mobile-cd-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  eas-build:
+    name: EAS Cloud Build (APK / AAB)
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    defaults:
+      run:
+        working-directory: mobile_app
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js 20 LTS
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: "npm"
+          cache-dependency-path: mobile_app/package-lock.json
+
+      - name: Setup Expo & EAS CLI
+        uses: expo/expo-github-action@v8
+        with:
+          expo-version: latest
+          eas-version: latest
+          token: ${{ secrets.EXPO_TOKEN }}
+
+      - name: Install Dependencies
+        run: npm ci
+
+      - name: Run Build with EAS Cloud
+        run: |
+          PROFILE="${{ github.event.inputs.profile || 'preview' }}"
+          PLATFORM="${{ github.event.inputs.platform || 'android' }}"
+          eas build --profile "$PROFILE" --platform "$PLATFORM" --non-interactive
+

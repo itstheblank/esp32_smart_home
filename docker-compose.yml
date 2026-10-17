@@ -12,6 +12,7 @@ services:
       - EMQX_SECURITY_PROFILE=legacy
     ports:
       - "1883:1883"               # MQTT TCP for ESP32, Android App, MQTTX
+      - "8083:8083"               # MQTT WebSocket for Mobile App / Prototype
       - "127.0.0.1:18083:18083"   # EMQX Dashboard (access via http://localhost:18083)
     volumes:
       - smart-home-emqx-data:/opt/emqx/data

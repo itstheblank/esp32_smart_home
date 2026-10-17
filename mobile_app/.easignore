@@ -1,0 +1,27 @@
+# Dependencies
+node_modules/
+
+# Git
+.git/
+.github/
+.husky/
+
+# Documentation & Scratch
+.scratch/
+docs/
+*.md
+
+# Build Artifacts & Temporary files
+dist/
+build/
+.expo/
+*.log
+.claude/
+
+# Monorepo firmware and broker files
+src/
+platformio.ini
+docker-compose.yml
+Dockerfile
+scripts/
+
