@@ -17,6 +17,10 @@ Dự án Firmware cho hệ thống nhà thông minh.
 - [x] **M1-04**: Kết nối tới MQTT Broker (EMQX), cấu hình Keep Alive 30s, tự động reconnect và đăng ký Last Will & Testament (`OFFLINE`, Retain true).
 - [x] **M1-05**: Đăng ký (Subscribe) các topic nhận lệnh điều khiển ngay sau khi kết nối/reconnect: `smarthome/cmd/light` và `smarthome/cmd/door`.
 - [x] **M1-06**: Phân tích cú pháp và kiểm tra tính hợp lệ của payload (`ON`/`OFF`, `OPEN`/`CLOSE`), ghi log thực thi và lọc bỏ lệnh không hợp lệ an toàn, chống crash firmware.
+- [x] **M1-07**: Publish trạng thái thiết bị (light, door, motion, online) chuẩn MQTT Contract v1.0.0 (Retain true).
+- [x] **M1-08**: Tạo giao diện điều khiển actuator (actuator_interface.h) cho Member 3 (Relay & Servo) độc lập với mã MQTT.
+- [x] **M1-09**: Tạo giao diện nhận sự kiện cảm biến (sensor_interface.h) đóng gói JSON RFID và sự kiện PIR cho Member 2.
+- [x] **M1-10**: Tự động đồng bộ toàn bộ trạng thái thiết bị (syncAllStatesAfterReconnect) ngay sau khi reconnect MQTT.
 
 ## Chạy MQTT Broker với Docker (Dành cho cả nhóm)
 

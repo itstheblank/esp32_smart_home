@@ -1,36 +1,144 @@
-#include <Arduino.h>
+﻿#include <Arduino.h>
 #include <WiFi.h>
 #include <PubSubClient.h>
 #include <ESP32Servo.h>
 #include "config.h"
+#include "actuator_interface.h"
+#include "sensor_interface.h"
 
 // =========================================================================
-// SERVO CONFIGURATION (SG90)
-// OPEN:  180 degrees
-// CLOSE: 0 degrees
+// KHAI BÁO BIẾN TOÀN CỤC & TRẠNG THÁI HỆ THỐNG
 // =========================================================================
-#define SERVO_PIN 2
-#define PIR_PIN 39
-
-Servo doorServo;
-
-void door_open()
-{
-  doorServo.write(180);
-  Serial.println("=> Servo: Door OPEN (180 degrees)");
-}
-
-void door_close()
-{
-  doorServo.write(0);
-  Serial.println("=> Servo: Door CLOSE (0 degrees)");
-}
-
 bool wifi_connected = false;
 WiFiClient wifiClient;
 PubSubClient mqttClient(wifiClient);
 
-// MQTT Callback function (For Task M1-05 & M1-06)
+// Lưu trữ trạng thái hiện tại của thiết bị trong bộ nhớ Core
+static bool currentLightState = false;  // false = OFF, true = ON
+static bool currentDoorState = false;   // false = CLOSED, true = OPEN
+static bool currentMotionState = false; // false = CLEAR, true = DETECTED
+
+// =========================================================================
+// M1-07: CÁC HÀM PUBLISH DEVICE STATE
+// =========================================================================
+void publishLightState(bool isOn)
+{
+  currentLightState = isOn;
+  const char *payload = isOn ? "ON" : "OFF";
+  if (mqttClient.connected())
+  {
+    mqttClient.publish(TOPIC_STATE_LIGHT, payload, true);
+    Serial.printf("[STATE] Light -> %s (Published)\n", payload);
+  }
+}
+
+void publishDoorState(bool isOpen)
+{
+  currentDoorState = isOpen;
+  const char *payload = isOpen ? "OPEN" : "CLOSED";
+  if (mqttClient.connected())
+  {
+    mqttClient.publish(TOPIC_STATE_DOOR, payload, true); // Retain = true
+    Serial.printf("[STATE] Door -> %s (Published)\n", payload);
+  }
+}
+void publishMotionState(bool detected)
+{
+  currentMotionState = detected;
+  const char *payload = detected ? "DETECTED" : "CLEAR";
+  if (mqttClient.connected())
+  {
+    mqttClient.publish(TOPIC_STATE_MOTION, payload, true); // Retain = true
+    Serial.printf("[STATE] Motion -> %s (Published)\n", payload);
+  }
+}
+
+// =========================================================================
+// M1-08: IMPLEMENTATION CỦA ACTUATOR INTERFACE (Dành cho Member 3)
+// =========================================================================
+#define SERVO_PIN 2
+#define RELAY_PIN 14
+
+Servo doorServo;
+namespace ActuatorInterface
+{
+  void init()
+  {
+    pinMode(RELAY_PIN, OUTPUT);
+    digitalWrite(RELAY_PIN, LOW); // Mặc định tắt đèn
+    ESP32PWM::allocateTimer(0);
+    ESP32PWM::allocateTimer(1);
+    ESP32PWM::allocateTimer(2);
+    ESP32PWM::allocateTimer(3);
+    doorServo.setPeriodHertz(50);
+    doorServo.attach(SERVO_PIN, 500, 2400);
+    doorServo.write(0); // Mặc định đóng cửa (0 độ)
+  }
+  bool setLight(bool turnOn)
+  {
+    digitalWrite(RELAY_PIN, turnOn ? HIGH : LOW);
+    return true;
+  }
+  bool openDoor()
+  {
+    doorServo.write(180); // Mở cửa góc 180 độ
+    return true;
+  }
+  bool closeDoor()
+  {
+    doorServo.write(0); // Đóng cửa góc 0 độ
+    return true;
+  }
+}
+// =========================================================================
+// M1-09: IMPLEMENTATION CỦA SENSOR INTERFACE (Dành cho Member 2)
+// =========================================================================
+namespace SensorInterface
+{
+  void notifyMotionState(bool detected)
+  {
+    publishMotionState(detected);
+  }
+  void notifyRFIDAccess(const char *uid, bool isGranted)
+  {
+    if (!mqttClient.connected())
+      return;
+    // Đóng gói JSON chuẩn: {"uid":"...","result":"GRANTED/DENIED"}
+    char jsonBuffer[128];
+    snprintf(jsonBuffer, sizeof(jsonBuffer), "{\"uid\":\"%s\",\"result\":\"%s\"}",
+             uid, isGranted ? "GRANTED" : "DENIED");
+    // Publish sự kiện quẹt thẻ (Retain = false theo contract)
+    mqttClient.publish(TOPIC_EVENT_ACCESS, jsonBuffer, false);
+    Serial.printf("[EVENT] RFID Access: %s\n", jsonBuffer);
+    // Nếu thẻ hợp lệ -> Tự động mở cửa
+    if (isGranted)
+    {
+      if (ActuatorInterface::openDoor())
+      {
+        publishDoorState(true);
+      }
+    }
+  }
+}
+// =========================================================================
+// M1-10: ĐỒNG BỘ TRẠNG THÁI SAU KHI RECONNECT (State Sync)
+// =========================================================================
+void syncAllStatesAfterReconnect()
+{
+  Serial.println("=> [M1-10] Syncing all device states to Broker...");
+
+  // Gửi lại trạng thái đèn, cửa, chuyển động (Retain: true)
+  publishLightState(currentLightState);
+  publishDoorState(currentDoorState);
+  publishMotionState(currentMotionState);
+  // Cuối cùng gửi trạng thái ONLINE
+  mqttClient.publish(TOPIC_STATE_ONLINE, "ONLINE", true);
+  Serial.println("=> [M1-10] Device is ONLINE and in-sync!");
+}
+
+// =========================================================================
+// MQTT CALLBACK (M1-05 & M1-06 kết nối M1-08)
+// =========================================================================
 void mqttCallback(char *topic, byte *payload, unsigned int length)
 {
   String message;
@@ -39,10 +147,7 @@ void mqttCallback(char *topic, byte *payload, unsigned int length)
     message += (char)payload[i];
   }
 
-  Serial.print("Message arrived [");
-  Serial.print(topic);
-  Serial.print("] : ");
-  Serial.println(message);
+  Serial.printf("Message arrived [%s] : %s\n", topic, message.c_str());
 
   // --- COMMAND PARSING FROM APP (Task M1-06) ---
 
@@ -51,19 +156,17 @@ void mqttCallback(char *topic, byte *payload, unsigned int length)
   {
     if (message == "ON")
     {
-      mqttClient.publish(TOPIC_STATE_LIGHT, "ESP32 SEND ON", true);
-      Serial.println("=> Published: ESP32 SEND ON");
-      // TODO: Call light_on() from Member 3 here
+      if (ActuatorInterface::setLight(true))
+        publishLightState(true);
     }
     else if (message == "OFF")
     {
-      mqttClient.publish(TOPIC_STATE_LIGHT, "ESP32 SEND OFF", true);
-      Serial.println("=> Published: ESP32 SEND OFF");
-      // TODO: Call light_off() from Member 3 here
+      if (ActuatorInterface::setLight(false))
+        publishLightState(false);
     }
     else
     {
-      Serial.println("=> ERROR: Invalid light command, ignored!");
+      Serial.println("=> ERROR: Invalid light command!");
     }
   }
 
@@ -72,63 +175,58 @@ void mqttCallback(char *topic, byte *payload, unsigned int length)
   {
     if (message == "OPEN")
     {
-      door_open();
-      mqttClient.publish(TOPIC_STATE_DOOR, "ESP32 SEND OPEN", true);
-      Serial.println("=> Published: ESP32 SEND OPEN");
+      if (ActuatorInterface::openDoor())
+        publishDoorState(true);
     }
     else if (message == "CLOSE")
     {
-      door_close();
-      mqttClient.publish(TOPIC_STATE_DOOR, "ESP32 SEND CLOSED", true);
-      Serial.println("=> Published: ESP32 SEND CLOSED");
+      if (ActuatorInterface::closeDoor())
+        publishDoorState(false);
     }
     else
     {
-      Serial.println("=> ERROR: Invalid door command, ignored!");
+      Serial.println("=> ERROR: Invalid door command!");
     }
   }
 }
 
-// Function to maintain and reconnect MQTT (M1-04)
+// =========================================================================
+// M1-04: QUẢN LÝ KẾT NỐI MQTT & LAST WILL
+// =========================================================================
 void reconnectMQTT()
 {
   static unsigned long lastAttempt = 0;
   if (!wifi_connected)
     return;
-
   if (millis() - lastAttempt > 5000)
   {
     lastAttempt = millis();
     Serial.print("Attempting MQTT connection...");
-    // Connect with Last Will and Testament (LWT) as specified in MQTT Contract v1.0.0:
-    // Topic: TOPIC_STATE_ONLINE, QoS: 0, Retain: true, Payload: "OFFLINE"
+    // Kết nối với Last Will: topic online, retain = true, payload = "OFFLINE"
     if (mqttClient.connect(MQTT_CLIENT_ID, TOPIC_STATE_ONLINE, 0, true, "OFFLINE"))
     {
-      Serial.println("connected");
-
-      // Publish online state (M1-07 / Contract M5-03)
-      mqttClient.publish(TOPIC_STATE_ONLINE, "ONLINE", true);
-
-      // Subscribe to command topics (M1-05)
+      Serial.println("connected!");
+      // Subscribe lệnh điều khiển (M1-05)
       mqttClient.subscribe(TOPIC_CMD_LIGHT);
       mqttClient.subscribe(TOPIC_CMD_DOOR);
+      // M1-10: Đồng bộ toàn bộ trạng thái sau khi kết nối lại
+      syncAllStatesAfterReconnect();
     }
     else
     {
-      Serial.print("failed, rc=");
-      Serial.print(mqttClient.state());
-      Serial.println(" try again in 5 seconds");
+      Serial.printf("failed, rc=%d. Try again in 5 seconds\n", mqttClient.state());
     }
   }
 }
-
-// Handle WiFi events (M1-03)
+// =========================================================================
+// M1-03: XỬ LÝ SỰ KIỆN WIFI
+// =========================================================================
 void WiFiEvent(WiFiEvent_t event)
 {
   switch (event)
   {
   case ARDUINO_EVENT_WIFI_STA_START:
-    Serial.println("=> WiFi module has started!");
+    Serial.println("=> WiFi module started!");
     break;
   case ARDUINO_EVENT_WIFI_STA_CONNECTED:
     Serial.println("=> WiFi connected!");
@@ -146,41 +244,26 @@ void WiFiEvent(WiFiEvent_t event)
     break;
   }
 }
-
 unsigned long lastWifiAttempt = 0;
-
 void setup()
 {
   Serial.begin(115200);
   delay(1000);
-
-  Serial.println("Initializing WiFi module...");
-
+  Serial.println("Initializing ESP32 SmartHome Core...");
+  // Khởi tạo phần cứng Actuator
+  ActuatorInterface::init();
+  // Khởi tạo WiFi
   WiFi.onEvent(WiFiEvent);
   WiFi.mode(WIFI_STA);
   WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
-
-  // Setup MQTT Broker
+  // Cấu hình MQTT Client
   mqttClient.setServer(MQTT_BROKER, MQTT_PORT);
   mqttClient.setCallback(mqttCallback);
-  mqttClient.setKeepAlive(30); // Clean session, Keep Alive 30s as per Contract M5-03
-
-  // Setup HC-SR501 PIR sensor on IO39
-  pinMode(PIR_PIN, INPUT);
-
-  // Setup SG90 Servo on IO2
-  ESP32PWM::allocateTimer(0);
-  ESP32PWM::allocateTimer(1);
-  ESP32PWM::allocateTimer(2);
-  ESP32PWM::allocateTimer(3);
-  doorServo.setPeriodHertz(50);           // Standard 50Hz servo
-  doorServo.attach(SERVO_PIN, 500, 2400); // Standard 500us to 2400us range for SG90
-  door_close();                           // Initial state: Closed (0 degrees)
+  mqttClient.setKeepAlive(30);
 }
-
 void loop()
 {
-  // Automatically reconnect WiFi if disconnected
+  // Tự động kết nối lại WiFi nếu mất mạng
   if (!wifi_connected)
   {
     if (millis() - lastWifiAttempt > 5000)
@@ -191,63 +274,14 @@ void loop()
       lastWifiAttempt = millis();
     }
   }
-  // Automatically reconnect MQTT if WiFi is connected but MQTT is dropped
+  // Tự động kết nối lại MQTT nếu có WiFi nhưng mất MQTT
   else if (wifi_connected && !mqttClient.connected())
   {
     reconnectMQTT();
   }
-
-  // Maintain MQTT connection
+  // Duy trì xử lý gói tin MQTT
   if (mqttClient.connected())
   {
     mqttClient.loop();
   }
-
-  // --- PIR MOTION DETECTION (IO39) ---
-  static int lastMotionState = LOW;
-  int currentMotion = digitalRead(PIR_PIN);
-
-  // Trigger when motion transitions from LOW to HIGH (rising edge)
-  if (currentMotion == HIGH && lastMotionState == LOW)
-  {
-    Serial.println("=> Motion DETECTED on IO39!");
-
-    // 1. Send message: ESP32 DETECT MOTION
-    if (mqttClient.connected())
-    {
-      mqttClient.publish(TOPIC_STATE_MOTION, "ESP32 DETECT MOTION", true);
-      Serial.println("=> Published: ESP32 DETECT MOTION");
-    }
-
-    // 2. Open the door
-    door_open();
-    if (mqttClient.connected())
-    {
-      mqttClient.publish(TOPIC_STATE_DOOR, "ESP32 SEND OPEN", true);
-      Serial.println("=> Published: ESP32 SEND OPEN");
-    }
-
-    // 3. Wait 2 seconds (servicing MQTT loop in background)
-    unsigned long waitStart = millis();
-    while (millis() - waitStart < 2000)
-    {
-      if (mqttClient.connected())
-      {
-        mqttClient.loop();
-      }
-      delay(10);
-    }
-
-    // 4. Send message: ESP32 SEND CLOSED
-    if (mqttClient.connected())
-    {
-      mqttClient.publish(TOPIC_STATE_DOOR, "ESP32 SEND CLOSED", true);
-      Serial.println("=> Published: ESP32 SEND CLOSED");
-    }
-
-    // 5. Close the door
-    door_close();
-  }
-
-  lastMotionState = currentMotion;
 }
