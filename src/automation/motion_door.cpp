@@ -25,19 +25,19 @@ void motion_door_loop()
     {
       Serial.println("=> Motion DETECTED on IO39!");
 
-      // 1. Send message: ESP32 DETECT MOTION
+      // 1. Send message: DETECTED
       if (mqttPtr->connected())
       {
-        mqttPtr->publishState(TOPIC_STATE_MOTION, "ESP32 DETECT MOTION");
-        Serial.println("=> Published: ESP32 DETECT MOTION");
+        mqttPtr->publishState(TOPIC_STATE_MOTION, "DETECTED");
+        Serial.println("=> Published: DETECTED");
       }
 
       // 2. Open the door
       doorPtr->open();
       if (mqttPtr->connected())
       {
-        mqttPtr->publishState(TOPIC_STATE_DOOR, "ESP32 SEND OPEN");
-        Serial.println("=> Published: ESP32 SEND OPEN");
+        mqttPtr->publishState(TOPIC_STATE_DOOR, "OPEN");
+        Serial.println("=> Published: OPEN");
       }
 
       waitStart = millis();
@@ -46,11 +46,11 @@ void motion_door_loop()
   }
   else if (millis() - waitStart >= DOOR_AUTO_CLOSE_MS)
   {
-    // 4. Send message: ESP32 SEND CLOSED
+    // 4. Send message: CLOSED
     if (mqttPtr->connected())
     {
-      mqttPtr->publishState(TOPIC_STATE_DOOR, "ESP32 SEND CLOSED");
-      Serial.println("=> Published: ESP32 SEND CLOSED");
+      mqttPtr->publishState(TOPIC_STATE_DOOR, "CLOSED");
+      Serial.println("=> Published: CLOSED");
     }
 
     // 5. Close the door

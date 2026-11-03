@@ -18,13 +18,13 @@ static void handleLightCommand(const char *payload, unsigned int)
   switch (light_parse_command(payload))
   {
   case LightCommand::ON:
-    mqtt.publishState(TOPIC_STATE_LIGHT, "ESP32 SEND ON");
-    Serial.println("=> Published: ESP32 SEND ON");
+    mqtt.publishState(TOPIC_STATE_LIGHT, "ON");
+    Serial.println("=> Published: ON");
     // TODO: Call light_on() from Member 3 here
     break;
   case LightCommand::OFF:
-    mqtt.publishState(TOPIC_STATE_LIGHT, "ESP32 SEND OFF");
-    Serial.println("=> Published: ESP32 SEND OFF");
+    mqtt.publishState(TOPIC_STATE_LIGHT, "OFF");
+    Serial.println("=> Published: OFF");
     // TODO: Call light_off() from Member 3 here
     break;
   default:
@@ -40,13 +40,13 @@ static void handleDoorCommand(const char *payload, unsigned int)
   {
   case DoorCommand::OPEN:
     door.open();
-    mqtt.publishState(TOPIC_STATE_DOOR, "ESP32 SEND OPEN");
-    Serial.println("=> Published: ESP32 SEND OPEN");
+    mqtt.publishState(TOPIC_STATE_DOOR, "OPEN");
+    Serial.println("=> Published: OPEN");
     break;
   case DoorCommand::CLOSE:
     door.close();
-    mqtt.publishState(TOPIC_STATE_DOOR, "ESP32 SEND CLOSED");
-    Serial.println("=> Published: ESP32 SEND CLOSED");
+    mqtt.publishState(TOPIC_STATE_DOOR, "CLOSED");
+    Serial.println("=> Published: CLOSED");
     break;
   default:
     Serial.println("=> ERROR: Invalid door command, ignored!");
