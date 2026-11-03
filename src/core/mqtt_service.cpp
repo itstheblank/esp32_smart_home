@@ -1,0 +1,111 @@
+#include "mqtt_service.h"
+#include "network.h"
+#include <string.h>
+
+static const unsigned long RECONNECT_INTERVAL_MS = 5000;
+static const int MQTT_KEEP_ALIVE_S = 30;      // Clean session, Keep Alive 30s as per Contract M5-03
+static const int MQTT_LWT_QOS = 0;            // LWT per Contract M5-03: QoS 0, Retain true, payload "OFFLINE"
+static const int PAYLOAD_BUFFER_SIZE = 160;
+
+void MqttService::begin(const char *broker, int port, const char *id, const char *lwt)
+{
+  clientId = id;
+  lwtTopic = lwt;
+  commandCount = 0;
+  lastAttempt = 0;
+
+  client.setServer(broker, port);
+  client.setKeepAlive(MQTT_KEEP_ALIVE_S);
+  client.setCallback([this](char *topic, byte *payload, unsigned int length) {
+    handleMessage(topic, payload, length);
+  });
+}
+
+void MqttService::onCommand(const char *topic, CommandHandler handler)
+{
+  if (commandCount < MAX_COMMANDS)
+  {
+    commandTopics[commandCount] = topic;
+    commandHandlers[commandCount] = handler;
+    commandCount++;
+  }
+}
+
+bool MqttService::connected()
+{
+  return client.connected();
+}
+
+bool MqttService::publishState(const char *topic, const char *payload)
+{
+  return client.publish(topic, payload, true);
+}
+
+bool MqttService::publishEvent(const char *topic, const char *payload)
+{
+  return client.publish(topic, payload, false);
+}
+
+// Function to maintain and reconnect MQTT (M1-04)
+void MqttService::loop()
+{
+  if (!network_connected())
+    return;
+
+  if (client.connected())
+  {
+    client.loop();
+  }
+  else if (millis() - lastAttempt > RECONNECT_INTERVAL_MS)
+  {
+    lastAttempt = millis();
+    connect();
+  }
+}
+
+void MqttService::connect()
+{
+  Serial.print("Attempting MQTT connection...");
+  if (client.connect(clientId, lwtTopic, MQTT_LWT_QOS, true, "OFFLINE"))
+  {
+    Serial.println("connected");
+
+    // Publish online state (M1-07 / Contract M5-03)
+    publishState(lwtTopic, "ONLINE");
+
+    // Subscribe to command topics (M1-05)
+    for (int i = 0; i < commandCount; i++)
+    {
+      client.subscribe(commandTopics[i]);
+    }
+  }
+  else
+  {
+    Serial.print("failed, rc=");
+    Serial.print(client.state());
+    Serial.println(" try again in 5 seconds");
+  }
+}
+
+// MQTT Callback function (For Task M1-05 & M1-06)
+void MqttService::handleMessage(char *topic, byte *payload, unsigned int length)
+{
+  static char buffer[PAYLOAD_BUFFER_SIZE];
+  unsigned int n = length < PAYLOAD_BUFFER_SIZE - 1 ? length : PAYLOAD_BUFFER_SIZE - 1;
+  memcpy(buffer, payload, n);
+  buffer[n] = '\0';
+
+  Serial.print("Message arrived [");
+  Serial.print(topic);
+  Serial.print("] : ");
+  Serial.println(buffer);
+
+  for (int i = 0; i < commandCount; i++)
+  {
+    if (strcmp(topic, commandTopics[i]) == 0)
+    {
+      commandHandlers[i](buffer, n);
+      break;
+    }
+  }
+}
