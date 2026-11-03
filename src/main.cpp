@@ -1,73 +1,56 @@
 #include <Arduino.h>
 #include <string.h>
-#include <ESP32Servo.h>
 #include "config.h"
 #include "core/network.h"
 #include "core/mqtt_service.h"
+#include "devices/door.h"
+#include "devices/motion.h"
+#include "devices/door_logic.h"
+#include "devices/light_logic.h"
 
-// =========================================================================
-// SERVO CONFIGURATION (SG90)
-// OPEN:  180 degrees
-// CLOSE: 0 degrees
-// =========================================================================
-#define SERVO_PIN 2
-#define PIR_PIN 39
-
-Servo doorServo;
-
-void door_open()
-{
-  doorServo.write(180);
-  Serial.println("=> Servo: Door OPEN (180 degrees)");
-}
-
-void door_close()
-{
-  doorServo.write(0);
-  Serial.println("=> Servo: Door CLOSE (0 degrees)");
-}
-
-MqttService mqtt;
+static Door door;
+static Motion motion;
+static MqttService mqtt;
 
 // Light command handler (M1-06)
 static void handleLightCommand(const char *payload, unsigned int)
 {
-  if (strcmp(payload, "ON") == 0)
+  switch (light_parse_command(payload))
   {
+  case LightCommand::ON:
     mqtt.publishState(TOPIC_STATE_LIGHT, "ESP32 SEND ON");
     Serial.println("=> Published: ESP32 SEND ON");
     // TODO: Call light_on() from Member 3 here
-  }
-  else if (strcmp(payload, "OFF") == 0)
-  {
+    break;
+  case LightCommand::OFF:
     mqtt.publishState(TOPIC_STATE_LIGHT, "ESP32 SEND OFF");
     Serial.println("=> Published: ESP32 SEND OFF");
     // TODO: Call light_off() from Member 3 here
-  }
-  else
-  {
+    break;
+  default:
     Serial.println("=> ERROR: Invalid light command, ignored!");
+    break;
   }
 }
 
 // Door command handler (M1-06)
 static void handleDoorCommand(const char *payload, unsigned int)
 {
-  if (strcmp(payload, "OPEN") == 0)
+  switch (door_parse_command(payload))
   {
-    door_open();
+  case DoorCommand::OPEN:
+    door.open();
     mqtt.publishState(TOPIC_STATE_DOOR, "ESP32 SEND OPEN");
     Serial.println("=> Published: ESP32 SEND OPEN");
-  }
-  else if (strcmp(payload, "CLOSE") == 0)
-  {
-    door_close();
+    break;
+  case DoorCommand::CLOSE:
+    door.close();
     mqtt.publishState(TOPIC_STATE_DOOR, "ESP32 SEND CLOSED");
     Serial.println("=> Published: ESP32 SEND CLOSED");
-  }
-  else
-  {
+    break;
+  default:
     Serial.println("=> ERROR: Invalid door command, ignored!");
+    break;
   }
 }
 
@@ -85,17 +68,9 @@ void setup()
   mqtt.onCommand(TOPIC_CMD_LIGHT, handleLightCommand);
   mqtt.onCommand(TOPIC_CMD_DOOR, handleDoorCommand);
 
-  // Setup HC-SR501 PIR sensor on IO39
-  pinMode(PIR_PIN, INPUT);
+  motion.init();
 
-  // Setup SG90 Servo on IO2
-  ESP32PWM::allocateTimer(0);
-  ESP32PWM::allocateTimer(1);
-  ESP32PWM::allocateTimer(2);
-  ESP32PWM::allocateTimer(3);
-  doorServo.setPeriodHertz(50);           // Standard 50Hz servo
-  doorServo.attach(SERVO_PIN, 500, 2400); // Standard 500us to 2400us range for SG90
-  door_close();                           // Initial state: Closed (0 degrees)
+  door.init(); // Initial state: Closed (0 degrees)
 }
 
 void loop()
@@ -104,11 +79,7 @@ void loop()
   mqtt.loop();
 
   // --- PIR MOTION DETECTION (IO39) ---
-  static int lastMotionState = LOW;
-  int currentMotion = digitalRead(PIR_PIN);
-
-  // Trigger when motion transitions from LOW to HIGH (rising edge)
-  if (currentMotion == HIGH && lastMotionState == LOW)
+  if (motion.loop())
   {
     Serial.println("=> Motion DETECTED on IO39!");
 
@@ -120,7 +91,7 @@ void loop()
     }
 
     // 2. Open the door
-    door_open();
+    door.open();
     if (mqtt.connected())
     {
       mqtt.publishState(TOPIC_STATE_DOOR, "ESP32 SEND OPEN");
@@ -146,8 +117,6 @@ void loop()
     }
 
     // 5. Close the door
-    door_close();
+    door.close();
   }
-
-  lastMotionState = currentMotion;
 }
