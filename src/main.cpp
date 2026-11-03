@@ -3,6 +3,7 @@
 #include <PubSubClient.h>
 #include <ESP32Servo.h>
 #include "config.h"
+#include "core/network.h"
 
 // =========================================================================
 // SERVO CONFIGURATION (SG90)
@@ -26,7 +27,6 @@ void door_close()
   Serial.println("=> Servo: Door CLOSE (0 degrees)");
 }
 
-bool wifi_connected = false;
 WiFiClient wifiClient;
 PubSubClient mqttClient(wifiClient);
 
@@ -93,7 +93,7 @@ void mqttCallback(char *topic, byte *payload, unsigned int length)
 void reconnectMQTT()
 {
   static unsigned long lastAttempt = 0;
-  if (!wifi_connected)
+  if (!network_connected())
     return;
 
   if (millis() - lastAttempt > 5000)
@@ -122,33 +122,6 @@ void reconnectMQTT()
   }
 }
 
-// Handle WiFi events (M1-03)
-void WiFiEvent(WiFiEvent_t event)
-{
-  switch (event)
-  {
-  case ARDUINO_EVENT_WIFI_STA_START:
-    Serial.println("=> WiFi module has started!");
-    break;
-  case ARDUINO_EVENT_WIFI_STA_CONNECTED:
-    Serial.println("=> WiFi connected!");
-    break;
-  case ARDUINO_EVENT_WIFI_STA_GOT_IP:
-    Serial.print("=> Got IP: ");
-    Serial.println(WiFi.localIP());
-    wifi_connected = true;
-    break;
-  case ARDUINO_EVENT_WIFI_STA_DISCONNECTED:
-    Serial.println("=> WiFi disconnected!");
-    wifi_connected = false;
-    break;
-  default:
-    break;
-  }
-}
-
-unsigned long lastWifiAttempt = 0;
-
 void setup()
 {
   Serial.begin(115200);
@@ -156,9 +129,7 @@ void setup()
 
   Serial.println("Initializing WiFi module...");
 
-  WiFi.onEvent(WiFiEvent);
-  WiFi.mode(WIFI_STA);
-  WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
+  network_begin(WIFI_SSID, WIFI_PASSWORD);
 
   // Setup MQTT Broker
   mqttClient.setServer(MQTT_BROKER, MQTT_PORT);
@@ -181,18 +152,10 @@ void setup()
 void loop()
 {
   // Automatically reconnect WiFi if disconnected
-  if (!wifi_connected)
-  {
-    if (millis() - lastWifiAttempt > 5000)
-    {
-      Serial.println("Attempting WiFi connection...");
-      WiFi.disconnect();
-      WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
-      lastWifiAttempt = millis();
-    }
-  }
+  network_loop();
+
   // Automatically reconnect MQTT if WiFi is connected but MQTT is dropped
-  else if (wifi_connected && !mqttClient.connected())
+  if (network_connected() && !mqttClient.connected())
   {
     reconnectMQTT();
   }
