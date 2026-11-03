@@ -4,33 +4,21 @@
 #include "core/mqtt_service.h"
 #include "devices/door.h"
 #include "devices/motion.h"
+#include "devices/light.h"
+#include "devices/rfid.h"
 #include "devices/door_logic.h"
-#include "devices/light_logic.h"
 #include "automation/motion_door.h"
 
 static Door door;
 static Motion motion;
+static Light light;
+static Rfid rfid;
 static MqttService mqtt;
 
 // Light command handler (M1-06)
-static void handleLightCommand(const char *payload, unsigned int)
+static void handleLightCommand(const char *payload, unsigned int length)
 {
-  switch (light_parse_command(payload))
-  {
-  case LightCommand::ON:
-    mqtt.publishState(TOPIC_STATE_LIGHT, "ON");
-    Serial.println("=> Published: ON");
-    // TODO: Call light_on() from Member 3 here
-    break;
-  case LightCommand::OFF:
-    mqtt.publishState(TOPIC_STATE_LIGHT, "OFF");
-    Serial.println("=> Published: OFF");
-    // TODO: Call light_off() from Member 3 here
-    break;
-  default:
-    Serial.println("=> ERROR: Invalid light command, ignored!");
-    break;
-  }
+  light.handleCommand(payload, length);
 }
 
 // Door command handler (M1-06)
@@ -70,6 +58,8 @@ void setup()
 
   motion.init();
   door.init(); // Initial state: Closed (0 degrees)
+  light.init(mqtt);
+  rfid.init(mqtt);
 
   motion_door_setup(motion, door, mqtt);
 }
@@ -79,4 +69,6 @@ void loop()
   network_loop();
   mqtt.loop();
   motion_door_loop();
+  light.loop();
+  rfid.loop();
 }
