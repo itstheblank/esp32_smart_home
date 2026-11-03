@@ -1,5 +1,4 @@
 #include <Arduino.h>
-#include <string.h>
 #include "config.h"
 #include "core/network.h"
 #include "core/mqtt_service.h"
@@ -7,6 +6,7 @@
 #include "devices/motion.h"
 #include "devices/door_logic.h"
 #include "devices/light_logic.h"
+#include "automation/motion_door.h"
 
 static Door door;
 static Motion motion;
@@ -69,54 +69,14 @@ void setup()
   mqtt.onCommand(TOPIC_CMD_DOOR, handleDoorCommand);
 
   motion.init();
-
   door.init(); // Initial state: Closed (0 degrees)
+
+  motion_door_setup(motion, door, mqtt);
 }
 
 void loop()
 {
   network_loop();
   mqtt.loop();
-
-  // --- PIR MOTION DETECTION (IO39) ---
-  if (motion.loop())
-  {
-    Serial.println("=> Motion DETECTED on IO39!");
-
-    // 1. Send message: ESP32 DETECT MOTION
-    if (mqtt.connected())
-    {
-      mqtt.publishState(TOPIC_STATE_MOTION, "ESP32 DETECT MOTION");
-      Serial.println("=> Published: ESP32 DETECT MOTION");
-    }
-
-    // 2. Open the door
-    door.open();
-    if (mqtt.connected())
-    {
-      mqtt.publishState(TOPIC_STATE_DOOR, "ESP32 SEND OPEN");
-      Serial.println("=> Published: ESP32 SEND OPEN");
-    }
-
-    // 3. Wait 2 seconds (servicing MQTT loop in background)
-    unsigned long waitStart = millis();
-    while (millis() - waitStart < 2000)
-    {
-      if (mqtt.connected())
-      {
-        mqtt.loop();
-      }
-      delay(10);
-    }
-
-    // 4. Send message: ESP32 SEND CLOSED
-    if (mqtt.connected())
-    {
-      mqtt.publishState(TOPIC_STATE_DOOR, "ESP32 SEND CLOSED");
-      Serial.println("=> Published: ESP32 SEND CLOSED");
-    }
-
-    // 5. Close the door
-    door.close();
-  }
+  motion_door_loop();
 }
