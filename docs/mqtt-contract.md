@@ -100,13 +100,7 @@ Member 1 cần thêm constant `TOPIC_EVENT_ACCESS = "smarthome/event/access"` kh
 
 [mqtt-contract.json](mqtt-contract.json) lưu cùng bảng trên để script đọc. `payloads` trong file chỉ liệt kê giá trị cho phép; lúc gửi MQTT chọn một giá trị, không gửi cả mảng JSON.
 
-Chạy tại thư mục project:
-
-```powershell
-python scripts/mqtt_smoke_test.py --output docs/test-results/m5-03-contract-broker.json
-```
-
-Script đọc command từ JSON và kiểm tra gửi/nhận qua broker. [Báo cáo kết quả](test-results/m5-03-contract-broker.json) chỉ xác nhận bốn command; không chứng minh board, state, RFID hay Last Will hoạt động.
+[Báo cáo kết quả](test-results/m5-03-contract-broker.json) chỉ xác nhận bốn command; không chứng minh board, state, RFID hay Last Will hoạt động.
 
 Trước khi ghép app/firmware:
 

@@ -22,7 +22,7 @@ Nguyên tắc: **đừng debug trên board**. Lỗi phải tái lập được t
 
 ## 2. Giả lập ESP32 (`scripts/fake_esp32.py`)
 
-Mở rộng từ `mqtt_smoke_test.py`, đọc thẳng `docs/mqtt-contract.json` để không lệch contract:
+Đọc thẳng `docs/mqtt-contract.json` để không lệch contract:
 
 - Subscribe `smarthome/cmd/+`, validate payload; lệnh sai chỉ log, đúng thì publish state retain (`CLOSE` ⇒ `CLOSED`).
 - Mô phỏng online/offline và LWT `OFFLINE`; client id riêng, không trùng `ESP32_SmartHome_Core`.
@@ -41,7 +41,7 @@ Bắt trình tự tin thật: MQTTX lưu hội thoại, hoặc dashboard EMQX.
 ## 4. Vòng debug 5 bước
 
 1. Chụp trình tự tin MQTT + trace Serial.
-2. Phát lại bằng `fake_esp32.py --replay` hoặc smoke test.
+2. Phát lại bằng `fake_esp32.py --replay`.
 3. Viết test native thất bại tái hiện đúng lỗi.
 4. Sửa đến khi test xanh; giữ test lại để không tái diễn.
 5. Xác nhận trên board một lần cuối.

@@ -112,13 +112,7 @@ Kết quả đạt ở bước này: Observer nhận đủ `ON`, `OFF`, `OPEN`, 
 
 ### Chạy kiểm tra tự động trên laptop
 
-Tại thư mục gốc project, chạy:
-
-```powershell
-python scripts/mqtt_smoke_test.py --output docs/test-results/m5-01-local-broker.json
-```
-
-Đọc báo cáo JSON và kết quả trên terminal. Báo cáo này xác nhận những trường hợp script đã thực sự kiểm tra; kiểm tra điện thoại, ESP32 và phần cứng cần bằng chứng riêng. Lệnh gửi các lệnh điều khiển MQTT, vì vậy chạy trong phiên thử nghiệm mà nhóm đang chủ động kiểm tra.
+Báo cáo [test-results/m5-01-local-broker.json](test-results/m5-01-local-broker.json) được ghi lại từ phiên chạy kiểm tra tự động trên laptop. Báo cáo này xác nhận những trường hợp kiểm tra đã thực sự chạy lúc đó; kiểm tra điện thoại, ESP32 và phần cứng cần bằng chứng riêng. Lệnh gửi các lệnh điều khiển MQTT, vì vậy chạy trong phiên thử nghiệm mà nhóm đang chủ động kiểm tra.
 
 ## 6. Chuẩn bị mạng chung cho điện thoại và ESP32
 
@@ -145,19 +139,11 @@ Trong lần kiểm tra ngày 13/10/2026, Wi-Fi laptop có IPv4 **`192.168.88.173
 
 ### Cho phép cổng MQTT qua Windows Firewall
 
-Windows yêu cầu quyền Administrator để tạo rule. Ngày 13/10, helper đã được chạy với quyền này và rule đã được xác minh đang bật. Khi cần cấu hình lại, mở PowerShell bằng **Run as administrator**, chuyển đến thư mục project và truyền đúng thông số mạng hiện tại:
+Windows yêu cầu quyền Administrator để tạo rule. Ngày 13/10, rule đã được tạo và xác minh đang bật; script helper dùng để tạo rule đã được dọn bỏ khỏi repo sau khi xác minh. Nếu cần tạo lại (đổi mạng, IP mới), mở PowerShell bằng **Run as administrator** và dùng lệnh [`New-NetFirewallRule`](https://learn.microsoft.com/en-us/powershell/module/netsecurity/new-netfirewallrule) với đúng thông số mạng hiện tại.
 
-```powershell
-.\scripts\open_mqtt_firewall.ps1 -LocalIPAddress "192.168.88.173" -RemoteSubnet "192.168.88.0/24" -InterfaceAlias "Wi-Fi"
-```
+Rule hiện tại cho phép TCP 1883 đến `192.168.88.173`, chỉ từ subnet `192.168.88.0/24` qua adapter `Wi-Fi`, profile `Public`. Giá trị này ghi lại trạng thái đã xác minh ngày 13/10. [Tài liệu New-NetFirewallRule của Microsoft](https://learn.microsoft.com/en-us/powershell/module/netsecurity/new-netfirewallrule).
 
-Rule hiện tại cho phép TCP 1883 đến `192.168.88.173`, chỉ từ subnet `192.168.88.0/24` qua adapter `Wi-Fi`, profile `Public`. Helper kiểm tra IP có thực sự thuộc adapter và dùng đúng profile mạng; rule cùng tên sẽ được cập nhật thay vì tạo trùng. Giá trị mặc định trong script là mạng thử ngày 12/10, nên luôn truyền thông số hiện tại như lệnh trên. [Tài liệu New-NetFirewallRule của Microsoft](https://learn.microsoft.com/en-us/powershell/module/netsecurity/new-netfirewallrule).
-
-Khi IP hoặc mạng thay đổi, xác định lại IPv4, subnet và adapter rồi truyền thông số mới. Ví dụ dưới đây chỉ áp dụng nếu `ipconfig` thực sự cho thấy Wi-Fi laptop đổi sang `192.168.0.103` với subnet `/24`:
-
-```powershell
-.\scripts\open_mqtt_firewall.ps1 -LocalIPAddress "192.168.0.103" -RemoteSubnet "192.168.0.0/24" -InterfaceAlias "Wi-Fi"
-```
+Khi IP hoặc mạng thay đổi, xác định lại IPv4, subnet và adapter rồi tạo rule tương ứng với thông số mới.
 
 ## 7. Kiểm tra Android gửi và nhận
 
