@@ -15,7 +15,7 @@ Implements contract v1.0.0 (docs/mqtt-contract.json):
 entries like {"topic": "smarthome/state/door", "payload": "OPEN",
 "retain": true, "delay_ms": 250} (retain/delay_ms optional).
 
-Uses only Python's standard library, same wire format as mqtt_smoke_test.py.
+Uses only Python's standard library, speaking the MQTT 3.1.1 wire format directly.
 """
 
 import argparse
