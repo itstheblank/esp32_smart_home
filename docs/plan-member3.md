@@ -49,7 +49,7 @@ Thứ tự ưu tiên; mỗi mục = 1 bước review + commit riêng. Nguyên t�
 1. **`devices/rfid_logic.h` (thuần, cho Member 2)** — format UID byte → chuỗi hex `A1B2C3D4`; bảng whitelist + hàm tra cứu trả `GRANTED`/`DENIED`; test native đủ case (UID rỗng, quá dài, thường/hoa). Trước khi làm: thông báo Member 2. Sau khi xong: Member 2 chỉ còn đọc thẻ + gọi 2 hàm.
 2. ✅ Bản thảo `docs/pin-map.md` + dự toán nguồn (thuộc Giai đoạn 4.1–4.2, soạn trước được, commit `07574a8`) — bảng chân đề xuất: servo IO2, PIR IO39, relay, LED, RFID SPI (SCK/MISO/MOSI/SS/RST); sơ đồ nguồn buck LM2596, servo nguồn riêng, common ground; rủi ro số 1: SPI mặc định trùng chân Ethernet, có 3 phương án thay thế. Chốt với Member 1 khi board về, rồi mới đi dây.
 3. **Check lệch contract** — script đọc `docs/mqtt-contract.json`, đối chiếu mọi hằng `TOPIC_*` và payload chữ trong `src/`; lệch ⇒ báo lỗi. Cần Member 5 đồng ý trước vì thuộc miền contract. Mục tiêu: đổi topic trong firmware mà quên đổi app ⇒ fail ngay, không âm thầm.
-4. **Golden-trace runner** — gom 9 bước kiểm tra `fake_esp32.py` (đang chạy tay) + smoke test thành một lệnh có pass/fail; có cờ `--trace FILE` để chạy đúng "bằng chứng vàng". Khi board về, dùng lại làm checklist bán tự động cho Giai đoạn 0.3.
+4. ✅ Golden-trace runner (`scripts/golden_runner.py`) — một lệnh pass/fail gom toàn bộ kiểm tra `fake_esp32.py`: lệnh hợp lệ, từ chối lệnh sai, retained readback, replay, Ctrl+C sạch, LWT khi kill; cờ `--board` để chạy lại làm checklist bán tự động cho Giai đoạn 0.3 khi board về; `--record`/`--trace FILE` để ghim "bằng chứng vàng".
 5. **(Tùy chọn, cần Member 5 đồng ý)** runbook broker: sao lưu/khôi phục cấu hình EMQX, kịch bản stress test viết sẵn để chạy khi hệ đủ cả.
 
 ## Phối hợp
