@@ -9,8 +9,9 @@ void Rfid::init(IMqtt &m)
 
 void Rfid::loop()
 {
-  // TODO(Member 2): read card UID, whitelist check -> GRANTED/DENIED,
-  // then call publishAccess(uid, result). See docs/mqtt-contract.md §2.
+  // TODO(Member 2): read card UID bytes, format with rfid_format_uid(),
+  // decide with rfid_check_access() against the whitelist, then call
+  // publishAccess(uid, result). See docs/mqtt-contract.md §2.
 }
 
 // Builds the contract JSON and sends it as a non-retained event.
