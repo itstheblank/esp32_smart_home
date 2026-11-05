@@ -6,10 +6,10 @@
 #include "automation/rfid_door.h"
 #include "devices/actuators/door.h"
 #include "devices/actuators/door_actions.h"
-#include "devices/sensors/motion.h"
+#include "devices/sensors/motion_sensor.h"
 #include "devices/actuators/light.h"
 #include "devices/actuators/light_actions.h"
-#include "devices/sensors/rfid.h"
+#include "devices/sensors/rfid_reader.h"
 
 static Door door;
 static Motion motion;
@@ -17,11 +17,10 @@ static Light light;
 static Rfid rfid;
 static MqttService mqtt;
 
-// Light command handler (M1-06): parse payload -> feed the manual rule path
 static void handleLightCommand(const char *payload, unsigned int)
 {
   LightAction action;
-  if (!light_action_from_payload(payload, &action))
+  if (!light_action_from_string(payload, &action))
   {
     Serial.println("=> ERROR: Invalid light command, ignored!");
     return;
@@ -29,11 +28,10 @@ static void handleLightCommand(const char *payload, unsigned int)
   light_motion_manual(action);
 }
 
-// Door command handler (M1-06): parse payload -> execute on the actuator
 static void handleDoorCommand(const char *payload, unsigned int)
 {
   DoorAction action;
-  if (!door_action_from_payload(payload, &action))
+  if (!door_action_from_string(payload, &action))
   {
     Serial.println("=> ERROR: Invalid door command, ignored!");
     return;
@@ -62,13 +60,10 @@ void setup()
     mqtt.loop();
   }
 
-  door.init(mqtt); // Initial state: Closed (0 degrees)
-  motion.init(mqtt);
-  light.init(mqtt, LIGHT_PIN);
-  rfid.init(mqtt);
-
-  light_motion_setup(motion, light);
-  rfid_door_setup(rfid, door);
+  door.init(1, mqtt, SERVO_PIN);
+  motion.init(1, mqtt, PIR_PIN);
+  light.init(1, mqtt, LIGHT_PIN);
+  rfid.init(1, mqtt, RFID_SS_PIN, RFID_RST_PIN);
 }
 
 void loop()
@@ -77,6 +72,5 @@ void loop()
   mqtt.loop();
   motion.loop();
   light_motion_loop();
-  rfid.loop();
   rfid_door_loop();
 }

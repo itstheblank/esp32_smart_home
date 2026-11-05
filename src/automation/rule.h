@@ -18,6 +18,7 @@ struct RuleAction
   uint8_t deviceType;
   uint8_t deviceId;
   uint8_t deviceAction;
+  uint8_t deviceActionParam;
 };
 
 struct Rule

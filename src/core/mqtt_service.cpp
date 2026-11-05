@@ -3,9 +3,59 @@
 #include <string.h>
 
 static const unsigned long RECONNECT_INTERVAL_MS = 5000;
-static const int MQTT_KEEP_ALIVE_S = 30;      // Clean session, Keep Alive 30s as per Contract M5-03
-static const int MQTT_LWT_QOS = 0;            // LWT per Contract M5-03: QoS 0, Retain true, payload "OFFLINE"
+static const int MQTT_KEEP_ALIVE_S = 30;      // Clean session, Keep Alive 30s
+static const int MQTT_LWT_QOS = 0;            // LWT: QoS 0, Retain true, payload "OFFLINE"
 static const int PAYLOAD_BUFFER_SIZE = 160;
+
+// Wire a fresh broker session: publish online state and (re)subscribe to command topics.
+static void connectOnce(PubSubClient &client, const char *clientId, const char *lwtTopic,
+                        const char *const *commandTopics, int commandCount)
+{
+  Serial.print("Attempting MQTT connection...");
+  if (client.connect(clientId, lwtTopic, MQTT_LWT_QOS, true, "OFFLINE"))
+  {
+    Serial.println("connected");
+
+    // Publish online state (M1-07)
+    client.publish(lwtTopic, "ONLINE", true);
+
+    // Subscribe to command topics (M1-05)
+    for (int i = 0; i < commandCount; i++)
+    {
+      client.subscribe(commandTopics[i]);
+    }
+  }
+  else
+  {
+    Serial.print("failed, rc=");
+    Serial.print(client.state());
+    Serial.println(" try again in 5 seconds");
+  }
+}
+
+// MQTT callback (Task M1-05 & M1-06): buffer, log and dispatch to the matching handler.
+static void dispatchMessage(const char *const *commandTopics, CommandHandler *commandHandlers,
+                            int commandCount, char *topic, byte *payload, unsigned int length)
+{
+  static char buffer[PAYLOAD_BUFFER_SIZE];
+  unsigned int n = length < PAYLOAD_BUFFER_SIZE - 1 ? length : PAYLOAD_BUFFER_SIZE - 1;
+  memcpy(buffer, payload, n);
+  buffer[n] = '\0';
+
+  Serial.print("Message arrived [");
+  Serial.print(topic);
+  Serial.print("] : ");
+  Serial.println(buffer);
+
+  for (int i = 0; i < commandCount; i++)
+  {
+    if (strcmp(topic, commandTopics[i]) == 0)
+    {
+      commandHandlers[i](buffer, n);
+      break;
+    }
+  }
+}
 
 void MqttService::begin(const char *broker, int port, const char *id, const char *lwt)
 {
@@ -14,10 +64,11 @@ void MqttService::begin(const char *broker, int port, const char *id, const char
   commandCount = 0;
   lastAttempt = 0;
 
+  client.setClient(wifiClient);
   client.setServer(broker, port);
   client.setKeepAlive(MQTT_KEEP_ALIVE_S);
   client.setCallback([this](char *topic, byte *payload, unsigned int length) {
-    handleMessage(topic, payload, length);
+    dispatchMessage(commandTopics, commandHandlers, commandCount, topic, payload, length);
   });
 }
 
@@ -46,7 +97,7 @@ bool MqttService::publishEvent(const char *topic, const char *payload)
   return client.publish(topic, payload, false);
 }
 
-// Function to maintain and reconnect MQTT (M1-04)
+// Maintain and reconnect MQTT (M1-04)
 void MqttService::loop()
 {
   if (!network_connected())
@@ -59,53 +110,6 @@ void MqttService::loop()
   else if (millis() - lastAttempt > RECONNECT_INTERVAL_MS)
   {
     lastAttempt = millis();
-    connect();
-  }
-}
-
-void MqttService::connect()
-{
-  Serial.print("Attempting MQTT connection...");
-  if (client.connect(clientId, lwtTopic, MQTT_LWT_QOS, true, "OFFLINE"))
-  {
-    Serial.println("connected");
-
-    // Publish online state (M1-07 / Contract M5-03)
-    publishState(lwtTopic, "ONLINE");
-
-    // Subscribe to command topics (M1-05)
-    for (int i = 0; i < commandCount; i++)
-    {
-      client.subscribe(commandTopics[i]);
-    }
-  }
-  else
-  {
-    Serial.print("failed, rc=");
-    Serial.print(client.state());
-    Serial.println(" try again in 5 seconds");
-  }
-}
-
-// MQTT Callback function (For Task M1-05 & M1-06)
-void MqttService::handleMessage(char *topic, byte *payload, unsigned int length)
-{
-  static char buffer[PAYLOAD_BUFFER_SIZE];
-  unsigned int n = length < PAYLOAD_BUFFER_SIZE - 1 ? length : PAYLOAD_BUFFER_SIZE - 1;
-  memcpy(buffer, payload, n);
-  buffer[n] = '\0';
-
-  Serial.print("Message arrived [");
-  Serial.print(topic);
-  Serial.print("] : ");
-  Serial.println(buffer);
-
-  for (int i = 0; i < commandCount; i++)
-  {
-    if (strcmp(topic, commandTopics[i]) == 0)
-    {
-      commandHandlers[i](buffer, n);
-      break;
-    }
+    connectOnce(client, clientId, lwtTopic, commandTopics, commandCount);
   }
 }
