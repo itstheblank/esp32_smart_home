@@ -93,13 +93,25 @@
   \begin{itemize}
     \setlength{\itemsep}{0.65em}
     \item \textbf{Firmware:} kết nối Wi-Fi, MQTT và xử lý lệnh điều khiển.
-    \item \textbf{Phần cứng:} phát triển mã cho đèn, cửa và các thiết bị liên quan.
-    \item \textbf{Cảm biến:} phát triển xử lý chuyển động PIR và thẻ RFID.
-    \item \textbf{Giao diện:} xây dựng prototype ứng dụng điều khiển.
-    \item \textbf{Tích hợp:} thống nhất topic, payload và kiểm tra giao tiếp.
+    \item \textbf{Thiết bị:} điều khiển đèn và cửa, đọc cảm biến PIR và RFID.
+    \item \textbf{Broker:} EMQX chuyển tiếp thông điệp, có cấu hình Docker Compose.
+    \item \textbf{Giao diện:} prototype dashboard và bộ khung ứng dụng di động.
+    \item \textbf{Tích hợp:} quy ước topic, payload và kiểm tra giao tiếp.
   \end{itemize}
   \vspace{0.3cm}
-  {\small Các phân hệ có mã hoặc prototype trên những nhánh phát triển riêng.}
+  {\small Mã thiết bị và giao diện tiếp tục phát triển trên các nhánh riêng.}
+\end{frame}
+
+\begin{frame}{1. Chức năng trên nhánh tích hợp phần cứng}
+  \begin{itemize}
+    \setlength{\itemsep}{0.6em}
+    \item \textbf{Đèn:} nhận lệnh MQTT hoặc phản ứng với tín hiệu chuyển động PIR.
+    \item \textbf{Cửa:} nhận lệnh mở/đóng và điều khiển servo.
+    \item \textbf{RFID:} kiểm tra thẻ trong danh sách cho phép; thẻ hợp lệ gọi mở cửa.
+    \item \textbf{Phản hồi:} gửi trạng thái đèn, cửa, chuyển động và sự kiện truy cập qua MQTT.
+  \end{itemize}
+  \vspace{0.3cm}
+  {\small Đây là chức năng trong mã nhánh tích hợp; cần kiểm tra trên thiết bị thật.}
 \end{frame}
 
 \begin{frame}{1. Trao đổi dữ liệu qua MQTT}
@@ -127,9 +139,9 @@
 \begin{frame}{1. Những phần đã thực hiện}
   \begin{itemize}
     \setlength{\itemsep}{0.55em}
-    \item Firmware kết nối Wi-Fi và MQTT, nhận lệnh đèn và cửa, kiểm tra payload.
-    \item Có mã phát triển cho servo, PIR, RFID và điều khiển thiết bị trên các nhánh của nhóm.
-    \item Đã chuẩn bị broker EMQX, quy ước MQTT và prototype giao diện.
+    \item Nhánh \texttt{main} có firmware kết nối Wi-Fi, MQTT và mã servo, PIR.
+    \item Nhánh phần cứng đã ghép mã đèn, cửa, PIR và RFID với dịch vụ MQTT.
+    \item Đã chuẩn bị broker EMQX, quy ước MQTT và prototype giao diện web.
     \item Kiểm tra broker cục bộ: chuyển tiếp thành công \textbf{4/4 lệnh} đèn và cửa.
     \item ESP32 nhận lệnh từ broker đã được ghi nhận theo xác nhận của nhóm.
   \end{itemize}
@@ -140,7 +152,7 @@
 \begin{frame}{1. Công việc tích hợp tiếp theo}
   \begin{itemize}
     \setlength{\itemsep}{0.7em}
-    \item Ghép các nhánh firmware, cảm biến, phần cứng và giao diện.
+    \item Hoàn thiện ghép nhánh phần cứng và giao diện vào hệ thống chung.
     \item Thống nhất topic và payload giữa ứng dụng với ESP32.
     \item Kiểm tra luồng lệnh và trạng thái trên thiết bị thật.
     \item Kiểm tra kết nối lại và hoàn thiện bằng chứng nghiệm thu.
