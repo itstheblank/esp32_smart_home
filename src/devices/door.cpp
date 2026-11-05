@@ -1,9 +1,11 @@
 #include "door.h"
+#include "config.h"
 
 #define SERVO_PIN 2
 
-void Door::init()
+void Door::init(IMqtt &m)
 {
+  mqtt = &m;
   // Setup SG90 Servo on IO2
   ESP32PWM::allocateTimer(0);
   ESP32PWM::allocateTimer(1);
@@ -14,14 +16,34 @@ void Door::init()
   close();                            // Initial state: Closed (0 degrees)
 }
 
+void Door::handleCommand(const char *payload, unsigned int)
+{
+  switch (door_parse_command(payload))
+  {
+  case DoorCommand::OPEN:
+    open();
+    break;
+  case DoorCommand::CLOSE:
+    close();
+    break;
+  default:
+    Serial.println("=> ERROR: Invalid door command, ignored!");
+    break;
+  }
+}
+
 void Door::open()
 {
   servo.write(180);
   Serial.println("=> Servo: Door OPEN (180 degrees)");
+  if (mqtt->connected())
+    mqtt->publishState(TOPIC_STATE_DOOR, "OPEN");
 }
 
 void Door::close()
 {
   servo.write(0);
   Serial.println("=> Servo: Door CLOSE (0 degrees)");
+  if (mqtt->connected())
+    mqtt->publishState(TOPIC_STATE_DOOR, "CLOSED");
 }

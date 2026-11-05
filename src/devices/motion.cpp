@@ -1,17 +1,22 @@
 #include "motion.h"
+#include "config.h"
 
-#define PIR_PIN 39
-
-void Motion::init()
+void Motion::init(IMqtt &m)
 {
-  lastActive = false;
+  mqtt = &m;
   pinMode(PIR_PIN, INPUT);
+  logic.reset(digitalRead(PIR_PIN) == HIGH, millis());
 }
 
-bool Motion::loop()
+void Motion::loop()
 {
-  bool currentActive = digitalRead(PIR_PIN) == HIGH;
-  bool rising = motion_is_rising(lastActive, currentActive);
-  lastActive = currentActive;
-  return rising;
+  bool newStable = false;
+  if (logic.step(digitalRead(PIR_PIN) == HIGH, millis(), &newStable))
+  {
+    if (mqtt->connected())
+    {
+      mqtt->publishState(TOPIC_STATE_MOTION, newStable ? "DETECTED" : "CLEAR");
+    }
+    Serial.printf("=> PIR stable state -> %s\n", newStable ? "DETECTED" : "CLEAR");
+  }
 }

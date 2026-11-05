@@ -6,8 +6,6 @@
 #include "devices/motion.h"
 #include "devices/light.h"
 #include "devices/rfid.h"
-#include "devices/door_logic.h"
-#include "automation/motion_door.h"
 
 static Door door;
 static Motion motion;
@@ -22,24 +20,9 @@ static void handleLightCommand(const char *payload, unsigned int length)
 }
 
 // Door command handler (M1-06)
-static void handleDoorCommand(const char *payload, unsigned int)
+static void handleDoorCommand(const char *payload, unsigned int length)
 {
-  switch (door_parse_command(payload))
-  {
-  case DoorCommand::OPEN:
-    door.open();
-    mqtt.publishState(TOPIC_STATE_DOOR, "OPEN");
-    Serial.println("=> Published: OPEN");
-    break;
-  case DoorCommand::CLOSE:
-    door.close();
-    mqtt.publishState(TOPIC_STATE_DOOR, "CLOSED");
-    Serial.println("=> Published: CLOSED");
-    break;
-  default:
-    Serial.println("=> ERROR: Invalid door command, ignored!");
-    break;
-  }
+  door.handleCommand(payload, length);
 }
 
 void setup()
@@ -56,19 +39,19 @@ void setup()
   mqtt.onCommand(TOPIC_CMD_LIGHT, handleLightCommand);
   mqtt.onCommand(TOPIC_CMD_DOOR, handleDoorCommand);
 
-  motion.init();
-  door.init(); // Initial state: Closed (0 degrees)
-  light.init(mqtt);
-  rfid.init(mqtt);
+  door.init(mqtt); // Initial state: Closed (0 degrees)
+  motion.init(mqtt);
+  light.init(mqtt, LIGHT_PIN);
+  rfid.init(mqtt, door);
 
-  motion_door_setup(motion, door, mqtt);
+  light.attachMotion(&motion);
 }
 
 void loop()
 {
   network_loop();
   mqtt.loop();
-  motion_door_loop();
+  motion.loop();
   light.loop();
   rfid.loop();
 }
