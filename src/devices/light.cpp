@@ -1,22 +1,13 @@
 #include "light.h"
 #include "config.h"
-#include "motion.h"
 
 void Light::init(IMqtt &m, uint8_t outputPin)
 {
   mqtt = &m;
   pin = outputPin;
-  motion = nullptr;
-  lastStable = false;
   pinMode(pin, OUTPUT);
   digitalWrite(pin, LOW);
-}
-
-void Light::attachMotion(const Motion *motionSource)
-{
-  motion = motionSource;
-  if (motion != nullptr)
-    lastStable = motion->stableMotion();
+  state.mark(); // publish initial OFF state once connected
 }
 
 void Light::handleCommand(const char *payload, unsigned int)
@@ -35,19 +26,25 @@ void Light::handleCommand(const char *payload, unsigned int)
   }
 }
 
+void Light::handleMotionTransition(bool detected)
+{
+  if (!detected)
+  {
+    Serial.printf("=> No-motion timer started (%lums)\n", MOTION_NO_MOTION_TIMEOUT_MS);
+  }
+  apply(automation.handleStableTransition(detected, millis()),
+        detected ? "motion detected" : "no-motion timeout pending");
+}
+
 void Light::loop()
 {
-  if (motion != nullptr)
-  {
-    const bool stable = motion->stableMotion();
-    if (stable != lastStable)
-    {
-      lastStable = stable;
-      apply(automation.handleStableTransition(stable, millis()),
-            stable ? "motion detected" : "no-motion timer started");
-    }
-  }
   apply(automation.tick(millis()), "no-motion timeout");
+  if (state.shouldPublish(mqtt->connected()))
+  {
+    const bool on = automation.isOn();
+    mqtt->publishState(TOPIC_STATE_LIGHT, on ? "ON" : "OFF");
+    Serial.printf("=> Published: %s\n", on ? "ON" : "OFF");
+  }
 }
 
 void Light::apply(LightAction action, const char *source)
@@ -56,6 +53,6 @@ void Light::apply(LightAction action, const char *source)
     return;
   const bool on = action == LightAction::ON;
   digitalWrite(pin, on ? HIGH : LOW);
-  mqtt->publishState(TOPIC_STATE_LIGHT, on ? "ON" : "OFF");
+  state.mark();
   Serial.printf("=> Light state -> %s (%s)\n", on ? "ON" : "OFF", source);
 }

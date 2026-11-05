@@ -2,31 +2,31 @@
 #define LIGHT_H
 
 #include <Arduino.h>
-#include "automation/light_automation.h"
 #include "config.h"
 #include "core/mqtt_service.h"
+#include "light_automation.h"
 #include "light_logic.h"
+#include "state_sync.h"
 
-class Motion;
-
-// Light device: drives its output pin, honors manual MQTT commands and runs
-// the PIR-driven automation (motion -> ON, no-motion timeout -> OFF).
+// Light device: drives its output pin and honors manual MQTT commands. The
+// automation state machine (motion -> ON, no-motion timeout -> OFF, manual
+// override) is fed by the automation/light_motion rule via
+// handleMotionTransition(); this class never references other devices.
 class Light
 {
 public:
   void init(IMqtt &mqtt, uint8_t pin);
-  void attachMotion(const Motion *motionSource);
   void handleCommand(const char *payload, unsigned int length);
+  void handleMotionTransition(bool detected);
   void loop();
 
 private:
   void apply(LightAction action, const char *source);
 
   IMqtt *mqtt;
-  const Motion *motion;
   LightAutomation automation{MOTION_NO_MOTION_TIMEOUT_MS};
   uint8_t pin;
-  bool lastStable;
+  StateSync state;
 };
 
 #endif // LIGHT_H

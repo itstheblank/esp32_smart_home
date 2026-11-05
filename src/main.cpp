@@ -2,6 +2,8 @@
 #include "config.h"
 #include "core/network.h"
 #include "core/mqtt_service.h"
+#include "automation/light_motion.h"
+#include "automation/rfid_door.h"
 #include "devices/door.h"
 #include "devices/motion.h"
 #include "devices/light.h"
@@ -42,9 +44,10 @@ void setup()
   door.init(mqtt); // Initial state: Closed (0 degrees)
   motion.init(mqtt);
   light.init(mqtt, LIGHT_PIN);
-  rfid.init(mqtt, door);
+  rfid.init(mqtt);
 
-  light.attachMotion(&motion);
+  light_motion_setup(motion, light);
+  rfid_door_setup(rfid, door);
 }
 
 void loop()
@@ -52,6 +55,8 @@ void loop()
   network_loop();
   mqtt.loop();
   motion.loop();
+  light_motion_loop();
   light.loop();
   rfid.loop();
+  rfid_door_loop();
 }

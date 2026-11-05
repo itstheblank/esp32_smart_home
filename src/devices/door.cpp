@@ -4,7 +4,7 @@
 void Door::init(IMqtt &m)
 {
   mqtt = &m;
-  // Setup SG90 Servo on IO2
+  // Setup SG90 Servo on SERVO_PIN (see config / docs/pin-map.md §1)
   ESP32PWM::allocateTimer(0);
   ESP32PWM::allocateTimer(1);
   ESP32PWM::allocateTimer(2);
@@ -30,18 +30,27 @@ void Door::handleCommand(const char *payload, unsigned int)
   }
 }
 
+void Door::loop()
+{
+  if (state.shouldPublish(mqtt->connected()))
+  {
+    mqtt->publishState(TOPIC_STATE_DOOR, isOpen ? "OPEN" : "CLOSED");
+    Serial.printf("=> Published: %s\n", isOpen ? "OPEN" : "CLOSED");
+  }
+}
+
 void Door::open()
 {
   servo.write(180);
   Serial.println("=> Servo: Door OPEN (180 degrees)");
-  if (mqtt->connected())
-    mqtt->publishState(TOPIC_STATE_DOOR, "OPEN");
+  isOpen = true;
+  state.mark();
 }
 
 void Door::close()
 {
   servo.write(0);
   Serial.println("=> Servo: Door CLOSE (0 degrees)");
-  if (mqtt->connected())
-    mqtt->publishState(TOPIC_STATE_DOOR, "CLOSED");
+  isOpen = false;
+  state.mark();
 }

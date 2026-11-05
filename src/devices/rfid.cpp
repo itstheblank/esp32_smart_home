@@ -1,14 +1,13 @@
 #include "rfid.h"
-#include "door.h"
 #include "config.h"
 #include "rfid_logic.h"
 #include <SPI.h>
 #include <stdio.h>
 
-void Rfid::init(IMqtt &m, Door &d)
+void Rfid::init(IMqtt &m)
 {
   mqtt = &m;
-  door = &d;
+  eventPending = false;
   SPI.begin(RFID_SCK_PIN, RFID_MISO_PIN, RFID_MOSI_PIN, RFID_SS_PIN);
   reader.PCD_Init();
   Serial.printf("=> RC522 initialized (SS=%u, RST=%u)\n", RFID_SS_PIN, RFID_RST_PIN);
@@ -20,18 +19,23 @@ void Rfid::loop()
     return;
 
   char uid[2 * sizeof(reader.uid.uidByte) + 1];
-  if (!rfid_format_uid(reader.uid.uidByte, reader.uid.size, uid, sizeof(uid)))
+  if (rfid_format_uid(reader.uid.uidByte, reader.uid.size, uid, sizeof(uid)))
+  {
+    const char *result = rfid_check_access(uid, RFID_ALLOWED_UIDS, RFID_ALLOWED_UID_COUNT);
+    Serial.printf("=> RFID UID=%s -> %s\n", uid, result);
+    if (publishAccess(uid, result))
+    {
+      snprintf(pending.uid, sizeof(pending.uid), "%s", uid);
+      pending.result = result;
+      eventPending = true;
+    }
+  }
+  else
   {
     Serial.println("=> ERROR: invalid RFID UID, dropped");
-    return;
   }
 
-  const char *result = rfid_check_access(uid, RFID_ALLOWED_UIDS, RFID_ALLOWED_UID_COUNT);
-  Serial.printf("=> RFID UID=%s -> %s\n", uid, result);
-  if (strcmp(result, RFID_RESULT_GRANTED) == 0)
-    door->open();
-  publishAccess(uid, result);
-
+  // Always release the card, even on error paths, so it is not re-read.
   reader.PICC_HaltA();
   reader.PCD_StopCrypto1();
 }
@@ -48,4 +52,14 @@ bool Rfid::publishAccess(const char *uid, const char *result)
     return false;
   }
   return mqtt->publishEvent(TOPIC_EVENT_ACCESS, json);
+}
+
+bool Rfid::takeAccessEvent(AccessEvent &out)
+{
+  if (!eventPending)
+    return false;
+  snprintf(out.uid, sizeof(out.uid), "%s", pending.uid);
+  out.result = pending.result;
+  eventPending = false;
+  return true;
 }

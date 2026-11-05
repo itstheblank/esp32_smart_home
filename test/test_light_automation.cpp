@@ -1,5 +1,5 @@
 #include <unity.h>
-#include "automation/light_automation.h"
+#include "devices/light_automation.h"
 
 static const unsigned long TIMEOUT = 10000;
 
