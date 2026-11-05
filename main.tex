@@ -5,6 +5,7 @@
 \usepackage[T5]{fontenc}
 \usepackage[vietnamese]{babel}
 \usepackage{lmodern}
+\usepackage{graphicx}
 
 \definecolor{DeepBlue}{HTML}{003B70}
 \definecolor{AccentRed}{HTML}{C8102E}
@@ -22,6 +23,13 @@
 \setbeamertemplate{footline}[frame number]
 \setbeamersize{text margin left=9mm,text margin right=9mm}
 \setlength{\parskip}{0.4em}
+
+% Đặt background.png cùng thư mục với main.tex. Nếu chưa có ảnh, dùng nền trắng.
+\IfFileExists{background.png}{%
+  \usebackgroundtemplate{%
+    \includegraphics[width=\paperwidth,height=\paperheight]{background.png}%
+  }%
+}{}
 
 \title{ESP32 SMART HOME}
 \subtitle{Giới thiệu hệ thống và demo chương trình}
