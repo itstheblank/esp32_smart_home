@@ -1,11 +1,13 @@
 \documentclass[aspectratio=169,11pt]{beamer}
 
-% Biên dịch bằng pdfLaTeX trên Overleaf hoặc TeX Live có gói tiếng Việt.
+% Compile with pdfLaTeX on Overleaf or TeX Live.
 \usepackage[utf8]{inputenc}
-\usepackage[T5]{fontenc}
-\usepackage[vietnamese]{babel}
+\usepackage[T1]{fontenc}
+\usepackage[english]{babel}
 \usepackage{lmodern}
 \usepackage{graphicx}
+% Find images next to main.tex (Overleaf) or in report/ (local project).
+\graphicspath{{./}{report/}}
 
 \definecolor{DeepBlue}{HTML}{003B70}
 \definecolor{AccentRed}{HTML}{C8102E}
@@ -25,7 +27,7 @@
 \setbeamersize{text margin left=9mm,text margin right=9mm}
 \setlength{\parskip}{0.4em}
 
-% Đặt background.png cùng thư mục với main.tex. Nếu chưa có ảnh, dùng nền trắng.
+% Place background.png next to main.tex. Use a white background if it is missing.
 \IfFileExists{background.png}{%
   \usebackgroundtemplate{%
     \includegraphics[width=\paperwidth,height=\paperheight]{background.png}%
@@ -33,171 +35,173 @@
 }{}
 
 \title{ESP32 SMART HOME}
-\subtitle{Giới thiệu hệ thống và demo chương trình}
-\author{Nhóm thực hiện}
+\subtitle{System Overview and Demonstration}
+\author{Project Team}
 \date{}
 
 \begin{document}
 
 \begin{frame}[plain]
   \vfill
-  {\large\color{AccentRed}\bfseries BÁO CÁO DEMO}\par
+  {\large\color{AccentRed}\bfseries PROJECT DEMONSTRATION}\par
   \vspace{0.35cm}
   {\Huge\color{DeepBlue}\bfseries ESP32 SMART HOME}\par
   \vspace{0.25cm}
   {\color{AccentRed}\rule{0.16\textwidth}{2pt}}\par
   \vspace{0.25cm}
-  {\large Giới thiệu hệ thống và demo chương trình}\par
+  {\large System Overview and Demonstration}\par
   \vspace{0.5cm}
-  {\small Nhóm thực hiện}
+  {\small Project Team}
   \vfill
 \end{frame}
 
-\begin{frame}{Nội dung trình bày}
+\begin{frame}{Presentation Outline}
   \vfill
-  {\Large\bfseries\color{AccentRed} 01}\quad {\large\bfseries Giới thiệu và tiến độ hệ thống}\par
+  {\Large\bfseries\color{AccentRed} 01}\quad {\large\bfseries System Overview and Progress}\par
   \vspace{0.7cm}
-  {\Large\bfseries\color{AccentRed} 02}\quad {\large\bfseries Demo phần cứng}\par
+  {\Large\bfseries\color{AccentRed} 02}\quad {\large\bfseries Hardware Demo}\par
   \vspace{0.7cm}
-  {\Large\bfseries\color{AccentRed} 03}\quad {\large\bfseries Demo ứng dụng}
+  {\Large\bfseries\color{AccentRed} 03}\quad {\large\bfseries App Demo}
   \vfill
 \end{frame}
 
-% PHẦN 1: Nội dung giới thiệu và những gì nhóm đã xây dựng.
-\begin{frame}{1. Bài toán và mục tiêu}
+% PART 1: System overview and work completed by the team.
+\begin{frame}{1. Problem and Objectives}
   \begin{columns}[T,onlytextwidth]
     \begin{column}{0.48\textwidth}
-      \textbf{Bài toán}
+      \textbf{Problem}
       \begin{itemize}
-        \item Người dùng cần điều khiển và theo dõi thiết bị trong nhà từ điện thoại.
-        \item Các thiết bị và ứng dụng cần trao đổi dữ liệu qua cùng một mạng.
+        \item Users need to control and monitor home devices from a phone.
+        \item Devices and the app need to exchange data over a shared network.
       \end{itemize}
     \end{column}
     \begin{column}{0.48\textwidth}
-      \textbf{Mục tiêu của nhóm}
+      \textbf{Team Objectives}
       \begin{itemize}
-        \item Xây dựng hệ thống điều khiển dựa trên ESP32.
-        \item Kết nối ứng dụng, bộ điều khiển và cảm biến qua MQTT.
-        \item Kiểm tra từng phân hệ trước khi tích hợp toàn bộ.
+        \item Build a control system using ESP32.
+        \item Use MQTT to exchange commands, device states and sensor events.
+        \item Test each subsystem before full integration.
       \end{itemize}
     \end{column}
   \end{columns}
 \end{frame}
 
-\begin{frame}{1. Kiến trúc tổng quan}
+\begin{frame}{1. System Architecture}
   \centering
   \vfill
-  \includegraphics[width=0.96\textwidth,height=0.60\textheight,keepaspectratio]{report/architecture.png}
+  % Overall system: app, message queue, ESP32, sensors and actuators.
+  % Editable source: report/architecture.mmd.
+  \includegraphics[width=\textwidth,height=0.72\textheight,keepaspectratio]{architecture.png}
   \vfill
-  {\small Kiến trúc tích hợp mục tiêu của hệ thống.}
+  {\small Target system architecture with bidirectional MQTT communication.}
 \end{frame}
 
-\begin{frame}{1. Các phân hệ của dự án}
+\begin{frame}{1. System Components}
   \begin{itemize}
     \setlength{\itemsep}{0.65em}
-    \item \textbf{Firmware:} kết nối Wi-Fi, MQTT và xử lý lệnh điều khiển.
-    \item \textbf{Thiết bị:} điều khiển đèn và cửa, đọc cảm biến PIR và RFID.
-    \item \textbf{Broker:} EMQX chuyển tiếp thông điệp, có cấu hình Docker Compose.
-    \item \textbf{Giao diện:} prototype dashboard và bộ khung ứng dụng di động.
-    \item \textbf{Tích hợp:} quy ước topic, payload và kiểm tra giao tiếp.
+    \item \textbf{Firmware:} Wi-Fi and MQTT connections, command handling.
+    \item \textbf{Hardware:} light and door control, PIR sensing and RFID reading.
+    \item \textbf{Broker:} EMQX message routing with Docker Compose configuration.
+    \item \textbf{User Interface:} dashboard prototype and mobile app skeleton.
+    \item \textbf{Integration:} shared topics, payloads and communication tests.
   \end{itemize}
   \vspace{0.3cm}
-  {\small Mã thiết bị và giao diện tiếp tục phát triển trên các nhánh riêng.}
+  {\small Hardware and interface development continues on separate branches.}
 \end{frame}
 
-\begin{frame}{1. Chức năng trên nhánh tích hợp phần cứng}
+\begin{frame}{1. Hardware Integration Branch Features}
   \begin{columns}[T,onlytextwidth]
     \begin{column}{0.47\textwidth}
-      {\large\bfseries\color{DeepBlue} Đèn và chuyển động}\par
+      {\large\bfseries\color{DeepBlue} Light and Motion}\par
       \vspace{0.3cm}
-      Nhận lệnh bật/tắt qua MQTT. Tín hiệu PIR cũng có thể kích hoạt đèn.
+      Receives ON/OFF commands over MQTT. PIR motion detection can also trigger the light.
     \end{column}
     \begin{column}{0.47\textwidth}
-      {\large\bfseries\color{DeepBlue} Cửa và thẻ RFID}\par
+      {\large\bfseries\color{DeepBlue} Door and RFID}\par
       \vspace{0.3cm}
-      Servo mở/đóng cửa. Thẻ hợp lệ trong danh sách cho phép gọi mở cửa.
+      A servo opens and closes the door. A card on the allowlist triggers a door-open request.
     \end{column}
   \end{columns}
   \vspace{0.7cm}
-  \textcolor{AccentRed}{\bfseries Phản hồi}\quad Trạng thái thiết bị và sự kiện truy cập gửi qua MQTT.
+  \textcolor{AccentRed}{\bfseries Feedback}\quad Device states and access events are published over MQTT.
   \vspace{0.45cm}
 
-  {\small Đây là chức năng trong mã nhánh tích hợp; cần kiểm tra trên thiết bị thật.}
+  {\small These features exist in the integration branch code and need testing on real hardware.}
 \end{frame}
 
-\begin{frame}{1. Trao đổi dữ liệu qua MQTT}
+\begin{frame}{1. MQTT Communication}
   \centering
-  {\large\bfseries Ví dụ: bật đèn và nhận trạng thái}\par
+  {\large\bfseries Example: Turn On the Light and Receive Its State}\par
   \vfill
-  \includegraphics[width=0.88\textwidth,height=0.57\textheight,keepaspectratio]{report/mqtt-flow.png}
+  \includegraphics[width=0.88\textwidth,height=0.57\textheight,keepaspectratio]{mqtt-flow.png}
   \vfill
-  {\small Tên đầy đủ bắt đầu bằng \texttt{smarthome/}. Luồng phản hồi cần kiểm tra khi tích hợp.}
+  {\small All topics start with \texttt{smarthome/}. State feedback needs integration testing.}
 \end{frame}
 
-\begin{frame}{1. Những phần đã thực hiện}
+\begin{frame}{1. Work Completed}
   \begin{columns}[T,onlytextwidth]
     \begin{column}{0.52\textwidth}
-      {\large\bfseries\color{DeepBlue} Đã xây dựng}\par
+      {\large\bfseries\color{DeepBlue} Implemented}\par
       \begin{itemize}
-        \item Firmware, broker và quy ước MQTT.
-        \item Mã tích hợp đèn, cửa, PIR và RFID trên nhánh phần cứng.
-        \item Prototype giao diện web.
+        \item Firmware, broker and MQTT contract.
+        \item Light, door, PIR and RFID code on the hardware integration branch.
+        \item Web interface prototype.
       \end{itemize}
     \end{column}
     \begin{column}{0.43\textwidth}
-      {\large\bfseries\color{DeepBlue} Đã kiểm tra}\par
+      {\large\bfseries\color{DeepBlue} Tested}\par
       \vspace{0.25cm}
       {\Huge\bfseries\color{AccentRed} 4/4}\par
-      Broker cục bộ chuyển tiếp đúng bốn lệnh đèn và cửa.
+      The local broker correctly forwards all four light and door commands.
 
-      {\small ESP32 nhận lệnh: đã ghi nhận theo xác nhận của nhóm.}
+      {\small ESP32 command reception is recorded based on the team's confirmation.}
     \end{column}
   \end{columns}
   \vspace{0.4cm}
-  {\small Kết quả broker chưa chứng minh toàn bộ hệ thống hoạt động.}
+  {\small Broker test results do not confirm full system operation.}
 \end{frame}
 
-\begin{frame}{1. Công việc tích hợp tiếp theo}
+\begin{frame}{1. Next Integration Tasks}
   \begin{itemize}
     \setlength{\itemsep}{0.7em}
-    \item Hoàn thiện ghép nhánh phần cứng và giao diện vào hệ thống chung.
-    \item Thống nhất topic và payload giữa ứng dụng với ESP32.
-    \item Kiểm tra luồng lệnh và trạng thái trên thiết bị thật.
-    \item Kiểm tra kết nối lại và hoàn thiện bằng chứng nghiệm thu.
+    \item Merge the hardware and interface branches into the shared system.
+    \item Align MQTT topics and payloads between the app and ESP32.
+    \item Verify command and state flows on real hardware.
+    \item Test reconnection and collect acceptance test evidence.
   \end{itemize}
   \vspace{0.5cm}
-  {\small Theo tài liệu hiện có, chưa có bằng chứng kiểm thử tích hợp toàn hệ thống.}
+  {\small Current documentation does not yet include full system integration test evidence.}
 \end{frame}
 
-% PHẦN 2: Tự thêm ảnh, video và nội dung demo phần cứng tại đây.
-\begin{frame}{2. Demo phần cứng}
+% PART 2: Add hardware demo photos, videos and content here.
+\begin{frame}{2. Hardware Demo}
   \centering
   \vfill
-  {\Large\color{DeepBlue}\bfseries Demo hardware}
+  {\Large\color{DeepBlue}\bfseries Hardware Demo}
 
   \vspace{0.45cm}
-  {\normalsize Chèn ảnh, video hoặc nội dung demo tại đây.}
+  {\normalsize Add demo photos, videos or content here.}
   \vfill
 \end{frame}
 
-% PHẦN 3: Tự thêm ảnh, video và nội dung demo ứng dụng tại đây.
-\begin{frame}{3. Demo ứng dụng}
+% PART 3: Add app demo screenshots, videos and content here.
+\begin{frame}{3. App Demo}
   \centering
   \vfill
-  {\Large\color{DeepBlue}\bfseries Demo app}
+  {\Large\color{DeepBlue}\bfseries App Demo}
 
   \vspace{0.45cm}
-  {\normalsize Chèn ảnh, video hoặc nội dung demo tại đây.}
+  {\normalsize Add demo screenshots, videos or content here.}
   \vfill
 \end{frame}
 
 \begin{frame}[plain]
   \centering
   \vfill
-  {\Huge\bfseries\color{DeepBlue} Cảm ơn thầy cô và các bạn!}
+  {\Huge\bfseries\color{DeepBlue} Thank You!}
 
   \vspace{0.5cm}
-  {\large Câu hỏi và trao đổi}
+  {\large Questions and Discussion}
   \vfill
 \end{frame}
 

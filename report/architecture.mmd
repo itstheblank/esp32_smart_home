@@ -1,10 +1,22 @@
-%% Nguồn Mermaid cho sơ đồ kiến trúc của slide.
-%% Đây là kiến trúc tích hợp mục tiêu, chưa xác nhận nghiệm thu toàn hệ thống.
-%%{init: {'theme': 'base', 'themeVariables': {'fontFamily': 'Arial', 'fontSize': '25px', 'primaryColor': '#eaf1f7', 'primaryTextColor': '#17324d', 'primaryBorderColor': '#003b70', 'lineColor': '#003b70', 'secondaryColor': '#ffffff', 'tertiaryColor': '#ffffff'}, 'flowchart': {'curve': 'linear', 'nodeSpacing': 40, 'rankSpacing': 70}}}%%
+%% Overall architecture for the entire system.
+%% One bidirectional link represents two-way MQTT communication.
+%%{init: {'theme': 'base', 'themeVariables': {'fontFamily': 'Arial', 'fontSize': '24px', 'primaryColor': '#eaf1f7', 'primaryTextColor': '#17324d', 'primaryBorderColor': '#003b70', 'lineColor': '#003b70', 'edgeLabelBackground': '#ffffff', 'secondaryColor': '#ffffff', 'tertiaryColor': '#ffffff'}, 'flowchart': {'curve': 'linear', 'nodeSpacing': 20, 'rankSpacing': 30, 'padding': 12}}}%%
 flowchart LR
-    app["Ứng dụng"] <--> broker["MQTT Broker<br/>EMQX"]
-    broker <--> esp["ESP32"]
-    esp --> devices["Đèn · Cửa"]
-    sensors["PIR · RFID"] --> esp
-    classDef device fill:#ffffff,stroke:#c8102e,stroke-width:2px,color:#17324d;
-    class devices,sensors device;
+    APP["Mobile<br/>App"]
+    MQ["Message Queue<br/>MQTT Broker"]
+    ESP["ESP32"]
+    PIR["PIR<br/>Sensor"]
+    RFID["RFID<br/>Reader"]
+    LIGHT["Light"]
+    DOOR["Door Servo"]
+
+    APP <-->|"Commands /<br/>States /<br/>Events"| MQ
+    MQ <-->|"Commands /<br/>States /<br/>Events"| ESP
+
+    PIR -->|"Motion"| ESP
+    RFID -->|"Card UID"| ESP
+    ESP -->|"ON / OFF"| LIGHT
+    ESP -->|"Open / Close"| DOOR
+
+    classDef hardware fill:#ffffff,stroke:#c8102e,stroke-width:2px,color:#17324d;
+    class PIR,RFID,LIGHT,DOOR hardware;
