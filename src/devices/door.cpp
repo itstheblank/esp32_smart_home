@@ -1,8 +1,6 @@
 #include "door.h"
 #include "config.h"
 
-#define SERVO_PIN 2
-
 void Door::init(IMqtt &m)
 {
   mqtt = &m;
