@@ -1,0 +1,10 @@
+%% Nguồn Mermaid cho sơ đồ kiến trúc của slide.
+%% Đây là kiến trúc tích hợp mục tiêu, chưa xác nhận nghiệm thu toàn hệ thống.
+%%{init: {'theme': 'base', 'themeVariables': {'fontFamily': 'Arial', 'fontSize': '25px', 'primaryColor': '#eaf1f7', 'primaryTextColor': '#17324d', 'primaryBorderColor': '#003b70', 'lineColor': '#003b70', 'secondaryColor': '#ffffff', 'tertiaryColor': '#ffffff'}, 'flowchart': {'curve': 'linear', 'nodeSpacing': 40, 'rankSpacing': 70}}}%%
+flowchart LR
+    app["Ứng dụng"] <--> broker["MQTT Broker<br/>EMQX"]
+    broker <--> esp["ESP32"]
+    esp --> devices["Đèn · Cửa"]
+    sensors["PIR · RFID"] --> esp
+    classDef device fill:#ffffff,stroke:#c8102e,stroke-width:2px,color:#17324d;
+    class devices,sensors device;

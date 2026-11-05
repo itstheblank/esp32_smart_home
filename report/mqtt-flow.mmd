@@ -1,0 +1,11 @@
+%% Nguồn Mermaid cho ví dụ bật đèn qua MQTT.
+%% Phản hồi trạng thái là luồng tích hợp mục tiêu, cần xác minh trên thiết bị.
+%%{init: {'theme': 'base', 'themeVariables': {'fontFamily': 'Arial', 'fontSize': '22px', 'actorBkg': '#eaf1f7', 'actorBorder': '#003b70', 'actorTextColor': '#17324d', 'actorLineColor': '#003b70', 'signalColor': '#003b70', 'signalTextColor': '#17324d', 'labelBoxBkgColor': '#ffffff', 'labelTextColor': '#17324d', 'sequenceNumberColor': '#17324d'}, 'sequence': {'actorMargin': 90, 'messageMargin': 34, 'mirrorActors': false}}}%%
+sequenceDiagram
+    participant A as Ứng dụng
+    participant B as Broker EMQX
+    participant E as ESP32
+    A->>B: cmd/light: ON
+    B->>E: cmd/light: ON
+    E->>B: state/light: ON
+    B->>A: state/light: ON

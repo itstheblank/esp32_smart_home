@@ -17,6 +17,7 @@
 \setbeamercolor{title}{fg=DeepBlue}
 \setbeamercolor{block title}{fg=white,bg=DeepBlue}
 \setbeamercolor{block body}{fg=BodyInk,bg=SoftBlue}
+\setbeamerfont{frametitle}{series=\bfseries,size=\Large}
 \setbeamertemplate{navigation symbols}{}
 \setbeamertemplate{itemize item}{\color{AccentRed}\textbullet}
 \setbeamertemplate{itemize subitem}{\color{AccentRed}--}
@@ -39,17 +40,27 @@
 \begin{document}
 
 \begin{frame}[plain]
-  \titlepage
+  \vfill
+  {\large\color{AccentRed}\bfseries BÁO CÁO DEMO}\par
+  \vspace{0.35cm}
+  {\Huge\color{DeepBlue}\bfseries ESP32 SMART HOME}\par
+  \vspace{0.25cm}
+  {\color{AccentRed}\rule{0.16\textwidth}{2pt}}\par
+  \vspace{0.25cm}
+  {\large Giới thiệu hệ thống và demo chương trình}\par
+  \vspace{0.5cm}
+  {\small Nhóm thực hiện}
+  \vfill
 \end{frame}
 
 \begin{frame}{Nội dung trình bày}
-  \large
-  \begin{enumerate}
-    \setlength{\itemsep}{1.1em}
-    \item Giới thiệu và tiến độ hệ thống
-    \item Demo phần cứng
-    \item Demo ứng dụng
-  \end{enumerate}
+  \vfill
+  {\Large\bfseries\color{AccentRed} 01}\quad {\large\bfseries Giới thiệu và tiến độ hệ thống}\par
+  \vspace{0.7cm}
+  {\Large\bfseries\color{AccentRed} 02}\quad {\large\bfseries Demo phần cứng}\par
+  \vspace{0.7cm}
+  {\Large\bfseries\color{AccentRed} 03}\quad {\large\bfseries Demo ứng dụng}
+  \vfill
 \end{frame}
 
 % PHẦN 1: Nội dung giới thiệu và những gì nhóm đã xây dựng.
@@ -75,26 +86,10 @@
 
 \begin{frame}{1. Kiến trúc tổng quan}
   \centering
-  \vspace{0.35cm}
-  {\Large\bfseries Ứng dụng \quad $\leftrightarrow$ \quad MQTT Broker \quad $\leftrightarrow$ \quad ESP32}
-
-  \vspace{0.8cm}
-  \begin{columns}[T,onlytextwidth]
-    \begin{column}{0.31\textwidth}
-      \textcolor{AccentRed}{\bfseries Ứng dụng}\\
-      Gửi yêu cầu điều khiển và hiển thị thông tin nhận được.
-    \end{column}
-    \begin{column}{0.31\textwidth}
-      \textcolor{AccentRed}{\bfseries Broker EMQX}\\
-      Chuyển tiếp thông điệp giữa các thành phần trong mạng.
-    \end{column}
-    \begin{column}{0.31\textwidth}
-      \textcolor{AccentRed}{\bfseries ESP32}\\
-      Xử lý lệnh, kết nối thiết bị và đọc cảm biến.
-    \end{column}
-  \end{columns}
-  \vspace{0.55cm}
-  {\small Sơ đồ thể hiện kiến trúc tích hợp mục tiêu của hệ thống.}
+  \vfill
+  \includegraphics[width=0.96\textwidth,height=0.60\textheight,keepaspectratio]{report/architecture.png}
+  \vfill
+  {\small Kiến trúc tích hợp mục tiêu của hệ thống.}
 \end{frame}
 
 \begin{frame}{1. Các phân hệ của dự án}
@@ -111,50 +106,55 @@
 \end{frame}
 
 \begin{frame}{1. Chức năng trên nhánh tích hợp phần cứng}
-  \begin{itemize}
-    \setlength{\itemsep}{0.6em}
-    \item \textbf{Đèn:} nhận lệnh MQTT hoặc phản ứng với tín hiệu chuyển động PIR.
-    \item \textbf{Cửa:} nhận lệnh mở/đóng và điều khiển servo.
-    \item \textbf{RFID:} kiểm tra thẻ trong danh sách cho phép; thẻ hợp lệ gọi mở cửa.
-    \item \textbf{Phản hồi:} gửi trạng thái đèn, cửa, chuyển động và sự kiện truy cập qua MQTT.
-  \end{itemize}
-  \vspace{0.3cm}
+  \begin{columns}[T,onlytextwidth]
+    \begin{column}{0.47\textwidth}
+      {\large\bfseries\color{DeepBlue} Đèn và chuyển động}\par
+      \vspace{0.3cm}
+      Nhận lệnh bật/tắt qua MQTT. Tín hiệu PIR cũng có thể kích hoạt đèn.
+    \end{column}
+    \begin{column}{0.47\textwidth}
+      {\large\bfseries\color{DeepBlue} Cửa và thẻ RFID}\par
+      \vspace{0.3cm}
+      Servo mở/đóng cửa. Thẻ hợp lệ trong danh sách cho phép gọi mở cửa.
+    \end{column}
+  \end{columns}
+  \vspace{0.7cm}
+  \textcolor{AccentRed}{\bfseries Phản hồi}\quad Trạng thái thiết bị và sự kiện truy cập gửi qua MQTT.
+  \vspace{0.45cm}
+
   {\small Đây là chức năng trong mã nhánh tích hợp; cần kiểm tra trên thiết bị thật.}
 \end{frame}
 
 \begin{frame}{1. Trao đổi dữ liệu qua MQTT}
-  \begin{columns}[T,onlytextwidth]
-    \begin{column}{0.49\textwidth}
-      \textbf{Ví dụ: yêu cầu bật đèn}
-      \begin{itemize}
-        \item Ứng dụng gửi lệnh đến broker.
-        \item Broker chuyển lệnh đến ESP32.
-        \item ESP32 kiểm tra nội dung lệnh.
-      \end{itemize}
-    \end{column}
-    \begin{column}{0.47\textwidth}
-      \begin{block}{Thông điệp ví dụ}
-        {\small Topic:}\\
-        {\small\texttt{smarthome/cmd/light}}\\[0.4em]
-        {\small Payload: \texttt{ON}}
-      \end{block}
-    \end{column}
-  \end{columns}
-  \vspace{0.4cm}
-  {\small Theo quy ước tích hợp, trạng thái thiết bị sẽ được gửi lại qua topic \texttt{state}.}
+  \centering
+  {\large\bfseries Ví dụ: bật đèn và nhận trạng thái}\par
+  \vfill
+  \includegraphics[width=0.88\textwidth,height=0.57\textheight,keepaspectratio]{report/mqtt-flow.png}
+  \vfill
+  {\small Tên đầy đủ bắt đầu bằng \texttt{smarthome/}. Luồng phản hồi cần kiểm tra khi tích hợp.}
 \end{frame}
 
 \begin{frame}{1. Những phần đã thực hiện}
-  \begin{itemize}
-    \setlength{\itemsep}{0.55em}
-    \item Nhánh \texttt{main} có firmware kết nối Wi-Fi, MQTT và mã servo, PIR.
-    \item Nhánh phần cứng đã ghép mã đèn, cửa, PIR và RFID với dịch vụ MQTT.
-    \item Đã chuẩn bị broker EMQX, quy ước MQTT và prototype giao diện web.
-    \item Kiểm tra broker cục bộ: chuyển tiếp thành công \textbf{4/4 lệnh} đèn và cửa.
-    \item ESP32 nhận lệnh từ broker đã được ghi nhận theo xác nhận của nhóm.
-  \end{itemize}
-  \vspace{0.2cm}
-  {\small Kiểm tra broker riêng lẻ chưa chứng minh toàn bộ hệ thống hoạt động.}
+  \begin{columns}[T,onlytextwidth]
+    \begin{column}{0.52\textwidth}
+      {\large\bfseries\color{DeepBlue} Đã xây dựng}\par
+      \begin{itemize}
+        \item Firmware, broker và quy ước MQTT.
+        \item Mã tích hợp đèn, cửa, PIR và RFID trên nhánh phần cứng.
+        \item Prototype giao diện web.
+      \end{itemize}
+    \end{column}
+    \begin{column}{0.43\textwidth}
+      {\large\bfseries\color{DeepBlue} Đã kiểm tra}\par
+      \vspace{0.25cm}
+      {\Huge\bfseries\color{AccentRed} 4/4}\par
+      Broker cục bộ chuyển tiếp đúng bốn lệnh đèn và cửa.
+
+      {\small ESP32 nhận lệnh: đã ghi nhận theo xác nhận của nhóm.}
+    \end{column}
+  \end{columns}
+  \vspace{0.4cm}
+  {\small Kết quả broker chưa chứng minh toàn bộ hệ thống hoạt động.}
 \end{frame}
 
 \begin{frame}{1. Công việc tích hợp tiếp theo}
