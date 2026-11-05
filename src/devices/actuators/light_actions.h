@@ -30,4 +30,13 @@ inline bool light_action_from_string(const char *payload, LightAction *out)
   return false;
 }
 
+// Maps a rule action byte to a LightAction. Unknown codes are rejected.
+inline bool light_action_from_code(uint8_t code, LightAction *out)
+{
+  if (out == nullptr || code > static_cast<uint8_t>(LightAction::LIGHT_OFF))
+    return false;
+  *out = static_cast<LightAction>(code);
+  return true;
+}
+
 #endif // LIGHT_ACTIONS_H

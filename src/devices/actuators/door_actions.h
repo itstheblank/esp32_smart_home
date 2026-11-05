@@ -30,4 +30,13 @@ inline bool door_action_from_string(const char *payload, DoorAction *out)
   return false;
 }
 
+// Maps a rule action byte to a DoorAction. Unknown codes are rejected.
+inline bool door_action_from_code(uint8_t code, DoorAction *out)
+{
+  if (out == nullptr || code > static_cast<uint8_t>(DoorAction::DOOR_CLOSE))
+    return false;
+  *out = static_cast<DoorAction>(code);
+  return true;
+}
+
 #endif // DOOR_ACTIONS_H
