@@ -2,7 +2,7 @@
 
 Phiên bản: **1.0.0**. Người soạn: member 1. Ngày: 02/11/2026.
 
-Thống nhất tổ chức `src/` để member 1, 2, 3 làm song song không đụng file nhau. Topic/payload vẫn theo [contract v1.0.0](mqtt-contract.md).
+Thống nhất tổ chức `src/` để member 1, 2, 3 làm song song không đụng file nhau. Topic/payload vẫn theo [contract v1.0.0](contracts/mqtt-contract.md).
 
 ## 1. Nguyên tắc
 
@@ -63,4 +63,4 @@ network → mqtt_service → door + motion → automation/motion_door → light 
 
 ## Tham khảo
 
-[Contract MQTT v1.0.0](mqtt-contract.md) · [Quy trình phát triển & debug](development.md)
+[Contract MQTT v1.0.0](contracts/mqtt-contract.md) · [Quy trình phát triển & debug](development.md)

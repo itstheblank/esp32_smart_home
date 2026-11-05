@@ -34,7 +34,7 @@ const char *TOPIC_STATE_ONLINE = "smarthome/state/online";
 const char *TOPIC_EVENT_ACCESS = "smarthome/event/access";
 
 // ==========================================
-// HARDWARE PINS (per docs/pin-map.md §1–§3)
+// HARDWARE PINS (per docs/contracts/pin-contract.md)
 // ==========================================
 const uint8_t SERVO_PIN = 2;  // Servo SG90 (door)
 const uint8_t LIGHT_PIN = 4;  // Module LED IO4, relay backup IO5

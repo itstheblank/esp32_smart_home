@@ -37,7 +37,7 @@ extern const char *TOPIC_STATE_ONLINE;
 extern const char *TOPIC_EVENT_ACCESS;
 
 // ==========================================
-// HARDWARE PINS (per docs/pin-map.md §1–§3)
+// HARDWARE PINS (per docs/contracts/pin-contract.md)
 // GPIO39 and GPIO35 are input-only. RC522 must be powered from 3.3V, never 5V.
 // ==========================================
 extern const uint8_t SERVO_PIN;

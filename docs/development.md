@@ -55,4 +55,4 @@ Thường chỉ cần board ở bước 1 và 5. JTAG/ESP-Prog là lựa chọn 
 
 ## Tham khảo
 
-[architecture.md](architecture.md) · [Contract MQTT v1.0.0](mqtt-contract.md) · [PubSubClient 2.8](https://pubsubclient.knolleary.net/api)
+[architecture.md](architecture.md) · [Contract MQTT v1.0.0](contracts/mqtt-contract.md) · [PubSubClient 2.8](https://pubsubclient.knolleary.net/api)
