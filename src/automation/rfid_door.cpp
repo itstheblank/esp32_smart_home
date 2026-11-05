@@ -1,5 +1,5 @@
 #include "rfid_door.h"
-#include "devices/door.h"
+#include "devices/actuators/door.h"
 #include "devices/rfid.h"
 #include "devices/rfid_logic.h"
 #include <string.h>

@@ -4,9 +4,9 @@
 #include "core/mqtt_service.h"
 #include "automation/light_motion.h"
 #include "automation/rfid_door.h"
-#include "devices/door.h"
+#include "devices/actuators/door.h"
 #include "devices/motion.h"
-#include "devices/light.h"
+#include "devices/actuators/light.h"
 #include "devices/rfid.h"
 
 static Door door;

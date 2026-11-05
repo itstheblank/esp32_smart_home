@@ -1,5 +1,5 @@
 #include <unity.h>
-#include "devices/light_logic.h"
+#include "devices/actuators/light_command_mapper.h"
 
 static void test_accepts_exact_on(void)
 {

@@ -1,5 +1,5 @@
 #include <unity.h>
-#include "devices/door_logic.h"
+#include "devices/actuators/door_command_mapper.h"
 
 static void test_accepts_exact_open(void)
 {

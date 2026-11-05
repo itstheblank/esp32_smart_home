@@ -4,8 +4,8 @@
 #include <Arduino.h>
 #include <ESP32Servo.h>
 #include "core/mqtt_service.h"
-#include "door_logic.h"
-#include "state_sync.h"
+#include "door_command_mapper.h"
+#include "devices/state_sync.h"
 
 // Door device: servo actuation + MQTT OPEN/CLOSE command handling.
 // State (open/closed) is tracked and published through StateSync, so the
