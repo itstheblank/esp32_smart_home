@@ -10,7 +10,7 @@
 class Door
 {
 public:
-  void init(IMqtt &mqtt, uint8_t pin, uint8_t id);
+  void init(uint8_t id, IMqtt &mqtt, uint8_t pin);
   void executeAction(DoorAction action);
 
 private:

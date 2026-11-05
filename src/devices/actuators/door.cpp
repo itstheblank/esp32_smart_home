@@ -1,11 +1,11 @@
 #include "door.h"
 #include "config.h"
 
-void Door::init(IMqtt &m, uint8_t servoPin, uint8_t deviceId)
+void Door::init(uint8_t deviceId, IMqtt &m, uint8_t servoPin)
 {
+  id = deviceId;
   mqtt = &m;
   pin = servoPin;
-  id = deviceId;
   // Setup SG90 Servo on pin (see config / docs/pin-map.md §1)
   ESP32PWM::allocateTimer(0);
   ESP32PWM::allocateTimer(1);

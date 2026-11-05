@@ -1,11 +1,11 @@
 #include "light.h"
 #include "config.h"
 
-void Light::init(IMqtt &m, uint8_t outputPin, uint8_t deviceId)
+void Light::init(uint8_t deviceId, IMqtt &m, uint8_t outputPin)
 {
+  id = deviceId;
   mqtt = &m;
   pin = outputPin;
-  id = deviceId;
   pinMode(pin, OUTPUT);
   digitalWrite(pin, LOW);
   mqtt->publishState(TOPIC_STATE_LIGHT, "OFF");
