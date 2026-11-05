@@ -10,14 +10,14 @@
 class Door
 {
 public:
-  void init(uint8_t id, IMqtt &mqtt, uint8_t pin);
+  void init(uint8_t id, MqttService &mqtt, uint8_t pin);
   void executeAction(DoorAction action);
 
 private:
   DeviceType type = DeviceType::DOOR;
   uint8_t id;
   Servo servo;
-  IMqtt *mqtt;
+  MqttService *mqtt;
   uint8_t pin;
   bool isOpen;
 };

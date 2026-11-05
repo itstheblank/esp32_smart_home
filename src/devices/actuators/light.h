@@ -8,13 +8,13 @@
 class Light
 {
 public:
-  void init(uint8_t id, IMqtt &mqtt, uint8_t pin);
+  void init(uint8_t id, MqttService &mqtt, uint8_t pin);
   void executeAction(LightAction action);
 
 private:
   DeviceType type = DeviceType::LIGHT;
   uint8_t id;
-  IMqtt *mqtt;
+  MqttService *mqtt;
   uint8_t pin;
 };
 

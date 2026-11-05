@@ -3,7 +3,7 @@
 #include <SPI.h>
 #include <string.h>
 
-void RfidReader::init(uint8_t deviceId, IMqtt &m, uint8_t chipSelectPin, uint8_t resetPin)
+void RfidReader::init(uint8_t deviceId, MqttService &m, uint8_t chipSelectPin, uint8_t resetPin)
 {
   id = deviceId;
   mqtt = &m;

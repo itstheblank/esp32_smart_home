@@ -5,18 +5,9 @@
 #include <WiFiClient.h>
 #include <PubSubClient.h>
 
-class IMqtt
-{
-public:
-  virtual bool publishState(const char *topic, const char *payload) = 0; // Retain true (contract §2)
-  virtual bool publishEvent(const char *topic, const char *payload) = 0; // Retain false (contract §2)
-  virtual bool connected() = 0;
-  virtual ~IMqtt() {}
-};
-
 typedef void (*CommandHandler)(const char *payload, unsigned int length);
 
-class MqttService : public IMqtt
+class MqttService
 {
 public:
   void begin(const char *broker, int port, const char *clientId, const char *lwtTopic);
@@ -28,8 +19,6 @@ public:
 
 private:
   static const int MAX_COMMANDS = 8;
-  void connect();
-  void handleMessage(char *topic, byte *payload, unsigned int length);
 
   WiFiClient wifiClient;
   PubSubClient client;

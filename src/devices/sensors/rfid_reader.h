@@ -10,7 +10,7 @@
 class RfidReader
 {
 public:
-  void init(uint8_t id, IMqtt &mqtt, uint8_t ssPin, uint8_t rstPin);
+  void init(uint8_t id, MqttService &mqtt, uint8_t ssPin, uint8_t rstPin);
   // Returns NONE, or RFID_TAG_DETECTED with the raw tag id on a card read.
   RfidReaderEventData loop();
   // Publishes the access telemetry: {"uid":"...","result":"GRANTED"|"DENIED"}.
@@ -19,7 +19,7 @@ public:
 private:
   DeviceType type = DeviceType::RFID_READER;
   uint8_t id;
-  IMqtt *mqtt;
+  MqttService *mqtt;
   uint8_t ssPin;
   uint8_t rstPin;
   MFRC522 reader;

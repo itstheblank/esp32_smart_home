@@ -1,7 +1,7 @@
 #include "door.h"
 #include "config.h"
 
-void Door::init(uint8_t deviceId, IMqtt &m, uint8_t servoPin)
+void Door::init(uint8_t deviceId, MqttService &m, uint8_t servoPin)
 {
   id = deviceId;
   mqtt = &m;

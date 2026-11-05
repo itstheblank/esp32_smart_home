@@ -1,7 +1,7 @@
 #include "motion_sensor.h"
 #include "config.h"
 
-void MotionSensor::init(uint8_t deviceId, IMqtt &m, uint8_t pirPin)
+void MotionSensor::init(uint8_t deviceId, MqttService &m, uint8_t pirPin)
 {
   id = deviceId;
   mqtt = &m;

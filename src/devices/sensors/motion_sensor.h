@@ -10,13 +10,13 @@
 class MotionSensor
 {
 public:
-  void init(uint8_t id, IMqtt &mqtt, uint8_t pin);
+  void init(uint8_t id, MqttService &mqtt, uint8_t pin);
   MotionSensorEvent loop();
 
 private:
   DeviceType type = DeviceType::MOTION_SENSOR;
   uint8_t id;
-  IMqtt *mqtt;
+  MqttService *mqtt;
   uint8_t pin;
   MotionDebounceLogic logic{PIR_STABLE_MS};
 };

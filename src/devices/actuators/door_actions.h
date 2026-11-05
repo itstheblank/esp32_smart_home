@@ -11,4 +11,23 @@ enum class DoorAction : uint8_t
   DOOR_CLOSE
 };
 
+// Maps a command payload to a DoorAction. Only exact "OPEN"/"CLOSE" (uppercase)
+// are commands; state words like "CLOSED" are not.
+inline bool door_action_from_string(const char *payload, DoorAction *out)
+{
+  if (payload == nullptr || out == nullptr)
+    return false;
+  if (strcmp(payload, "OPEN") == 0)
+  {
+    *out = DoorAction::DOOR_OPEN;
+    return true;
+  }
+  if (strcmp(payload, "CLOSE") == 0)
+  {
+    *out = DoorAction::DOOR_CLOSE;
+    return true;
+  }
+  return false;
+}
+
 #endif // DOOR_ACTIONS_H

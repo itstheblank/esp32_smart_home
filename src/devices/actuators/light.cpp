@@ -1,7 +1,7 @@
 #include "light.h"
 #include "config.h"
 
-void Light::init(uint8_t deviceId, IMqtt &m, uint8_t outputPin)
+void Light::init(uint8_t deviceId, MqttService &m, uint8_t outputPin)
 {
   id = deviceId;
   mqtt = &m;
