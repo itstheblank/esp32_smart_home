@@ -7,7 +7,6 @@ void Light::init(IMqtt &m, uint8_t outputPin)
   pin = outputPin;
   pinMode(pin, OUTPUT);
   digitalWrite(pin, LOW);
-  state.mark(); // publish initial OFF state once connected
 }
 
 void Light::handleCommand(const char *payload, unsigned int)
@@ -39,12 +38,6 @@ void Light::handleMotionTransition(bool detected)
 void Light::loop()
 {
   apply(automation.tick(millis()), "no-motion timeout");
-  if (state.shouldPublish(mqtt->connected()))
-  {
-    const bool on = automation.isOn();
-    mqtt->publishState(TOPIC_STATE_LIGHT, on ? "ON" : "OFF");
-    Serial.printf("=> Published: %s\n", on ? "ON" : "OFF");
-  }
 }
 
 void Light::apply(LightAction action, const char *source)
@@ -53,6 +46,10 @@ void Light::apply(LightAction action, const char *source)
     return;
   const bool on = action == LightAction::ON;
   digitalWrite(pin, on ? HIGH : LOW);
-  state.mark();
+  if (mqtt->connected())
+  {
+    mqtt->publishState(TOPIC_STATE_LIGHT, on ? "ON" : "OFF");
+    Serial.printf("=> Published: %s\n", on ? "ON" : "OFF");
+  }
   Serial.printf("=> Light state -> %s (%s)\n", on ? "ON" : "OFF", source);
 }

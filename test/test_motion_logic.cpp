@@ -1,5 +1,5 @@
 #include <unity.h>
-#include "devices/motion_logic.h"
+#include "devices/sensors/motion_output_debounce.h"
 
 static void test_fires_on_rising_edge(void)
 {

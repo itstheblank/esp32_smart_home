@@ -5,7 +5,6 @@ void run_light_automation_tests();
 void run_door_logic_tests();
 void run_motion_logic_tests();
 void run_rfid_logic_tests();
-void run_state_sync_tests();
 
 int main()
 {
@@ -15,6 +14,5 @@ int main()
   run_door_logic_tests();
   run_motion_logic_tests();
   run_rfid_logic_tests();
-  run_state_sync_tests();
   return UNITY_END();
 }

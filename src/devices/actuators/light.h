@@ -6,7 +6,6 @@
 #include "core/mqtt_service.h"
 #include "light_automation.h"
 #include "light_command_mapper.h"
-#include "devices/state_sync.h"
 
 // Light device: drives its output pin and honors manual MQTT commands. The
 // automation state machine (motion -> ON, no-motion timeout -> OFF, manual
@@ -26,7 +25,6 @@ private:
   IMqtt *mqtt;
   LightAutomation automation{MOTION_NO_MOTION_TIMEOUT_MS};
   uint8_t pin;
-  StateSync state;
 };
 
 #endif // LIGHT_H

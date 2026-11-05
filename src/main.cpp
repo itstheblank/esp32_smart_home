@@ -5,9 +5,9 @@
 #include "automation/light_motion.h"
 #include "automation/rfid_door.h"
 #include "devices/actuators/door.h"
-#include "devices/motion.h"
+#include "devices/sensors/motion.h"
 #include "devices/actuators/light.h"
-#include "devices/rfid.h"
+#include "devices/sensors/rfid.h"
 
 static Door door;
 static Motion motion;

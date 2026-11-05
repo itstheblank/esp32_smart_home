@@ -1,7 +1,7 @@
 #include "rfid_door.h"
 #include "devices/actuators/door.h"
-#include "devices/rfid.h"
-#include "devices/rfid_logic.h"
+#include "devices/sensors/rfid.h"
+#include "devices/sensors/rfid_output_access.h"
 #include <string.h>
 
 static Rfid *rfidPtr = nullptr;

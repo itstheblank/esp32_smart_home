@@ -1,6 +1,6 @@
 #include "rfid.h"
 #include "config.h"
-#include "rfid_logic.h"
+#include "rfid_output_access.h"
 #include <SPI.h>
 #include <stdio.h>
 

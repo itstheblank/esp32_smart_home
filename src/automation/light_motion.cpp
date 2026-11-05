@@ -1,6 +1,6 @@
 #include "light_motion.h"
 #include "devices/actuators/light.h"
-#include "devices/motion.h"
+#include "devices/sensors/motion.h"
 
 static Motion *motionPtr = nullptr;
 static Light *lightPtr = nullptr;

@@ -1,5 +1,5 @@
 #include <unity.h>
-#include "devices/rfid_logic.h"
+#include "devices/sensors/rfid_output_access.h"
 
 static void test_format_uid_four_bytes(void)
 {

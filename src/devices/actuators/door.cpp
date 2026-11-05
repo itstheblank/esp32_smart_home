@@ -30,21 +30,16 @@ void Door::handleCommand(const char *payload, unsigned int)
   }
 }
 
-void Door::loop()
-{
-  if (state.shouldPublish(mqtt->connected()))
-  {
-    mqtt->publishState(TOPIC_STATE_DOOR, isOpen ? "OPEN" : "CLOSED");
-    Serial.printf("=> Published: %s\n", isOpen ? "OPEN" : "CLOSED");
-  }
-}
-
 void Door::open()
 {
   servo.write(180);
   Serial.println("=> Servo: Door OPEN (180 degrees)");
   isOpen = true;
-  state.mark();
+  if (mqtt->connected())
+  {
+    mqtt->publishState(TOPIC_STATE_DOOR, "OPEN");
+    Serial.println("=> Published: OPEN");
+  }
 }
 
 void Door::close()
@@ -52,5 +47,9 @@ void Door::close()
   servo.write(0);
   Serial.println("=> Servo: Door CLOSE (0 degrees)");
   isOpen = false;
-  state.mark();
+  if (mqtt->connected())
+  {
+    mqtt->publishState(TOPIC_STATE_DOOR, "CLOSED");
+    Serial.println("=> Published: CLOSED");
+  }
 }
