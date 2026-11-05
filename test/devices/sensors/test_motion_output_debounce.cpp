@@ -77,7 +77,7 @@ static void test_debounce_restart_window_on_flip_back(void)
   TEST_ASSERT_TRUE(logic.step(true, 550));
 }
 
-void run_motion_logic_tests()
+void run_motion_output_debounce_tests()
 {
   RUN_TEST(test_fires_on_rising_edge);
   RUN_TEST(test_no_repeat_while_sustained_high);

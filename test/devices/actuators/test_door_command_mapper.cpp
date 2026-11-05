@@ -36,7 +36,7 @@ static void test_rejects_empty(void)
   TEST_ASSERT_EQUAL(DoorCommand::INVALID, door_parse_command(""));
 }
 
-void run_door_logic_tests()
+void run_door_command_mapper_tests()
 {
   RUN_TEST(test_accepts_exact_open);
   RUN_TEST(test_accepts_exact_close);

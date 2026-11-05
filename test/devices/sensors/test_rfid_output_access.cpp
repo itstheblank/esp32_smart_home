@@ -86,7 +86,7 @@ static void test_format_then_check_end_to_end(void)
   TEST_ASSERT_EQUAL_STRING("GRANTED", rfid_check_access(uid, whitelist, 1));
 }
 
-void run_rfid_logic_tests()
+void run_rfid_output_access_tests()
 {
   RUN_TEST(test_format_uid_four_bytes);
   RUN_TEST(test_format_uid_uppercase_letters);

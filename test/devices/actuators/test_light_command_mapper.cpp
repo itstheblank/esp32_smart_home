@@ -36,7 +36,7 @@ static void test_rejects_empty(void)
   TEST_ASSERT_EQUAL(LightCommand::INVALID, light_parse_command(""));
 }
 
-void run_light_logic_tests()
+void run_light_command_mapper_tests()
 {
   RUN_TEST(test_accepts_exact_on);
   RUN_TEST(test_accepts_exact_off);
