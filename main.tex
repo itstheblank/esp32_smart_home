@@ -1,311 +1,184 @@
 \documentclass[aspectratio=169,11pt]{beamer}
-% Movie Rating Prediction and Analytics - Capstone Progress Report
-% All page text: Lato. Text colors: black, red; header text: white.
-% Original HUST blue backdrop preserved. Charts: simple blue bars.
-% Compile on Overleaf with pdfLaTeX.
-\usepackage[T1]{fontenc}
-\usepackage[default]{lato}
-\usepackage{graphicx}
-\usepackage{tikz}
-\usetikzlibrary{calc,arrows.meta}
-\definecolor{Ink}{HTML}{111111}
-\definecolor{HUSTRed}{HTML}{C8102E}
-\definecolor{HUSTBlue}{HTML}{003B70}
-\definecolor{LightBlue}{HTML}{8DB3D2}
-\definecolor{GridBlue}{HTML}{DCE8F0}
-\setbeamercolor{normal text}{fg=Ink}
-\setbeamercolor{structure}{fg=HUSTRed}
-\setbeamertemplate{navigation symbols}{}
-\setbeamertemplate{footline}{}
-\setbeamersize{text margin left=8mm,text margin right=8mm}
-\usebackgroundtemplate{\includegraphics[width=\paperwidth,height=\paperheight]{hust_slide2_content.png}}
 
-% The background is 16 x 9 cm. All content is placed within x 0.9..15.1,
-% y 1.43..7.55 (cm below the top-left corner).
-\newcommand{\Coord}[2]{($(current page.north west)+(#1cm,-#2cm)$)}
-\newcommand{\Header}[2]{%
-  \node[anchor=north west,inner sep=0pt,text=white,
-    font=\bfseries\fontsize{17}{20}\selectfont]
-    at \Coord{0.73}{0.17} {\if\relax\detokenize{#1}\relax#2\else#1\enspace #2\fi};}
-\newcommand{\MainTitle}[3]{%
-  \node[anchor=north west,inner sep=0pt,text=Ink,
-    font=\bfseries\fontsize{16}{20}\selectfont]
-    at \Coord{#1}{#2} {#3};}
-\newcommand{\Sub}[3]{%
-  \node[anchor=north west,inner sep=0pt,text=Ink,
-    font=\bfseries\fontsize{12}{18}\selectfont]
-    at \Coord{#1}{#2} {#3};}
-\newcommand{\Body}[4]{%
-  \node[anchor=north west,inner sep=0pt,text=Ink,
-    text width=#3cm,align=left,font=\fontsize{12.9}{17.5}\selectfont]
-    at \Coord{#1}{#2} {#4};}
-\newcommand{\FinePrint}[4]{%
-  \node[anchor=north west,inner sep=0pt,text=Ink,
-    text width=#3cm,align=left,font=\fontsize{11.3}{15}\selectfont]
-    at \Coord{#1}{#2} {#4};}
-\newcommand{\RedLabel}[3]{%
-  \node[anchor=north west,inner sep=0pt,text=HUSTRed,
-    font=\bfseries\fontsize{11.4}{14}\selectfont]
-    at \Coord{#1}{#2} {#3};}
-\tikzset{lightarrow/.style={-{Stealth[length=1.65mm]},draw=HUSTBlue,line width=0.70pt}}
+% Biên dịch bằng pdfLaTeX trên Overleaf hoặc TeX Live có gói tiếng Việt.
+\usepackage[utf8]{inputenc}
+\usepackage[T5]{fontenc}
+\usepackage[vietnamese]{babel}
+\usepackage{lmodern}
+
+\definecolor{DeepBlue}{HTML}{003B70}
+\definecolor{AccentRed}{HTML}{C8102E}
+\definecolor{BodyInk}{HTML}{202B36}
+\definecolor{SoftBlue}{HTML}{EAF1F7}
+\setbeamercolor{normal text}{fg=BodyInk,bg=white}
+\setbeamercolor{structure}{fg=DeepBlue}
+\setbeamercolor{frametitle}{fg=white,bg=DeepBlue}
+\setbeamercolor{title}{fg=DeepBlue}
+\setbeamercolor{block title}{fg=white,bg=DeepBlue}
+\setbeamercolor{block body}{fg=BodyInk,bg=SoftBlue}
+\setbeamertemplate{navigation symbols}{}
+\setbeamertemplate{itemize item}{\color{AccentRed}\textbullet}
+\setbeamertemplate{itemize subitem}{\color{AccentRed}--}
+\setbeamertemplate{footline}[frame number]
+\setbeamersize{text margin left=9mm,text margin right=9mm}
+\setlength{\parskip}{0.4em}
+
+\title{ESP32 SMART HOME}
+\subtitle{Giới thiệu hệ thống và demo chương trình}
+\author{Nhóm thực hiện}
+\date{}
 
 \begin{document}
 
-% -----------------------------------------------------------------
-% Slide 1: cover - retain original formatting and team
-% -----------------------------------------------------------------
 \begin{frame}[plain]
-\begin{tikzpicture}[remember picture,overlay]
-  % Keep the original title composition and all five members.
-  \node[anchor=center,align=center,inner sep=0pt,text width=15.55cm]
-    at \Coord{8.00}{2.86}
-    {{\color{HUSTRed}\bfseries\fontsize{23.2}{29}\selectfont
-      MOVIE RATING PREDICTION \&\\[0.06cm]
-      ANALYTICS USING MACHINE LEARNING}\\[0.24cm]
-     {\color{Ink}\fontsize{13}{17}\selectfont Wikipedia Web Crawling + IMDb Rating Labels}};
-  \node[anchor=north,align=center,inner sep=0pt,text=Ink,
-    font=\fontsize{11.9}{18}\selectfont]
-    at \Coord{8.00}{4.25}
-    {Tran Tien Dung - 20235921\\
-     Lang Hong Nguyet Anh - 20235885\\
-     Tran Sy Nguyen - 20235985\\
-     Ha Duc Duong - 20235923\\
-     Vu Nhat Minh Duong - 20235925};
-\end{tikzpicture}
+  \titlepage
 \end{frame}
 
-% -----------------------------------------------------------------
-% Slide 2: table of contents only
-% -----------------------------------------------------------------
-\begin{frame}[plain]
-\begin{tikzpicture}[remember picture,overlay]
-  \Header{}{TABLE OF CONTENTS}
-  \RedLabel{1.27}{1.80}{1}
-  \Body{2.10}{1.73}{12.0}{Project Overview}
-  \RedLabel{1.27}{2.68}{2}
-  \Body{2.10}{2.61}{12.0}{Wikipedia Web Crawler}
-  \RedLabel{1.27}{3.56}{3}
-  \Body{2.10}{3.49}{12.0}{Existing IMDb Dataset}
-  \RedLabel{1.27}{4.44}{4}
-  \Body{2.10}{4.37}{12.0}{Data Matching and Integration}
-  \RedLabel{1.27}{5.32}{5}
-  \Body{2.10}{5.25}{12.0}{Processing and Label Analysis}
-  \RedLabel{1.27}{6.20}{6}
-  \Body{2.10}{6.13}{12.0}{Implementation Plan}
-\end{tikzpicture}
-\end{frame}
-\begin{frame}[plain]
-\begin{tikzpicture}[remember picture,overlay]
-  \Header{1}{PROJECT OVERVIEW}
-  \MainTitle{0.94}{1.54}{Predicting IMDb ratings using movie metadata}
-  \Body{0.95}{2.25}{13.8}{We study movie characteristics and build a Machine Learning pipeline to estimate ratings for unseen films.}
-  \RedLabel{0.95}{3.45}{CORE QUESTION}
-  \Body{0.95}{3.85}{13.8}{How much can we predict from a movie's available information?}
-
-  % Workflow as one familiar, unboxed line: no step-cards or large numbers.
-  \Sub{0.95}{5.05}{Project workflow}
-  \node[anchor=north west,inner sep=0pt,text=Ink,text width=14.05cm,
-    font=\fontsize{12.5}{16.7}\selectfont] at \Coord{0.95}{5.84}
-    {Data acquisition \textcolor{HUSTBlue}{$\rightarrow$} Data preparation
-    \textcolor{HUSTBlue}{$\rightarrow$} EDA
-    \textcolor{HUSTBlue}{$\rightarrow$} Modeling
-    \textcolor{HUSTBlue}{$\rightarrow$} Evaluation};
-  \FinePrint{0.95}{7.02}{14.0}{\textcolor{HUSTRed}{\bfseries Scope of this report:} data acquisition and preparation.}
-\end{tikzpicture}
-\end{frame}
-% -----------------------------------------------------------------
-% Slide 3: learning problem + two data sources
-% -----------------------------------------------------------------
-\begin{frame}[plain]
-\begin{tikzpicture}[remember picture,overlay]
-  \Header{1}{PROJECT OVERVIEW}
-  \MainTitle{0.94}{1.49}{Predicting IMDb ratings from movie metadata}
-  \Body{0.95}{2.13}{13.9}{Our learning problem remains \textbf{supervised regression}: predict a movie's IMDb rating using descriptive features.}
-  \Sub{0.96}{3.20}{Two sources, two different roles}
-  \RedLabel{0.97}{3.73}{Wikipedia -- input features (X)}
-  \Body{0.98}{4.34}{6.70}{Title, director, cast, runtime, country, and budget.}
-  \RedLabel{8.15}{3.73}{IMDb -- rating labels (y)}
-  \Body{8.16}{4.34}{6.63}{averageRating is the label; numVotes is for filtering.}
-  \Sub{0.96}{5.58}{Updated data pipeline}
-  \node[anchor=north west,inner sep=0pt,text=Ink,text width=14.0cm,
-    font=\fontsize{12.5}{17}\selectfont] at \Coord{0.96}{6.15}
-    {Wikipedia \textcolor{HUSTBlue}{$\rightarrow$} Crawl \textcolor{HUSTBlue}{$\rightarrow$} Clean \textcolor{HUSTBlue}{$\rightarrow$} Match IMDb \textcolor{HUSTBlue}{$\rightarrow$} ML};
-  \FinePrint{0.96}{7.00}{14.1}{\textcolor{HUSTRed}{\bfseries Update:} Wikipedia crawling will extend our completed IMDb dataset.}
-\end{tikzpicture}
+\begin{frame}{Nội dung trình bày}
+  \large
+  \begin{enumerate}
+    \setlength{\itemsep}{1.1em}
+    \item Giới thiệu và tiến độ hệ thống
+    \item Demo phần cứng
+    \item Demo ứng dụng
+  \end{enumerate}
 \end{frame}
 
-% -----------------------------------------------------------------
-% Slide 4: completed IMDb baseline and original counts-by-year chart
-% -----------------------------------------------------------------
----------------
-\begin{frame}[plain]
-\begin{tikzpicture}[remember picture,overlay]
-  \Header{3}{WIKIPEDIA WEB CRAWLER}
-  \MainTitle{0.94}{1.49}{Adding a dedicated Wikipedia crawler}
-  \Body{0.96}{2.12}{14.0}{The crawler will extract movie data from Wikipedia infoboxes.}
-  \Sub{0.95}{3.26}{Planned crawling workflow}
-  \node[anchor=center,align=center,text=Ink,inner sep=0pt,
-    font=\fontsize{12.0}{16}\selectfont] at \Coord{2.13}{4.19} {Discover\\film pages};
-  \draw[lightarrow] \Coord{3.39}{4.19} -- \Coord{4.30}{4.19};
-  \node[anchor=center,align=center,text=Ink,inner sep=0pt,
-    font=\fontsize{12.0}{16}\selectfont] at \Coord{5.65}{4.19} {Fetch HTML\\politely};
-  \draw[lightarrow] \Coord{6.92}{4.19} -- \Coord{7.82}{4.19};
-  \node[anchor=center,align=center,text=Ink,inner sep=0pt,
-    font=\fontsize{12.0}{16}\selectfont] at \Coord{9.14}{4.19} {Parse film\\infobox};
-  \draw[lightarrow] \Coord{10.44}{4.19} -- \Coord{11.37}{4.19};
-  \node[anchor=center,align=center,text=Ink,inner sep=0pt,
-    font=\fontsize{12.0}{16}\selectfont] at \Coord{12.89}{4.19} {Save raw\\JSON / CSV};
-  \Sub{0.96}{5.02}{Metadata to extract}
-  \FinePrint{0.97}{5.51}{13.85}{Title, year, director, cast, runtime, language, country, budget.}
-  \Sub{0.96}{6.32}{Implementation and controls}
-  \FinePrint{0.97}{6.81}{13.85}{Python, Requests, BeautifulSoup; rate limits, retries, logs, resume.}
-  \FinePrint{0.97}{7.24}{14.0}{\textcolor{HUSTRed}{\bfseries Status:} Crawled and matched movie counts have not been reported yet.}
-\end{tikzpicture}
-\end{frame}
-\begin{frame}[plain]
-\begin{tikzpicture}[remember picture,overlay]
-  \Header{2}{EXISTING IMDb DATASET}
-  \MainTitle{0.94}{1.49}{216,670 IMDb movies (2015--2025)}
-  \Body{0.95}{2.11}{14.0}{\textbf{118,609} with IMDb ratings (54.7\%); \textbf{98,061} without ratings (45.3\%).}
-  \Sub{0.95}{3.16}{Number of movies by release year}
-  % Single-series basic bar chart, simple to reproduce in matplotlib/Excel.
-  \draw[Ink,line width=0.45pt] \Coord{1.41}{6.72} -- \Coord{14.97}{6.72};
-  \draw[GridBlue,line width=0.35pt] \Coord{1.41}{5.55} -- \Coord{14.97}{5.55};
-  \draw[GridBlue,line width=0.35pt] \Coord{1.41}{4.38} -- \Coord{14.97}{4.38};
-  \node[anchor=east,inner sep=0pt,text=Ink,font=\fontsize{9.5}{11}\selectfont] at \Coord{1.21}{6.66} {0};
-  \node[anchor=east,inner sep=0pt,text=Ink,font=\fontsize{9.5}{11}\selectfont] at \Coord{1.21}{5.49} {10k};
-  \node[anchor=east,inner sep=0pt,text=Ink,font=\fontsize{9.5}{11}\selectfont] at \Coord{1.21}{4.32} {20k};
-
-  \foreach \x/\barheight/\yy in {1.82/2.060/15,3.00/2.203/16,4.18/2.257/17,5.36/2.294/18,6.54/2.292/19,7.72/1.971/20,8.90/2.263/21,10.08/2.476/22,11.26/2.493/23,12.44/2.526/24,13.62/2.515/25}{%
-    \fill[HUSTBlue] \Coord{\x}{6.72} rectangle ($(current page.north west)+(\x cm,-6.72cm)+(0.70cm,\barheight cm)$);
-    \node[anchor=north,inner sep=0pt,text=Ink,font=\fontsize{10.0}{12}\selectfont]
-      at ($(current page.north west)+(\x cm,-6.88cm)+(0.35cm,0cm)$) {\yy};
-  }
-  \FinePrint{0.97}{7.28}{13.9}{15 = 2015; 25 = 2025. IMDb records only (not Wikipedia crawl output).}
-
-\end{tikzpicture}
+% PHẦN 1: Nội dung giới thiệu và những gì nhóm đã xây dựng.
+\begin{frame}{1. Bài toán và mục tiêu}
+  \begin{columns}[T,onlytextwidth]
+    \begin{column}{0.48\textwidth}
+      \textbf{Bài toán}
+      \begin{itemize}
+        \item Người dùng cần điều khiển và theo dõi thiết bị trong nhà từ điện thoại.
+        \item Các thiết bị và ứng dụng cần trao đổi dữ liệu qua cùng một mạng.
+      \end{itemize}
+    \end{column}
+    \begin{column}{0.48\textwidth}
+      \textbf{Mục tiêu của nhóm}
+      \begin{itemize}
+        \item Xây dựng hệ thống điều khiển dựa trên ESP32.
+        \item Kết nối ứng dụng, bộ điều khiển và cảm biến qua MQTT.
+        \item Kiểm tra từng phân hệ trước khi tích hợp toàn bộ.
+      \end{itemize}
+    \end{column}
+  \end{columns}
 \end{frame}
 
-% -----------------------------------------------------------------
-% Slide 5: added Wikipedia web crawler
-% --------------------------------------------------
+\begin{frame}{1. Kiến trúc tổng quan}
+  \centering
+  \vspace{0.35cm}
+  {\Large\bfseries Ứng dụng \quad $\leftrightarrow$ \quad MQTT Broker \quad $\leftrightarrow$ \quad ESP32}
 
-% -----------------------------------------------------------------
-% Slide 6: intended data matching; no fabricated results
-% -----------------------------------------------------------------
-\begin{frame}[plain]
-\begin{tikzpicture}[remember picture,overlay]
-  \Header{4}{DATA MATCHING AND INTEGRATION}
-  \MainTitle{0.94}{1.49}{Connecting Wikipedia metadata with IMDb labels}
-  \Body{0.96}{2.11}{13.9}{Match Wikipedia titles to IMDb IDs, then attach rating labels.}
-  \Sub{0.96}{3.11}{Matching strategy}
-  \Body{0.99}{3.65}{13.8}{\textcolor{HUSTRed}{1.}\hspace{0.16cm} Normalize movie titles and release years.}
-  \Body{0.99}{4.20}{13.8}{\textcolor{HUSTRed}{2.}\hspace{0.16cm} Match primaryTitle + year, then originalTitle + year.}
-  \Body{0.99}{4.75}{13.8}{\textcolor{HUSTRed}{3.}\hspace{0.16cm} Manually review fuzzy matches and retain unmatched records.}
-  \Sub{0.96}{5.62}{Final dataset structure}
-  \FinePrint{0.99}{6.18}{13.9}{\textbf{Wikipedia (X):} director, cast, runtime, country, language, budget.}
-  \FinePrint{0.99}{6.59}{13.9}{\textbf{IMDb (y):} tconst, averageRating; numVotes for filtering.}
-  \FinePrint{0.99}{7.21}{13.9}{\textcolor{HUSTRed}{\bfseries Caution:} Wikipedia infoboxes may change after a film is released.}
-\end{tikzpicture}
+  \vspace{0.8cm}
+  \begin{columns}[T,onlytextwidth]
+    \begin{column}{0.31\textwidth}
+      \textcolor{AccentRed}{\bfseries Ứng dụng}\\
+      Gửi yêu cầu điều khiển và hiển thị thông tin nhận được.
+    \end{column}
+    \begin{column}{0.31\textwidth}
+      \textcolor{AccentRed}{\bfseries Broker EMQX}\\
+      Chuyển tiếp thông điệp giữa các thành phần trong mạng.
+    \end{column}
+    \begin{column}{0.31\textwidth}
+      \textcolor{AccentRed}{\bfseries ESP32}\\
+      Xử lý lệnh, kết nối thiết bị và đọc cảm biến.
+    \end{column}
+  \end{columns}
+  \vspace{0.55cm}
+  {\small Sơ đồ thể hiện kiến trúc tích hợp mục tiêu của hệ thống.}
 \end{frame}
 
-% -----------------------------------------------------------------
-% Slide 7: existing Workstream 2 and what must change
-% -----------------------------------------------------------------
-\begin{frame}[plain]
-\begin{tikzpicture}[remember picture,overlay]
-  \Header{5}{PROCESSING AND LABEL ANALYSIS}
-  \MainTitle{0.94}{1.49}{Extending the existing preprocessing pipeline}
-  \Body{0.96}{2.12}{13.9}{IMDb data processing is complete; Wikipedia integration is next.}
-  \Sub{0.96}{3.16}{Already completed on IMDb data}
-  \Body{0.99}{3.72}{13.85}{\textcolor{HUSTRed}{\textbullet}\hspace{0.16cm} 216,670 records retained after cleaning; 0 duplicate IMDb IDs.}
-  \Body{0.99}{4.25}{13.85}{\textcolor{HUSTRed}{\textbullet}\hspace{0.16cm} 118,609 rated records in the current modeling dataset.}
-  \Body{0.99}{4.78}{13.85}{\textcolor{HUSTRed}{\textbullet}\hspace{0.16cm} 39 model features, including 26 genre indicators.}
-  \Sub{0.96}{5.66}{To update with Wikipedia features}
-  \Body{0.99}{6.22}{13.85}{Rebuild features, check missingness, and review match quality.}
-  \FinePrint{0.99}{7.16}{13.85}{\textcolor{HUSTRed}{\bfseries Note:} The 39 baseline features do not yet represent Wikipedia metadata.}
-\end{tikzpicture}
+\begin{frame}{1. Các phân hệ của dự án}
+  \begin{itemize}
+    \setlength{\itemsep}{0.65em}
+    \item \textbf{Firmware:} kết nối Wi-Fi, MQTT và xử lý lệnh điều khiển.
+    \item \textbf{Phần cứng:} phát triển mã cho đèn, cửa và các thiết bị liên quan.
+    \item \textbf{Cảm biến:} phát triển xử lý chuyển động PIR và thẻ RFID.
+    \item \textbf{Giao diện:} xây dựng prototype ứng dụng điều khiển.
+    \item \textbf{Tích hợp:} thống nhất topic, payload và kiểm tra giao tiếp.
+  \end{itemize}
+  \vspace{0.3cm}
+  {\small Các phân hệ có mã hoặc prototype trên những nhánh phát triển riêng.}
 \end{frame}
 
-% -----------------------------------------------------------------
-% Slide 8: original vote threshold analysis and caveat
-% -----------------------------------------------------------------
-\begin{frame}[plain]
-\begin{tikzpicture}[remember picture,overlay]
-  \Header{5}{PROCESSING AND LABEL ANALYSIS}
-  \MainTitle{0.94}{1.49}{IMDb vote thresholds: existing label pool}
-  \FinePrint{0.97}{2.07}{13.9}{Rated IMDb movie counts before Wikipedia matching:}
-  \node[anchor=west,inner sep=0pt,text=Ink,font=\fontsize{11.6}{14}\selectfont] at \Coord{1.07}{2.78} {$\geq$0 votes};
-  \fill[HUSTBlue] \Coord{4.16}{2.78} rectangle ($(current page.north west)+(11.46cm,-3.09cm)$);
-  \node[anchor=west,inner sep=0pt,text=Ink,font=\fontsize{11.3}{14}\selectfont] at \Coord{12.04}{2.78} {118,609};
-
-  \node[anchor=west,inner sep=0pt,text=Ink,font=\fontsize{11.6}{14}\selectfont] at \Coord{1.07}{3.32} {$\geq$10 votes};
-  \fill[HUSTBlue] \Coord{4.16}{3.32} rectangle ($(current page.north west)+(10.92cm,-3.63cm)$);
-  \node[anchor=west,inner sep=0pt,text=Ink,font=\fontsize{11.3}{14}\selectfont] at \Coord{12.04}{3.32} {109,982};
-
-  \node[anchor=west,inner sep=0pt,text=Ink,font=\fontsize{11.6}{14}\selectfont] at \Coord{1.07}{3.86} {$\geq$50 votes};
-  \fill[HUSTBlue] \Coord{4.16}{3.86} rectangle ($(current page.north west)+(8.26cm,-4.17cm)$);
-  \node[anchor=west,inner sep=0pt,text=Ink,font=\fontsize{11.3}{14}\selectfont] at \Coord{12.04}{3.86} {66,649};
-
-  \node[anchor=west,inner sep=0pt,text=Ink,font=\fontsize{11.6}{14}\selectfont] at \Coord{1.07}{4.40} {$\geq$100 votes};
-  \fill[HUSTBlue] \Coord{4.16}{4.40} rectangle ($(current page.north west)+(7.35cm,-4.71cm)$);
-  \node[anchor=west,inner sep=0pt,text=Ink,font=\fontsize{11.3}{14}\selectfont] at \Coord{12.04}{4.40} {51,851};
-
-  \node[anchor=west,inner sep=0pt,text=Ink,font=\fontsize{11.6}{14}\selectfont] at \Coord{1.07}{4.94} {$\geq$500 votes};
-  \fill[HUSTBlue] \Coord{4.16}{4.94} rectangle ($(current page.north west)+(5.71cm,-5.25cm)$);
-  \node[anchor=west,inner sep=0pt,text=Ink,font=\fontsize{11.3}{14}\selectfont] at \Coord{12.04}{4.94} {25,255};
-
-  \node[anchor=west,inner sep=0pt,text=Ink,font=\fontsize{11.6}{14}\selectfont] at \Coord{1.07}{5.48} {$\geq$1,000 votes};
-  \fill[HUSTBlue] \Coord{4.16}{5.48} rectangle ($(current page.north west)+(5.23cm,-5.79cm)$);
-  \node[anchor=west,inner sep=0pt,text=Ink,font=\fontsize{11.3}{14}\selectfont] at \Coord{12.04}{5.48} {17,460};
-
-  \node[anchor=west,inner sep=0pt,text=Ink,font=\fontsize{11.6}{14}\selectfont] at \Coord{1.07}{6.02} {$\geq$5,000 votes};
-  \fill[HUSTBlue] \Coord{4.16}{6.02} rectangle ($(current page.north west)+(4.55cm,-6.33cm)$);
-  \node[anchor=west,inner sep=0pt,text=Ink,font=\fontsize{11.3}{14}\selectfont] at \Coord{12.04}{6.02} {6,328};
-
-  \FinePrint{0.97}{6.74}{13.9}{\textcolor{HUSTRed}{\bfseries Proposed pre-join cohort:} 51,851 titles have $\geq$100 votes.}
-  \FinePrint{0.97}{7.22}{13.9}{Final matched cohort may be smaller; numVotes is not an input.}
-
-\end{tikzpicture}
+\begin{frame}{1. Trao đổi dữ liệu qua MQTT}
+  \begin{columns}[T,onlytextwidth]
+    \begin{column}{0.49\textwidth}
+      \textbf{Ví dụ: yêu cầu bật đèn}
+      \begin{itemize}
+        \item Ứng dụng gửi lệnh đến broker.
+        \item Broker chuyển lệnh đến ESP32.
+        \item ESP32 kiểm tra nội dung lệnh.
+      \end{itemize}
+    \end{column}
+    \begin{column}{0.47\textwidth}
+      \begin{block}{Thông điệp ví dụ}
+        {\small Topic:}\\
+        {\small\texttt{smarthome/cmd/light}}\\[0.4em]
+        {\small Payload: \texttt{ON}}
+      \end{block}
+    \end{column}
+  \end{columns}
+  \vspace{0.4cm}
+  {\small Theo quy ước tích hợp, trạng thái thiết bị sẽ được gửi lại qua topic \texttt{state}.}
 \end{frame}
 
-% -----------------------------------------------------------------
-% Slide 9: implementation plan and statuses
-% -----------------------------------------------------------------
-\begin{frame}[plain]
-\begin{tikzpicture}[remember picture,overlay]
-  \Header{6}{IMPLEMENTATION PLAN}
-  \MainTitle{0.94}{1.49}{Integrating the new crawler into the project}
-  \Sub{0.97}{2.20}{Wikipedia crawler}
-  \FinePrint{1.00}{2.76}{11.35}{Discover pages, parse infoboxes, and store titles, cast, crew}
-  \RedLabel{12.70}{3.37}{DONE}
-
-  \Sub{0.97}{3.31}{IMDb data foundation}
-  \FinePrint{1.00}{3.87}{11.35}{2015--2025 titles, ratings; existing data preparation.}
-  \RedLabel{12.70}{2.26}{DONE}
-
-  \Sub{0.97}{4.42}{Matching and data preparation}
-  \FinePrint{1.00}{4.98}{11.35}{Title + year matching; review join quality; rebuild features.}
-  \RedLabel{12.70}{4.48}{DONE}
-
-  \Sub{0.97}{5.53}{EDA, modeling and evaluation}
-  \FinePrint{1.00}{6.09}{11.35}{Supervised regression, temporal evaluation, error analysis.}
-  \RedLabel{12.70}{5.59}{NEXT}
-
-  \FinePrint{0.97}{7.02}{14.0}{\textcolor{HUSTRed}{\bfseries Optional:} Unsupervised clustering for unmatched or unrated movie metadata.}
-\end{tikzpicture}
+\begin{frame}{1. Những phần đã thực hiện}
+  \begin{itemize}
+    \setlength{\itemsep}{0.55em}
+    \item Firmware kết nối Wi-Fi và MQTT, nhận lệnh đèn và cửa, kiểm tra payload.
+    \item Có mã phát triển cho servo, PIR, RFID và điều khiển thiết bị trên các nhánh của nhóm.
+    \item Đã chuẩn bị broker EMQX, quy ước MQTT và prototype giao diện.
+    \item Kiểm tra broker cục bộ: chuyển tiếp thành công \textbf{4/4 lệnh} đèn và cửa.
+    \item ESP32 nhận lệnh từ broker đã được ghi nhận theo xác nhận của nhóm.
+  \end{itemize}
+  \vspace{0.2cm}
+  {\small Kiểm tra broker riêng lẻ chưa chứng minh toàn bộ hệ thống hoạt động.}
 \end{frame}
 
-% -----------------------------------------------------------------
-% Slide 10: same closing format
-% -----------------------------------------------------------------
+\begin{frame}{1. Công việc tích hợp tiếp theo}
+  \begin{itemize}
+    \setlength{\itemsep}{0.7em}
+    \item Ghép các nhánh firmware, cảm biến, phần cứng và giao diện.
+    \item Thống nhất topic và payload giữa ứng dụng với ESP32.
+    \item Kiểm tra luồng lệnh và trạng thái trên thiết bị thật.
+    \item Kiểm tra kết nối lại và hoàn thiện bằng chứng nghiệm thu.
+  \end{itemize}
+  \vspace{0.5cm}
+  {\small Theo tài liệu hiện có, chưa có bằng chứng kiểm thử tích hợp toàn hệ thống.}
+\end{frame}
+
+% PHẦN 2: Tự thêm ảnh, video và nội dung demo phần cứng tại đây.
+\begin{frame}{2. Demo phần cứng}
+  \centering
+  \vfill
+  {\Large\color{DeepBlue}\bfseries Demo hardware}
+
+  \vspace{0.45cm}
+  {\normalsize Chèn ảnh, video hoặc nội dung demo tại đây.}
+  \vfill
+\end{frame}
+
+% PHẦN 3: Tự thêm ảnh, video và nội dung demo ứng dụng tại đây.
+\begin{frame}{3. Demo ứng dụng}
+  \centering
+  \vfill
+  {\Large\color{DeepBlue}\bfseries Demo app}
+
+  \vspace{0.45cm}
+  {\normalsize Chèn ảnh, video hoặc nội dung demo tại đây.}
+  \vfill
+\end{frame}
+
 \begin{frame}[plain]
-\begin{tikzpicture}[remember picture,overlay]
-  \node[anchor=center,align=center,inner sep=0pt,text width=12.0cm]
-    at \Coord{8.00}{4.25}
-    {{\color{HUSTRed}\bfseries\fontsize{31}{36}\selectfont THANK YOU!}\\[0.28cm]
-     {\color{Ink}\fontsize{15}{19}\selectfont Questions \& Feedback}};
-\end{tikzpicture}
+  \centering
+  \vfill
+  {\Huge\bfseries\color{DeepBlue} Cảm ơn thầy cô và các bạn!}
+
+  \vspace{0.5cm}
+  {\large Câu hỏi và trao đổi}
+  \vfill
 \end{frame}
 
 \end{document}
