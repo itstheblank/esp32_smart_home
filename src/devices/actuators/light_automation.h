@@ -1,6 +1,8 @@
 #ifndef LIGHT_AUTOMATION_H
 #define LIGHT_AUTOMATION_H
 
+#include "light_actions.h"
+
 // Pure logic — no Arduino.h, host-testable (docs/development.md)
 // Ported from member2's sensors-automation rules:
 //   - stable PIR transition -> DETECTED turns the light on, CLEAR starts the
@@ -8,12 +10,6 @@
 //   - a manual MQTT command applies immediately, cancels the pending timer and
 //     takes priority until the NEXT stable PIR transition (deterministic
 //     manual-vs-automation priority without an extra mode topic).
-enum class LightAction
-{
-  NONE,
-  ON,
-  OFF
-};
 
 class LightAutomation
 {
@@ -29,29 +25,37 @@ public:
     return apply(on);
   }
 
-  LightAction handleStableTransition(bool detected, unsigned long nowMs)
+  bool handleStableTransition(bool detected, unsigned long nowMs, LightAction *action = nullptr)
   {
     // A new physical PIR transition explicitly returns control to automation.
     manualOverride = false;
     if (detected)
     {
       waitingForNoMotion = false;
-      return apply(true);
+      const LightAction act = apply(true);
+      if (action != nullptr)
+        *action = act;
+      return true;
     }
     waitingForNoMotion = true;
     noMotionStartedAt = nowMs;
-    return LightAction::NONE;
+    return false;
   }
 
-  LightAction tick(unsigned long nowMs)
+  bool tick(unsigned long nowMs, LightAction *action = nullptr)
   {
     if (waitingForNoMotion && nowMs - noMotionStartedAt >= noMotionTimeoutMs)
     {
       waitingForNoMotion = false;
       if (!manualOverride)
-        return apply(false);
+      {
+        const LightAction act = apply(false);
+        if (action != nullptr)
+          *action = act;
+        return true;
+      }
     }
-    return LightAction::NONE;
+    return false;
   }
 
   bool isOn() const { return lightOn; }
@@ -61,7 +65,7 @@ private:
   LightAction apply(bool on)
   {
     lightOn = on;
-    return on ? LightAction::ON : LightAction::OFF;
+    return on ? LightAction::LIGHT_ON : LightAction::LIGHT_OFF;
   }
 
   unsigned long noMotionTimeoutMs;

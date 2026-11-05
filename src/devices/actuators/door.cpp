@@ -1,55 +1,29 @@
 #include "door.h"
 #include "config.h"
 
-void Door::init(IMqtt &m)
+void Door::init(IMqtt &m, uint8_t servoPin, uint8_t deviceId)
 {
   mqtt = &m;
-  // Setup SG90 Servo on SERVO_PIN (see config / docs/pin-map.md §1)
+  pin = servoPin;
+  id = deviceId;
+  // Setup SG90 Servo on pin (see config / docs/pin-map.md §1)
   ESP32PWM::allocateTimer(0);
   ESP32PWM::allocateTimer(1);
   ESP32PWM::allocateTimer(2);
   ESP32PWM::allocateTimer(3);
-  servo.setPeriodHertz(50);           // Standard 50Hz servo
-  servo.attach(SERVO_PIN, 500, 2400); // Standard 500us to 2400us range for SG90
-  close();                            // Initial state: Closed (0 degrees)
+  servo.setPeriodHertz(50);             // Standard 50Hz servo
+  servo.attach(pin, 500, 2400);         // Standard 500us to 2400us range for SG90
+  executeAction(DoorAction::DOOR_CLOSE); // Initial state: Closed (0 degrees)
 }
 
-void Door::handleCommand(const char *payload, unsigned int)
+void Door::executeAction(DoorAction action)
 {
-  switch (door_parse_command(payload))
+  isOpen = (action == DoorAction::DOOR_OPEN);
+  servo.write(isOpen ? 180 : 0);
+  Serial.printf("=> Servo: Door %s (%d degrees)\n", isOpen ? "OPEN" : "CLOSE", isOpen ? 180 : 0);
+  if (mqtt && mqtt->connected())
   {
-  case DoorCommand::OPEN:
-    open();
-    break;
-  case DoorCommand::CLOSE:
-    close();
-    break;
-  default:
-    Serial.println("=> ERROR: Invalid door command, ignored!");
-    break;
-  }
-}
-
-void Door::open()
-{
-  servo.write(180);
-  Serial.println("=> Servo: Door OPEN (180 degrees)");
-  isOpen = true;
-  if (mqtt->connected())
-  {
-    mqtt->publishState(TOPIC_STATE_DOOR, "OPEN");
-    Serial.println("=> Published: OPEN");
-  }
-}
-
-void Door::close()
-{
-  servo.write(0);
-  Serial.println("=> Servo: Door CLOSE (0 degrees)");
-  isOpen = false;
-  if (mqtt->connected())
-  {
-    mqtt->publishState(TOPIC_STATE_DOOR, "CLOSED");
-    Serial.println("=> Published: CLOSED");
+    mqtt->publishState(TOPIC_STATE_DOOR, isOpen ? "OPEN" : "CLOSED");
+    Serial.printf("=> Published: %s\n", isOpen ? "OPEN" : "CLOSED");
   }
 }

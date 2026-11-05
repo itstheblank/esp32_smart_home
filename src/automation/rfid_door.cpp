@@ -19,6 +19,6 @@ void rfid_door_loop()
   if (rfidPtr->takeAccessEvent(event) &&
       strcmp(event.result, RFID_RESULT_GRANTED) == 0)
   {
-    doorPtr->open();
+    doorPtr->executeAction(DoorAction::DOOR_OPEN);
   }
 }
