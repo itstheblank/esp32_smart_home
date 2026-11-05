@@ -7,6 +7,7 @@ void Light::init(IMqtt &m, uint8_t outputPin)
   pin = outputPin;
   pinMode(pin, OUTPUT);
   digitalWrite(pin, LOW);
+  mqtt->publishState(TOPIC_STATE_LIGHT, "OFF"); // initial state overwrites stale retained value
 }
 
 void Light::handleCommand(const char *payload, unsigned int)

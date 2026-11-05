@@ -41,6 +41,13 @@ void setup()
   mqtt.onCommand(TOPIC_CMD_LIGHT, handleLightCommand);
   mqtt.onCommand(TOPIC_CMD_DOOR, handleDoorCommand);
 
+  // Wait for the broker.
+  const unsigned long connectDeadline = millis() + 15000;
+  while (!mqtt.connected() && millis() < connectDeadline)
+  {
+    mqtt.loop();
+  }
+
   door.init(mqtt); // Initial state: Closed (0 degrees)
   motion.init(mqtt);
   light.init(mqtt, LIGHT_PIN);
