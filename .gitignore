@@ -28,6 +28,7 @@ mobile_app/.claude/
 
 # Node dependencies and system artifacts
 node_modules/
+.turbo/
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
