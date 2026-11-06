@@ -1,0 +1,142 @@
+name: Mobile CI (UI Dashboard)
+
+on:
+  push:
+    branches:
+      - main
+      - dev
+      - feat/ui-dashboard
+      - "feat/**"
+      - "fix/**"
+    paths:
+      - "mobile_app/**"
+      - ".github/workflows/mobile-ci.yml"
+      - "docs/mqtt-contract.json"
+  pull_request:
+    branches:
+      - main
+      - dev
+      - feat/ui-dashboard
+    paths:
+      - "mobile_app/**"
+      - ".github/workflows/mobile-ci.yml"
+      - "docs/mqtt-contract.json"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.ref != 'refs/heads/main' && github.ref != 'refs/heads/dev' }}
+
+jobs:
+  # ─── 1. Lint, Code Style & Contract Guard ─────────────────────────────────
+  lint:
+    name: Lint & Format Check
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    defaults:
+      run:
+        working-directory: mobile_app
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js 20 LTS
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: "npm"
+          cache-dependency-path: mobile_app/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run ESLint
+        run: npm run lint
+
+      - name: Check Prettier formatting
+        run: npm run format:check
+
+      - name: Validate MQTT Contract Integrity
+        run: npm run validate:contract
+
+  # ─── 2. SDK & Dependency Health (Expo Doctor) ──────────────────────────────
+  doctor:
+    name: Expo Doctor (SDK Compatibility)
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    defaults:
+      run:
+        working-directory: mobile_app
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js 20 LTS
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: "npm"
+          cache-dependency-path: mobile_app/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run Expo Doctor Diagnostics
+        run: npm run doctor
+
+  # ─── 3. Unit Tests (Vitest) ────────────────────────────────────────────────
+  test:
+    name: Unit Tests (Vitest)
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    defaults:
+      run:
+        working-directory: mobile_app
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js 20 LTS
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: "npm"
+          cache-dependency-path: mobile_app/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run Unit Tests
+        run: npm test
+
+  # ─── 4. Export & Metro Bundle Verification ─────────────────────────────────
+  build-check:
+    name: Android Bundle & Export Check
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    needs: [lint, test]
+    defaults:
+      run:
+        working-directory: mobile_app
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js 20 LTS
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: "npm"
+          cache-dependency-path: mobile_app/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Verify Android Production Bundle Export
+        run: npx expo export --platform android --output-dir dist
