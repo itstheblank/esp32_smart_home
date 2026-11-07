@@ -25,10 +25,10 @@ inline bool device_type_from_code(uint8_t code, DeviceType *out)
   return true;
 }
 
-// Converts a motion sensor result. Always succeeds for a valid out pointer.
+// Converts a motion sensor result. Returns false if no event occurred.
 inline bool device_event_from_motion(MotionSensorEvent event, uint8_t deviceId, DeviceEvent *out)
 {
-  if (out == nullptr)
+  if (out == nullptr || event == MotionSensorEvent::NONE)
     return false;
   out->deviceType = DeviceType::MOTION_SENSOR;
   out->deviceId = deviceId;

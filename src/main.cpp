@@ -2,6 +2,7 @@
 #include "config.h"
 #include "core/network.h"
 #include "core/mqtt_service.h"
+#include "core/log_service.h"
 #include "automation/device_action.h"
 #include "automation/rule_engine.h"
 #include "devices/actuators/door.h"
@@ -15,7 +16,6 @@ static Door door;
 static Motion motion;
 static Light light;
 static Rfid rfid;
-static MqttService mqtt;
 
 // Rule table — empty until the rule service (parse + store) lands.
 static Rule rules[RULE_MAX_RULES];
@@ -36,14 +36,14 @@ static void execute_rule_action(const RuleAction &action)
   {
     LightAction lightAction;
     if (light_action_from_code(action.deviceAction, &lightAction))
-      light.executeAction(lightAction);
+      light.executeAction(lightAction); // Device logs itself on execution
     break;
   }
   case DeviceType::DOOR:
   {
     DoorAction doorAction;
     if (door_action_from_code(action.deviceAction, &doorAction))
-      door.executeAction(doorAction);
+      door.executeAction(doorAction); // Device logs itself on execution
     break;
   }
   default:
@@ -66,9 +66,10 @@ static void handleLightCommand(const char *payload, unsigned int)
   if (!light_action_from_string(payload, &action))
   {
     Serial.println("=> ERROR: Invalid light command, ignored!");
+    LogService::instance().logAction("LIGHT", light.getId(), payload, false);
     return;
   }
-  light.executeAction(action);
+  light.executeAction(action); // Device logs itself on execution
 }
 
 static void handleDoorCommand(const char *payload, unsigned int)
@@ -77,9 +78,10 @@ static void handleDoorCommand(const char *payload, unsigned int)
   if (!door_action_from_string(payload, &action))
   {
     Serial.println("=> ERROR: Invalid door command, ignored!");
+    LogService::instance().logAction("DOOR", door.getId(), payload, false);
     return;
   }
-  door.executeAction(action);
+  door.executeAction(action); // Device logs itself on execution
 }
 
 void setup()
@@ -91,33 +93,45 @@ void setup()
 
   network_begin(WIFI_SSID, WIFI_PASSWORD);
 
-  // Setup MQTT Broker
-  mqtt.begin(MQTT_BROKER, MQTT_PORT, MQTT_CLIENT_ID, TOPIC_STATE_ONLINE);
-  mqtt.onCommand(TOPIC_CMD_LIGHT, handleLightCommand);
-  mqtt.onCommand(TOPIC_CMD_DOOR, handleDoorCommand);
+  // Setup MQTT Broker singleton with LWT on TOPIC_LOGS
+  MqttService::instance().begin(MQTT_BROKER, MQTT_PORT, MQTT_CLIENT_ID, TOPIC_LOGS);
+  MqttService::instance().onCommand(TOPIC_CMD_LIGHT, handleLightCommand);
+  MqttService::instance().onCommand(TOPIC_CMD_DOOR, handleDoorCommand);
 
-  // Wait for the broker.
+  // Wait for the broker connection.
   const unsigned long connectDeadline = millis() + 15000;
-  while (!mqtt.connected() && millis() < connectDeadline)
+  while (!MqttService::instance().connected() && millis() < connectDeadline)
   {
-    mqtt.loop();
+    MqttService::instance().loop();
   }
 
-  door.init(1, mqtt, SERVO_PIN);
-  motion.init(1, mqtt, PIR_PIN);
-  light.init(1, mqtt, LIGHT_PIN);
-  rfid.init(1, mqtt, RFID_SS_PIN, RFID_RST_PIN);
+  // Initialize devices (no MQTT dependency injected in init; each logs its initial state)
+  door.init(1, SERVO_PIN);
+  motion.init(1, PIR_PIN);
+  light.init(1, LIGHT_PIN);
+  rfid.init(1, RFID_SS_PIN, RFID_RST_PIN);
 }
 
 void loop()
 {
   network_loop();
-  mqtt.loop();
+  MqttService::instance().loop();
 
-  DeviceEvent event;
-  if (device_event_from_motion(motion.loop(), 1, &event))
-    apply_event(event);
+  // Motion sensor evaluation (device logs itself on state transition)
+  MotionSensorEvent motionEvent = motion.loop();
+  if (motionEvent != MotionSensorEvent::NONE)
+  {
+    DeviceEvent event;
+    if (device_event_from_motion(motionEvent, motion.getId(), &event))
+      apply_event(event);
+  }
 
-  if (device_event_from_rfid(rfid.loop(), 1, &event))
-    apply_event(event);
+  // RFID reader evaluation (device logs itself on tag detection)
+  RfidReaderEventData rfidData = rfid.loop();
+  if (rfidData.event == RfidReaderEvent::RFID_TAG_DETECTED)
+  {
+    DeviceEvent event;
+    if (device_event_from_rfid(rfidData, rfid.getId(), &event))
+      apply_event(event);
+  }
 }

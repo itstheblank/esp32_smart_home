@@ -4,13 +4,13 @@
 // NETWORK (WiFi)
 // ==========================================
 // Set these locally before flashing. Do not commit real credentials.
-const char *WIFI_SSID = "YOUR_WIFI_SSID";
-const char *WIFI_PASSWORD = "YOUR_WIFI_PASSWORD";
+const char *WIFI_SSID = "Iphone X";
+const char *WIFI_PASSWORD = "camonquykhach";
 
 // ==========================================
 // MQTT BROKER
 // ==========================================
-const char *MQTT_BROKER = "192.168.137.1"; // IP of the computer running MQTT Broker (from Wireless LAN adapter Wi-Fi)
+const char *MQTT_BROKER = "192.168.2.6"; // IP of the computer running local MQTT Broker (from Wi-Fi wlp0s20f3)
 const int MQTT_PORT = 1883;
 const char *MQTT_CLIENT_ID = "ESP32_SmartHome_Core";
 
@@ -21,16 +21,17 @@ const char *TOPIC_CMD_LIGHT = "smarthome/cmd/light";
 const char *TOPIC_CMD_DOOR = "smarthome/cmd/door";
 
 // ==========================================
-// MQTT TOPICS — STATE (ESP32 -> App, retained)
+// MQTT TOPICS — LOGS (ESP32 -> App, non-retained)
+// ==========================================
+const char *TOPIC_LOGS = "smarthome/logs";
+
+// ==========================================
+// MQTT TOPICS — LEGACY STATE / EVENTS (Deprecated)
 // ==========================================
 const char *TOPIC_STATE_LIGHT = "smarthome/state/light";
 const char *TOPIC_STATE_DOOR = "smarthome/state/door";
 const char *TOPIC_STATE_MOTION = "smarthome/state/motion";
 const char *TOPIC_STATE_ONLINE = "smarthome/state/online";
-
-// ==========================================
-// MQTT TOPICS — EVENTS (ESP32 -> App, non-retained)
-// ==========================================
 const char *TOPIC_EVENT_ACCESS = "smarthome/event/access";
 
 // ==========================================

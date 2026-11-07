@@ -1,24 +1,22 @@
 #include "light.h"
-#include "config.h"
+#include "core/log_service.h"
+#include <Arduino.h>
 
-void Light::init(uint8_t deviceId, MqttService &m, uint8_t outputPin)
+void Light::init(uint8_t deviceId, uint8_t outputPin)
 {
   id = deviceId;
-  mqtt = &m;
   pin = outputPin;
   pinMode(pin, OUTPUT);
   digitalWrite(pin, LOW);
-  mqtt->publishState(TOPIC_STATE_LIGHT, "OFF");
+  state = false;
+  LogService::instance().logAction("LIGHT", id, "OFF", true);
 }
 
-void Light::executeAction(LightAction action)
+bool Light::executeAction(LightAction action)
 {
-  const bool on = (action == LightAction::LIGHT_ON);
-  digitalWrite(pin, on ? HIGH : LOW);
-  if (mqtt && mqtt->connected())
-  {
-    mqtt->publishState(TOPIC_STATE_LIGHT, on ? "ON" : "OFF");
-    Serial.printf("=> Published: %s\n", on ? "ON" : "OFF");
-  }
-  Serial.printf("=> Light state -> %s\n", on ? "ON" : "OFF");
+  state = (action == LightAction::LIGHT_ON);
+  digitalWrite(pin, state ? HIGH : LOW);
+  Serial.printf("=> Light (id=%u, pin=%u) -> %s\n", id, pin, state ? "ON" : "OFF");
+  LogService::instance().logAction("LIGHT", id, state ? "ON" : "OFF", true);
+  return true;
 }

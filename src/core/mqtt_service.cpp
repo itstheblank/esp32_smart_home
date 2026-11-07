@@ -7,17 +7,20 @@ static const int MQTT_KEEP_ALIVE_S = 30;      // Clean session, Keep Alive 30s
 static const int MQTT_LWT_QOS = 0;            // LWT: QoS 0, Retain true, payload "OFFLINE"
 static const int PAYLOAD_BUFFER_SIZE = 160;
 
+static const char *LWT_OFFLINE = "{\"device\":\"SYSTEM\",\"id\":0,\"action\":\"OFFLINE\",\"success\":true,\"data\":{}}";
+static const char *LWT_ONLINE = "{\"device\":\"SYSTEM\",\"id\":0,\"action\":\"ONLINE\",\"success\":true,\"data\":{}}";
+
 // Wire a fresh broker session: publish online state and (re)subscribe to command topics.
 static void connectOnce(PubSubClient &client, const char *clientId, const char *lwtTopic,
                         const char *const *commandTopics, int commandCount)
 {
   Serial.print("Attempting MQTT connection...");
-  if (client.connect(clientId, lwtTopic, MQTT_LWT_QOS, true, "OFFLINE"))
+  if (client.connect(clientId, lwtTopic, MQTT_LWT_QOS, false, LWT_OFFLINE))
   {
     Serial.println("connected");
 
-    // Publish online state (M1-07)
-    client.publish(lwtTopic, "ONLINE", true);
+    // Publish online state (non-retained)
+    client.publish(lwtTopic, LWT_ONLINE, false);
 
     // Subscribe to command topics (M1-05)
     for (int i = 0; i < commandCount; i++)

@@ -6,6 +6,7 @@
 // Pure logic — no Arduino.h, host-testable
 enum class MotionSensorEvent : uint8_t
 {
+  NONE = 0,
   MOTION_DETECTED,
   MOTION_CLEAR
 };

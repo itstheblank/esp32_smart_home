@@ -10,6 +10,15 @@ typedef void (*CommandHandler)(const char *payload, unsigned int length);
 class MqttService
 {
 public:
+  static MqttService &instance()
+  {
+    static MqttService s_instance;
+    return s_instance;
+  }
+
+  MqttService(const MqttService &) = delete;
+  MqttService &operator=(const MqttService &) = delete;
+
   void begin(const char *broker, int port, const char *clientId, const char *lwtTopic);
   void loop();
   bool connected();
@@ -18,16 +27,18 @@ public:
   bool publishEvent(const char *topic, const char *payload);
 
 private:
+  MqttService() = default;
+
   static const int MAX_COMMANDS = 8;
 
   WiFiClient wifiClient;
   PubSubClient client;
-  const char *clientId;
-  const char *lwtTopic;
-  const char *commandTopics[MAX_COMMANDS];
-  CommandHandler commandHandlers[MAX_COMMANDS];
-  int commandCount;
-  unsigned long lastAttempt;
+  const char *clientId = nullptr;
+  const char *lwtTopic = nullptr;
+  const char *commandTopics[MAX_COMMANDS] = {nullptr};
+  CommandHandler commandHandlers[MAX_COMMANDS] = {nullptr};
+  int commandCount = 0;
+  unsigned long lastAttempt = 0;
 };
 
 #endif // MQTT_SERVICE_H

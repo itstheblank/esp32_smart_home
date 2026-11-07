@@ -1,10 +1,10 @@
 #include "door.h"
-#include "config.h"
+#include "core/log_service.h"
+#include <Arduino.h>
 
-void Door::init(uint8_t deviceId, MqttService &m, uint8_t servoPin)
+void Door::init(uint8_t deviceId, uint8_t servoPin)
 {
   id = deviceId;
-  mqtt = &m;
   pin = servoPin;
   // Setup SG90 Servo on pin (see config / docs/pin-map.md §1)
   ESP32PWM::allocateTimer(0);
@@ -16,14 +16,11 @@ void Door::init(uint8_t deviceId, MqttService &m, uint8_t servoPin)
   executeAction(DoorAction::DOOR_CLOSE); // Initial state: Closed (0 degrees)
 }
 
-void Door::executeAction(DoorAction action)
+bool Door::executeAction(DoorAction action)
 {
   isOpen = (action == DoorAction::DOOR_OPEN);
   servo.write(isOpen ? 180 : 0);
-  Serial.printf("=> Servo: Door %s (%d degrees)\n", isOpen ? "OPEN" : "CLOSE", isOpen ? 180 : 0);
-  if (mqtt && mqtt->connected())
-  {
-    mqtt->publishState(TOPIC_STATE_DOOR, isOpen ? "OPEN" : "CLOSED");
-    Serial.printf("=> Published: %s\n", isOpen ? "OPEN" : "CLOSED");
-  }
+  Serial.printf("=> Door (id=%u, pin=%u) -> %s (%d degrees)\n", id, pin, isOpen ? "OPEN" : "CLOSE", isOpen ? 180 : 0);
+  LogService::instance().logAction("DOOR", id, isOpen ? "OPEN" : "CLOSE", true);
+  return true;
 }

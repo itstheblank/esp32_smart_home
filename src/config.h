@@ -24,16 +24,17 @@ extern const char *TOPIC_CMD_LIGHT;
 extern const char *TOPIC_CMD_DOOR;
 
 // ==========================================
-// MQTT TOPICS — STATE (ESP32 -> App, retained)
+// MQTT TOPICS — LOGS (ESP32 -> App, non-retained)
+// ==========================================
+extern const char *TOPIC_LOGS;
+
+// ==========================================
+// MQTT TOPICS — LEGACY STATE / EVENTS (Deprecated)
 // ==========================================
 extern const char *TOPIC_STATE_LIGHT;
 extern const char *TOPIC_STATE_DOOR;
 extern const char *TOPIC_STATE_MOTION;
 extern const char *TOPIC_STATE_ONLINE;
-
-// ==========================================
-// MQTT TOPICS — EVENTS (ESP32 -> App, non-retained)
-// ==========================================
 extern const char *TOPIC_EVENT_ACCESS;
 
 // ==========================================

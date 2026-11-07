@@ -1,17 +1,15 @@
 #include "motion_sensor.h"
-#include "config.h"
+#include "core/log_service.h"
+#include <Arduino.h>
 
-void MotionSensor::init(uint8_t deviceId, MqttService &m, uint8_t pirPin)
+void MotionSensor::init(uint8_t deviceId, uint8_t pirPin)
 {
   id = deviceId;
-  mqtt = &m;
   pin = pirPin;
   pinMode(pin, INPUT);
   logic.reset(digitalRead(pin) == HIGH, millis());
-  // Initial stable state overwrites any stale retained value from a previous run
-  const char *initial = logic.stableState() ? "DETECTED" : "CLEAR";
-  mqtt->publishState(TOPIC_STATE_MOTION, initial);
-  Serial.printf("=> Published: %s\n", initial);
+  LogService::instance().logAction("MOTION_SENSOR", id,
+                                   logic.stableState() ? "MOTION_DETECTED" : "MOTION_CLEAR", true);
 }
 
 MotionSensorEvent MotionSensor::loop()
@@ -19,13 +17,11 @@ MotionSensorEvent MotionSensor::loop()
   bool newStable = false;
   if (logic.step(digitalRead(pin) == HIGH, millis(), &newStable))
   {
-    const char *state = newStable ? "DETECTED" : "CLEAR";
-    Serial.printf("=> PIR stable state -> %s\n", state);
-    if (mqtt && mqtt->connected())
-    {
-      mqtt->publishState(TOPIC_STATE_MOTION, state);
-      Serial.printf("=> Published: %s\n", state);
-    }
+    Serial.printf("=> MotionSensor (id=%u, pin=%u) stable state -> %s\n",
+                  id, pin, newStable ? "DETECTED" : "CLEAR");
+    const char *action = newStable ? "MOTION_DETECTED" : "MOTION_CLEAR";
+    LogService::instance().logAction("MOTION_SENSOR", id, action, true);
+    return newStable ? MotionSensorEvent::MOTION_DETECTED : MotionSensorEvent::MOTION_CLEAR;
   }
-  return logic.stableState() ? MotionSensorEvent::MOTION_DETECTED : MotionSensorEvent::MOTION_CLEAR;
+  return MotionSensorEvent::NONE;
 }
