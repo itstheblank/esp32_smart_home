@@ -3,6 +3,7 @@
 #include "core/network.h"
 #include "core/mqtt_service.h"
 #include "core/log_service.h"
+#include "core/command_dispatcher.h"
 #include "automation/device_action.h"
 #include "automation/rule_engine.h"
 #include "devices/actuators/door.h"
@@ -60,30 +61,6 @@ static void apply_event(const DeviceEvent &event)
     execute_rule_action(actions[i]);
 }
 
-static void handleLightCommand(const char *payload, unsigned int)
-{
-  LightAction action;
-  if (!light_action_from_string(payload, &action))
-  {
-    Serial.println("=> ERROR: Invalid light command, ignored!");
-    LogService::instance().logAction("LIGHT", light.getId(), payload, false);
-    return;
-  }
-  light.executeAction(action); // Device logs itself on execution
-}
-
-static void handleDoorCommand(const char *payload, unsigned int)
-{
-  DoorAction action;
-  if (!door_action_from_string(payload, &action))
-  {
-    Serial.println("=> ERROR: Invalid door command, ignored!");
-    LogService::instance().logAction("DOOR", door.getId(), payload, false);
-    return;
-  }
-  door.executeAction(action); // Device logs itself on execution
-}
-
 void setup()
 {
   Serial.begin(115200);
@@ -95,8 +72,6 @@ void setup()
 
   // Setup MQTT Broker singleton with LWT on TOPIC_LOGS
   MqttService::instance().begin(MQTT_BROKER, MQTT_PORT, MQTT_CLIENT_ID, TOPIC_LOGS);
-  MqttService::instance().onCommand(TOPIC_CMD_LIGHT, handleLightCommand);
-  MqttService::instance().onCommand(TOPIC_CMD_DOOR, handleDoorCommand);
 
   // Wait for the broker connection.
   const unsigned long connectDeadline = millis() + 15000;
@@ -105,11 +80,14 @@ void setup()
     MqttService::instance().loop();
   }
 
-  // Initialize devices (no MQTT dependency injected in init; each logs its initial state)
+  // Initialize devices (each logs its initial state)
   door.init(1, SERVO_PIN);
   motion.init(1, PIR_PIN);
   light.init(1, LIGHT_PIN);
   rfid.init(1, RFID_SS_PIN, RFID_RST_PIN);
+
+  // Initialize command dispatcher (automatically binds to TOPIC_CMD)
+  CommandDispatcher::instance().begin(&light, &door);
 }
 
 void loop()

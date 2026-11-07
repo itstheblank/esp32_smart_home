@@ -20,8 +20,7 @@ extern const char *MQTT_CLIENT_ID;
 // ==========================================
 // MQTT TOPICS — COMMANDS (App -> ESP32)
 // ==========================================
-extern const char *TOPIC_CMD_LIGHT;
-extern const char *TOPIC_CMD_DOOR;
+extern const char *TOPIC_CMD;
 
 // ==========================================
 // MQTT TOPICS — LOGS (ESP32 -> App, non-retained)

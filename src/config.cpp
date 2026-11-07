@@ -17,8 +17,7 @@ const char *MQTT_CLIENT_ID = "ESP32_SmartHome_Core";
 // ==========================================
 // MQTT TOPICS — COMMANDS (App -> ESP32)
 // ==========================================
-const char *TOPIC_CMD_LIGHT = "smarthome/cmd/light";
-const char *TOPIC_CMD_DOOR = "smarthome/cmd/door";
+const char *TOPIC_CMD = "smarthome/cmd";
 
 // ==========================================
 // MQTT TOPICS — LOGS (ESP32 -> App, non-retained)

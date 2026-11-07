@@ -10,22 +10,67 @@
 | Session | Clean session, Keep Alive 30 s | Reconnect retried every 5 s |
 | Last Will | `{"device":"SYSTEM","id":0,"action":"OFFLINE","success":true,"data":{}}`, retained false, on `smarthome/logs` | Published by broker when connection drops unexpectedly |
 | On connect | Publishes `ONLINE` log, re-subscribes to command topics | — |
-| Subscriptions | `smarthome/cmd/light`, `smarthome/cmd/door` | Subscribed individually, no wildcard |
+| Subscriptions | `smarthome/cmd` | Single command topic |
 
 ---
 
 ## 2. Commands — App → ESP32, retain false
 
-Plain uppercase string, no quotes, no whitespace. Invalid payloads are ignored, logged, and leave the device state unchanged.
+All commands are published to **`smarthome/cmd`** as JSON objects.
 
-| Topic | Payload | Note |
-|---|---|---|
-| `smarthome/cmd/light` | `ON` | Turn light ON |
-| `smarthome/cmd/light` | `OFF` | Turn light OFF |
-| `smarthome/cmd/door` | `OPEN` | Servo to 180° |
-| `smarthome/cmd/door` | `CLOSE` | Servo to 0° |
+> **Retain = false**: A reconnect must not re-execute an old command.
 
-*Retain false is deliberate: a reconnect must not re-execute an old command.*
+### 2.1 JSON Schema
+
+Every command published to `smarthome/cmd` follows this general schema:
+
+```json
+{
+  "device": "<string>",
+  "id": <integer>,
+  "action": "<string>",
+  "data": <object>
+}
+```
+
+#### Field Definitions
+
+| Field | Type | Required | Description |
+|---|---|---|---|
+| `device` | string | Yes | Target device type (e.g. `"LIGHT"`, `"DOOR"`) |
+| `id` | integer | Yes | Hardware unit instance identifier |
+| `action` | string | Yes | Action to perform (e.g. `"ON"`, `"OFF"`, `"OPEN"`, `"CLOSE"`) |
+| `data` | object | No | Optional contextual parameters (`{}` by default) |
+
+#### Error Handling
+If a command contains invalid JSON, an unknown `device` or `id`, or an unsupported `action`:
+- The command is rejected and device state remains unchanged.
+- A failure log is published to `smarthome/logs` with `"success": false`:
+  ```json
+  {"device":"<device>","id":<id>,"action":"<action>","success":false,"data":{}}
+  ```
+
+### 2.2 Examples
+
+#### Light ON
+```json
+{
+  "device": "LIGHT",
+  "id": 1,
+  "action": "ON",
+  "data": {}
+}
+```
+
+#### Door OPEN
+```json
+{
+  "device": "DOOR",
+  "id": 1,
+  "action": "OPEN",
+  "data": {}
+}
+```
 
 ---
 
