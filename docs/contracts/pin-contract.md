@@ -25,8 +25,8 @@
 | Pin | Target | Note |
 |---|---|---|
 | VCC | 3V3 from the board | **Never 5V** — destroys the module |
-| GND | Common ground | — |
 | RST | GPIO33 (`RFID_RST_PIN`) | — |
+| GND | Common ground | — |
 | SDA (SS) | GPIO32 (`RFID_SS_PIN`) | Chip select |
 | MOSI | GPIO17 (`RFID_MOSI_PIN`) | ESP32 → module |
 | MISO | GPIO35 (`RFID_MISO_PIN`) | Module → ESP32; GPIO35 is input-only — exactly the MISO role |

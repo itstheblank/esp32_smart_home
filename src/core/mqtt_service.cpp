@@ -45,11 +45,6 @@ static void dispatchMessage(const char *const *commandTopics, CommandHandler *co
   memcpy(buffer, payload, n);
   buffer[n] = '\0';
 
-  Serial.print("Message arrived [");
-  Serial.print(topic);
-  Serial.print("] : ");
-  Serial.println(buffer);
-
   for (int i = 0; i < commandCount; i++)
   {
     if (strcmp(topic, commandTopics[i]) == 0)
@@ -82,6 +77,11 @@ void MqttService::onCommand(const char *topic, CommandHandler handler)
     commandTopics[commandCount] = topic;
     commandHandlers[commandCount] = handler;
     commandCount++;
+    if (client.connected())
+    {
+      client.subscribe(topic);
+      Serial.printf("=> Subscribed to command topic: %s\n", topic);
+    }
   }
 }
 

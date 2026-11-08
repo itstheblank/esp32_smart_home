@@ -70,8 +70,17 @@ void setup()
 
   network_begin(WIFI_SSID, WIFI_PASSWORD);
 
+  // Initialize devices
+  door.init(1, SERVO_PIN);
+  motion.init(1, PIR_PIN);
+  light.init(1, LIGHT_PIN);
+  rfid.init(1, RFID_SS_PIN, RFID_RST_PIN);
+
   // Setup MQTT Broker singleton with LWT on TOPIC_LOGS
   MqttService::instance().begin(MQTT_BROKER, MQTT_PORT, MQTT_CLIENT_ID, TOPIC_LOGS);
+
+  // Register command dispatcher BEFORE connecting
+  CommandDispatcher::instance().begin(&light, &door);
 
   // Wait for the broker connection.
   const unsigned long connectDeadline = millis() + 15000;
@@ -80,14 +89,11 @@ void setup()
     MqttService::instance().loop();
   }
 
-  // Initialize devices (each logs its initial state)
-  door.init(1, SERVO_PIN);
-  motion.init(1, PIR_PIN);
-  light.init(1, LIGHT_PIN);
-  rfid.init(1, RFID_SS_PIN, RFID_RST_PIN);
-
-  // Initialize command dispatcher (automatically binds to TOPIC_CMD)
-  CommandDispatcher::instance().begin(&light, &door);
+  // Publish initial states to smarthome/logs once connected
+  LogService::instance().logAction("LIGHT", light.getId(), "OFF", true);
+  LogService::instance().logAction("DOOR", door.getId(), "CLOSE", true);
+  LogService::instance().logAction("MOTION_SENSOR", motion.getId(),
+                                   motion.isDetected() ? "MOTION_DETECTED" : "MOTION_CLEAR", true);
 }
 
 void loop()
