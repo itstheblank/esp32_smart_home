@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Smart Home Test Center</title>
+  <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div>
+        <h1>🏠 Smart Home Test Center</h1>
+        <small class="text-muted">Broker: <span id="brokerInfo">Connecting...</span></small>
+      </div>
+      <div id="statusBadge" class="badge badge-offline">Connecting...</div>
+    </header>
+
+    <!-- Quick Actions -->
+    <div class="card">
+      <div class="card-title">⚡ Quick Commands</div>
+      <div class="btn-group">
+        <button class="btn btn-primary" onclick="sendQuick('LIGHT', 1, 'ON')">💡 Light 1 ON</button>
+        <button class="btn btn-secondary" onclick="sendQuick('LIGHT', 1, 'OFF')">💡 Light 1 OFF</button>
+        <button class="btn btn-primary" onclick="sendQuick('DOOR', 1, 'OPEN')">🚪 Door 1 OPEN</button>
+        <button class="btn btn-secondary" onclick="sendQuick('DOOR', 1, 'CLOSE')">🚪 Door 1 CLOSE</button>
+      </div>
+    </div>
+
+    <!-- Custom Command -->
+    <div class="card">
+      <div class="card-title">✉️ Custom Command (smarthome/cmd)</div>
+      <div class="form-row">
+        <div class="form-group">
+          <label for="custDevice">Device</label>
+          <select id="custDevice">
+            <option value="LIGHT">LIGHT</option>
+            <option value="DOOR">DOOR</option>
+            <option value="MOTION_SENSOR">MOTION_SENSOR</option>
+            <option value="RFID_READER">RFID_READER</option>
+            <option value="SYSTEM">SYSTEM</option>
+          </select>
+        </div>
+        <div class="form-group" style="width: 70px;">
+          <label for="custId">ID</label>
+          <input type="number" id="custId" value="1" min="0">
+        </div>
+        <div class="form-group">
+          <label for="custAction">Action</label>
+          <input type="text" id="custAction" value="ON" placeholder="e.g. ON, CLOSE">
+        </div>
+        <div class="form-group flex-grow">
+          <label for="custData">Data (JSON)</label>
+          <input type="text" id="custData" value="{}" placeholder='e.g. {"tagId":"123"}'>
+        </div>
+        <div class="form-group btn-align">
+          <button class="btn btn-primary" onclick="sendCustom()">Send Command</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Live Telemetry & Logs -->
+    <div class="card">
+      <div class="log-header">
+        <div class="card-title no-margin">📜 Live Telemetry & Event Stream</div>
+        <div class="log-actions">
+          <select id="filterDevice" onchange="renderLogs()">
+            <option value="ALL">Filter: All Devices</option>
+            <option value="LIGHT">LIGHT</option>
+            <option value="DOOR">DOOR</option>
+            <option value="MOTION_SENSOR">MOTION_SENSOR</option>
+            <option value="RFID_READER">RFID_READER</option>
+            <option value="SYSTEM">SYSTEM</option>
+          </select>
+          <button class="btn btn-small" onclick="clearLogs()">Clear</button>
+        </div>
+      </div>
+
+      <div class="table-container">
+        <table>
+          <thead>
+            <tr>
+              <th style="width: 85px;">Time</th>
+              <th style="width: 100px;">Topic</th>
+              <th style="width: 120px;">Device</th>
+              <th style="width: 45px;">ID</th>
+              <th style="width: 130px;">Action</th>
+              <th style="width: 75px;">Status</th>
+              <th>Data</th>
+            </tr>
+          </thead>
+          <tbody id="logsBody">
+            <tr><td colspan="7" class="empty-state">Waiting for events...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <div id="toast"></div>
+
+  <script src="/static/js/app.js"></script>
+</body>
+</html>

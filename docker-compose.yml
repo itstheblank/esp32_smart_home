@@ -17,6 +17,23 @@ services:
       - smart-home-emqx-data:/opt/emqx/data
       - smart-home-emqx-log:/opt/emqx/log
 
+  server:
+    build:
+      context: ./server
+      dockerfile: Dockerfile
+    image: smart-home-web-server:latest
+    container_name: smart-home-web-server
+    restart: unless-stopped
+    depends_on:
+      - broker
+    environment:
+      - MQTT_BROKER=broker
+      - MQTT_PORT=1883
+      - WEB_HOST=0.0.0.0
+      - WEB_PORT=5000
+    ports:
+      - "5000:5000"               # Web Dashboard (access via http://localhost:5000)
+
 volumes:
   smart-home-emqx-data:
     name: smart-home-emqx-data
