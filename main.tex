@@ -33,12 +33,10 @@
 \setlength{\parskip}{0.35em}
 \renewcommand{\arraystretch}{1.18}
 
-% Replace these fields once the team confirms its formal identity.
-\newcommand{\GroupName}{Group name to be confirmed}
+\newcommand{\GroupName}{Project Team}
 \newcommand{\VNname}[1]{{\fontencoding{T5}\selectfont #1}}
 \newcommand{\SheetLink}{https://docs.google.com/spreadsheets/d/1aQGHk3CCcypYjSrMD-Z9yHB_KMrWZ5OGlXp1mt-CLV8/edit}
 \newcommand{\RepoLink}{https://github.com/itstheblank/esp32_smart_home}
-\newcommand{\Pending}[1]{{\color{AccentRed}#1}}
 
 % Upload background.png next to main.tex to apply the background to every slide.
 \IfFileExists{background.png}{%
@@ -46,8 +44,8 @@
 }{}
 
 \title{ESP32 SMART HOME}
-\subtitle{Checkpoint 1 --- System Design and Progress}
-\author{\GroupName}
+\subtitle{Checkpoint 1 --- System Design and Demonstration}
+\author{\VNname{Trần Sỹ Nguyên} \and \VNname{Lăng Hồng Nguyệt Anh} \and Luong Ngoc Vu Long \and Ha Duc Duong \and Nguyen Vu Anh Khoa}
 \date{9 November 2026}
 
 \begin{document}
@@ -58,11 +56,18 @@
   \vspace{0.25cm}
   {\Huge\color{DeepBlue}\bfseries ESP32 SMART HOME}\par
   {\color{AccentRed}\rule{0.16\textwidth}{2pt}}\par
-  {\large System Design and Progress}\par
+  {\large System Design and Demonstration}\par
   \vspace{0.25cm}
   {\normalsize\bfseries \GroupName}\par
-  {\small \VNname{Nguyên} \quad \VNname{Nguyệt Anh} \quad Long \quad Limi \quad Khoa}\par
-  {\small Full names and student IDs pending confirmation}\par
+  {\small
+    \begin{tabular}{@{}lr@{}}
+      \VNname{Trần Sỹ Nguyên} & 20235985 \\
+      \VNname{Lăng Hồng Nguyệt Anh} & 20235885 \\
+      Luong Ngoc Vu Long & 20235967 \\
+      Ha Duc Duong & 20235923 \\
+      Nguyen Vu Anh Khoa & 20235957 \\
+    \end{tabular}\par
+  }
   \vspace{0.2cm}
   {\small 9 November 2026}
   \vfill
@@ -70,7 +75,7 @@
 
 \begin{frame}{Presentation Outline}
   \vfill
-  {\Large\bfseries\color{AccentRed} 01}\quad {\large\bfseries System Design and Progress}\par
+  {\Large\bfseries\color{AccentRed} 01}\quad {\large\bfseries System Design}\par
   {\small\hspace{1.0cm} Users, requirements, architecture, budget and team roles}\par
   \vspace{0.55cm}
   {\Large\bfseries\color{AccentRed} 02}\quad {\large\bfseries Hardware Demo}\par
@@ -149,20 +154,28 @@
 
 \begin{frame}{1. Technology Choices and Rationale}
   \small
-  \begin{tabularx}{\textwidth}{@{}p{3.1cm}X@{}}
+  \begingroup
+  \renewcommand{\arraystretch}{1.35}
+  \hyphenpenalty=10000
+  \exhyphenpenalty=10000
+  \begin{tabularx}{\textwidth}{@{}>{\raggedright\arraybackslash}p{3.4cm}>{\raggedright\arraybackslash}X@{}}
     \toprule
     \textbf{Technology} & \textbf{Rationale for this prototype} \\
     \midrule
-    ESP32 / PlatformIO & Wi-Fi, GPIO and peripheral interfaces in one firmware project. \\
-    MQTT / EMQX & Publish/subscribe communication for commands and telemetry, with broker client monitoring. \\
-    React Native / Expo & Mobile interface with shared components and MQTT connectivity. \\
-    Python / Paho MQTT & Test commands and stream device logs to a browser dashboard. \\
-    Docker Compose & Repeatable broker and test-service setup on a laptop. \\
-    Session/local storage & Server keeps 300 logs in RAM. Mobile retains configuration and 50 logs using AsyncStorage. \\
+    ESP32 / PlatformIO & Wi-Fi and device interfaces in a shared firmware project. \\
+    MQTT / EMQX & Pub/sub messaging for commands, states and events. \\
+    React Native / Expo & Shared mobile screens with MQTT connectivity. \\
+    Python + Paho & Test commands and display incoming device logs. \\
+    Docker Compose & Repeatable broker and service setup on a laptop. \\
+    Log storage & Server RAM holds 300 logs. App storage retains 50 logs and settings. \\
     \bottomrule
   \end{tabularx}
-  \vspace{0.2cm}
-  {\small Durable server database selection remains open. The sheet treats backend/database as optional for core scope.}
+  \endgroup
+  \par\vspace{0.3cm}
+  \begin{minipage}{\textwidth}
+    \footnotesize\raggedright
+    Core scope uses session/local logs. Persistent server storage remains a future design decision.
+  \end{minipage}
 \end{frame}
 
 % Budget assumptions are separate from actual purchases. One of each item/set.
@@ -227,100 +240,22 @@
   \textcolor{AccentRed}{\bfseries Integration priority}\quad Agree one version, update both clients and rerun shared test cases.
 \end{frame}
 
-\begin{frame}{1. Progress Recorded in the Sheet}
-  \begin{columns}[T,onlytextwidth]
-    \begin{column}{0.43\textwidth}
-      {\Huge\bfseries\color{DeepBlue} 57}\quad tasks\par
-      {\Large\bfseries 46}\quad Must tasks\par
-      \vspace{0.3cm}
-      {\Huge\bfseries\color{AccentRed} 30.7\%}\par
-      {\small Hour-weighted progress across 160 estimated hours}
-    \end{column}
-    \begin{column}{0.51\textwidth}
-      \begin{tabular}{@{}lr@{}}
-        \toprule
-        \textbf{Recorded status} & \textbf{Tasks} \\
-        \midrule
-        Done & 15 \\
-        In Progress & 8 \\
-        Not Started & 34 \\
-        \bottomrule
-      \end{tabular}
-      \vspace{0.35cm}
-
-      {\small Several tracker rows lag branch development. Owners need to reconcile status and acceptance evidence.}
-    \end{column}
-  \end{columns}
-  \vspace{0.4cm}
-  {\small Snapshot read on 9 Nov 2026 from Dashboard and Task Tracker.}
-\end{frame}
-
-\begin{frame}{1. Code Progress and Test Evidence}
-  \begin{columns}[T,onlytextwidth]
-    \begin{column}{0.52\textwidth}
-      {\large\bfseries\color{DeepBlue} Code available}\par
-      \begin{itemize}
-        \item Sensor readers, actuator commands and JSON logging in the hardware branch.
-        \item Python test server and web dashboard.
-        \item React Native screens, MQTT context and local log storage.
-      \end{itemize}
-    \end{column}
-    \begin{column}{0.43\textwidth}
-      {\large\bfseries\color{DeepBlue} Recorded tests}\par
-      {\Huge\bfseries\color{AccentRed} 4/4}\par
-      {\small Historical broker test of the original light/door command contract.}
-
-      {\small ESP32 reception was confirmed by the team. New JSON-schema and physical acceptance tests remain pending.}
-    \end{column}
-  \end{columns}
-\end{frame}
-
-\begin{frame}{1. Top Problems and Owners}
-  \small
-  \begin{tabularx}{\textwidth}{@{}X p{2.3cm}@{}}
-    \toprule
-    \textbf{Problem and required resolution} & \textbf{Owners} \\
-    \midrule
-    MQTT contract differs between hardware/server and mobile. Agree and implement one schema. & M1, M4, M5 \\
-    Hardware Compose does not expose the app's WebSocket port 8083. Confirm the demo transport. & M3, M4, M5 \\
-    Latest firmware has an empty rule table. Complete PIR-light and authorized RFID-door rules. & M1, M2, M3 \\
-    Physical E2E evidence and power/model checks need completion. Execute the acceptance checklist. & All, led by M5 \\
-    \bottomrule
-  \end{tabularx}
-  \vspace{0.25cm}
-  {\small These findings come from source review. The team should confirm progress made outside the repository.}
-\end{frame}
-
 \begin{frame}{1. Team Roles and Shared Repository}
   \small
-  \begin{tabularx}{\textwidth}{@{}l l X@{}}
+  \begin{tabularx}{\textwidth}{@{}l >{\raggedright\arraybackslash}p{3.9cm} l >{\raggedright\arraybackslash}X@{}}
     \toprule
-    \textbf{Member} & \textbf{Sheet name} & \textbf{Primary ownership} \\
+    \textbf{Member} & \textbf{Name} & \textbf{Student ID} & \textbf{Primary ownership} \\
     \midrule
-    M1 & \VNname{Nguyên} & Wi-Fi/MQTT core, command parsing, state and firmware interfaces \\
-    M2 & \VNname{Nguyệt Anh} & PIR, RFID authorization and automation logic \\
-    M3 & Long & Power, wiring, actuators, door mechanism and physical model \\
-    M4 & Limi & Mobile dashboard, MQTT control, state and event UI \\
-    M5 & Khoa & Broker, LAN, contract, integration, QA and report coordination \\
+    M1 & \VNname{Trần Sỹ Nguyên} & 20235985 & Wi-Fi/MQTT core and firmware interfaces \\
+    M2 & \VNname{Lăng Hồng Nguyệt Anh} & 20235885 & PIR, RFID authorization and automation \\
+    M3 & Luong Ngoc Vu Long & 20235967 & Power, wiring, actuators and physical model \\
+    M4 & Ha Duc Duong & 20235923 & Mobile dashboard, MQTT control and event UI \\
+    M5 & Nguyen Vu Anh Khoa & 20235957 & Broker, integration, QA and report coordination \\
     \bottomrule
   \end{tabularx}
   \vspace{0.35cm}
   \href{\RepoLink}{\textbf{github.com/itstheblank/esp32\_smart\_home}}\par
   \href{\SheetLink}{Shared project sheet}\par
-  {\small Short names follow the sheet. Full names and student IDs need confirmation.}
-\end{frame}
-
-\begin{frame}{1. Next Checkpoint Evidence}
-  \begin{enumerate}
-    \setlength{\itemsep}{0.5em}
-    \item Freeze the MQTT schema and demo network configuration.
-    \item Complete the automation rules and combine the tested modules.
-    \item Record phone-to-device control and sensor-to-interface feedback.
-    \item Run the 20-cycle door and 30-minute stability checks.
-    \item Pass all Must scenarios twice and reconcile the tracker.
-  \end{enumerate}
-  \vspace{0.3cm}
-  {\small Checkpoint 1 permits a design/progress presentation. A live demo can be added when available.}
 \end{frame}
 
 % PART 2: The user will add hardware demo assets here.
