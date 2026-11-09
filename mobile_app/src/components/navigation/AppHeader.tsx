@@ -1,11 +1,11 @@
-import React, { useMemo } from "react";
-import { View, Text, StyleSheet } from "react-native";
-import { useAppTheme } from "../../context/ThemeContext";
-import { useI18n } from "../../context/I18nContext";
-import { RobotAvatar } from "../common/RobotAvatar";
-import { LanguageToggle } from "../common/LanguageToggle";
-import { ModeToggle } from "../common/ModeToggle";
-import { spacing } from "@repo/design-tokens";
+import React, { useMemo } from 'react';
+import { View, Text, StyleSheet } from 'react-native';
+import { useAppTheme } from '../../context/ThemeContext';
+import { useI18n } from '../../context/I18nContext';
+import { RobotAvatar } from '../common/RobotAvatar';
+import { LanguageToggle } from '../common/LanguageToggle';
+import { ModeToggle } from '../common/ModeToggle';
+import { spacing } from '@repo/design-tokens';
 
 interface AppHeaderProps {
   onAvatarPress?: () => void;
@@ -19,13 +19,13 @@ export const AppHeader: React.FC<AppHeaderProps> = ({ onAvatarPress }) => {
   const formattedDate = useMemo(() => {
     const now = new Date();
     try {
-      if (currentLang === "en") {
-        const weekday = now.toLocaleDateString("en-US", { weekday: "long" });
-        const month = now.toLocaleDateString("en-US", { month: "short" });
+      if (currentLang === 'en') {
+        const weekday = now.toLocaleDateString('en-US', { weekday: 'long' });
+        const month = now.toLocaleDateString('en-US', { month: 'short' });
         const day = now.getDate();
         return `${weekday}, ${month} ${day}`;
       } else {
-        const weekday = now.toLocaleDateString("vi-VN", { weekday: "long" });
+        const weekday = now.toLocaleDateString('vi-VN', { weekday: 'long' });
         const day = now.getDate();
         const month = now.getMonth() + 1;
         // Capitalize first letter (e.g., Thứ Sáu)
@@ -33,7 +33,7 @@ export const AppHeader: React.FC<AppHeaderProps> = ({ onAvatarPress }) => {
         return `${capWeekday}, ${day} Th${month}`;
       }
     } catch {
-      return currentLang === "en" ? "Friday, Nov 6" : "Thứ Sáu, 6 Th11";
+      return currentLang === 'en' ? 'Friday, Nov 6' : 'Thứ Sáu, 6 Th11';
     }
   }, [currentLang]);
 
@@ -44,12 +44,8 @@ export const AppHeader: React.FC<AppHeaderProps> = ({ onAvatarPress }) => {
         <RobotAvatar size={44} onPress={onAvatarPress} />
 
         <View style={styles.textColumn}>
-          <Text style={[styles.greetingText, { color: theme.textPrimary }]}>
-            {t("greeting")}
-          </Text>
-          <Text style={[styles.dateText, { color: theme.textSecondary }]}>
-            {formattedDate}
-          </Text>
+          <Text style={[styles.greetingText, { color: theme.textPrimary }]}>{t('greeting')}</Text>
+          <Text style={[styles.dateText, { color: theme.textSecondary }]}>{formattedDate}</Text>
         </View>
       </View>
 
@@ -64,36 +60,35 @@ export const AppHeader: React.FC<AppHeaderProps> = ({ onAvatarPress }) => {
 
 const styles = StyleSheet.create({
   headerContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
     paddingHorizontal: spacing.lg,
     paddingTop: spacing.lg,
     paddingBottom: spacing.lg,
   },
   userGreetingBox: {
-    flexDirection: "row",
-    alignItems: "center",
+    flexDirection: 'row',
+    alignItems: 'center',
     gap: 12,
   },
   textColumn: {
-    justifyContent: "center",
+    justifyContent: 'center',
   },
   greetingText: {
     fontSize: 18,
-    fontWeight: "800",
+    fontWeight: '800',
     letterSpacing: -0.2,
     lineHeight: 22,
   },
   dateText: {
     fontSize: 12,
-    fontWeight: "500",
+    fontWeight: '500',
     marginTop: 2,
   },
   headerActions: {
-    flexDirection: "row",
-    alignItems: "center",
+    flexDirection: 'row',
+    alignItems: 'center',
     gap: 8,
   },
 });
-

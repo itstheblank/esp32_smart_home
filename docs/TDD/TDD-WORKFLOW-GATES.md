@@ -32,6 +32,7 @@ Trong dự án IoT **ESP32 Smart Home**, sự tương tác giữa phần cứng 
 ```
 
 Mỗi thành viên khi phụ trách module (đặc biệt là Member 4 trên nhánh `feat/ui-dashboard`) có thể linh hoạt:
+
 - **Áp dụng TDD (Test-Driven Development)** khi xây dựng các tầng tính toán, xử lý gói tin MQTT, chuyển đổi trạng thái cửa/đèn, bộ lọc nhật ký sự kiện hoặc cơ chế rollback khi timeout.
 - **Áp dụng Code-First/Prototype-First** khi dựng layout giao diện, căn chỉnh animation Mặt trời / Mặt trăng, style Figma.
 - **NHƯNG:** Trước khi tạo Pull Request hoặc hoàn tất task, toàn bộ logic nghiệp vụ phải được bọc trong các bộ test thực chất, phản ánh đúng hành vi vận hành của hệ thống IoT.
@@ -59,29 +60,32 @@ Nếu thành viên lựa chọn tiếp cận theo TDD, chu trình chuẩn gồm 
 ---
 
 ### 🛑 GATE 1: Duyệt Kế Hoạch Vi Mô (1-Page Micro-Plan)
-* **Mục tiêu:** Định hình chính xác phạm vi thay đổi trước khi gõ phím. Tránh lan man sang các module khác của firmware hoặc broker.
-* **Quy chuẩn Micro-Plan (< 60 dòng):**
+
+- **Mục tiêu:** Định hình chính xác phạm vi thay đổi trước khi gõ phím. Tránh lan man sang các module khác của firmware hoặc broker.
+- **Quy chuẩn Micro-Plan (< 60 dòng):**
   1. **Nghiệp vụ IoT:** Tính năng điều khiển đèn, cảm biến nhiệt ẩm, khóa cửa RFID, hay bộ lọc sự kiện?
   2. **MQTT Contract Scope:** Tác động đến topic nào (`smarthome/cmd/*`, `smarthome/state/*`, `smarthome/event/*`)?
   3. **Tập tin tác động (Impacted Files):** Tối đa 3–5 file (Headless Service, Hook, Thin UI, Test file).
   4. **Kịch bản Test đối kháng:** Ca test biên (Edge case), ca lỗi mạng, ca nhận gói tin rác.
-* **Quyết định Gatekeeper:** Duyệt nếu kế hoạch ngắn gọn, bám sát `docs/mqtt-contract.json`. Từ chối nếu viết kế hoạch chung chung không gắn với thiết bị IoT.
+- **Quyết định Gatekeeper:** Duyệt nếu kế hoạch ngắn gọn, bám sát `docs/mqtt-contract.json`. Từ chối nếu viết kế hoạch chung chung không gắn với thiết bị IoT.
 
 ---
 
 ### 🛑 GATE 2: Xác Nhận Test ĐỎ Hợp Lệ (Red Test Verification)
-* **Mục tiêu:** Đảm bảo test được chạy và **thất bại đúng lý do nghiệp vụ** (thiếu logic xử lý) chứ không phải thất bại do lỗi cú pháp (SyntaxError, ImportNotFound).
-* **Quy tắc bất biến:**
-  - Viết test mô tả hành vi mong đợi: ví dụ *"gửi lệnh đóng cửa phải phát ra topic smarthome/cmd/door với payload 'CLOSE'"*.
+
+- **Mục tiêu:** Đảm bảo test được chạy và **thất bại đúng lý do nghiệp vụ** (thiếu logic xử lý) chứ không phải thất bại do lỗi cú pháp (SyntaxError, ImportNotFound).
+- **Quy tắc bất biến:**
+  - Viết test mô tả hành vi mong đợi: ví dụ _"gửi lệnh đóng cửa phải phát ra topic smarthome/cmd/door với payload 'CLOSE'"_.
   - Chạy `npm test` trong `mobile_app` $\rightarrow$ Test **BẮT BUỘC PHẢI THẤT BẠI (FAIL/RED)**.
   - Log terminal phải chỉ rõ assertion không đạt (ví dụ: `expected 'CLOSE' but received undefined`).
-* **Cảnh báo gian lận:** Nếu test chạy mà XANH ngay khi chưa viết code nghiệp vụ $\rightarrow$ Bài test vô giá trị (Tautology), lập tức loại bỏ!
+- **Cảnh báo gian lận:** Nếu test chạy mà XANH ngay khi chưa viết code nghiệp vụ $\rightarrow$ Bài test vô giá trị (Tautology), lập tức loại bỏ!
 
 ---
 
 ### 🟢 GIAI ĐOẠN IMPLEMENTATION: Quy Tắc "Minimum Green"
-* Chỉ viết lượng code logic vừa đủ để biến các bài test ĐỎ thành **XANH (GREEN)**.
-* **Phân tách 3 tầng (Clean 3-Tier Headless):**
+
+- Chỉ viết lượng code logic vừa đủ để biến các bài test ĐỎ thành **XANH (GREEN)**.
+- **Phân tách 3 tầng (Clean 3-Tier Headless):**
   - **Tier 1 (Contracts):** Khai báo topics, hằng số payload (`ON`, `OFF`, `OPEN`, `CLOSE`, `CLOSED`, `DETECTED`, `CLEAR`, `ONLINE`, `OFFLINE`).
   - **Tier 2 (Headless Logic):** Hooks, Mappers, State Machines, MQTT Service thuần JavaScript (100% testable trong Vitest không cần màn hình).
   - **Tier 3 (Thin UI):** Các component React Native (`< 200 dòng`), chỉ nhận ViewModel và gọi hàm hành động, tuyệt đối không chứa logic parse MQTT hay math phức tạp.
@@ -89,6 +93,7 @@ Nếu thành viên lựa chọn tiếp cận theo TDD, chu trình chuẩn gồm 
 ---
 
 ### 🛑 GATE 3: Soi Diff 60 Giây — Kiểm Tra Tự Thân (Self-Audit)
+
 Trước khi commit, thành viên phải tự soi lại git diff dựa trên **IoT Sanity Checklist**:
 
 - [ ] **1. No Tautology:** Test có assert trên hàm sản xuất thật không? Có assert trên biến giả tự khai báo không?
@@ -101,6 +106,7 @@ Trước khi commit, thành viên phải tự soi lại git diff dựa trên **I
 ---
 
 ### 🛑 GATE 4: Nghiệm Thu Thực Chứng (IoT Trinity Evidence)
+
 Nghiệm thu không dựa trên việc "giao diện trông đẹp" mà phải dựa trên **Bộ Ba Bằng Chứng Thực Chứng**:
 
 ```text
@@ -126,6 +132,6 @@ Nghiệm thu không dựa trên việc "giao diện trông đẹp" mà phải d�
 ---
 
 ### 🛑 GATE 5: Đồng Bộ Tri Thức & Khóa Guard Tự Động
-* Cập nhật tiến độ vào file theo dõi dự án (`checkpoint.md` hoặc Task Tracker).
-* Nếu phát hiện lỗi mới (ví dụ: payload cảm biến trả về chuỗi thay vì số, hoặc mã thẻ RFID có khoảng trắng): Lập tức bổ sung case kiểm thử vào [contract.test.js](file:///c:/Users/rivea/Documents/GitHub/esp32_smart_home/mobile_app/src/__tests__/contract.test.js) hoặc [scripts/validate-contract.js](file:///c:/Users/rivea/Documents/GitHub/esp32_smart_home/mobile_app/scripts/validate-contract.js) để biến nó thành chốt chặn tự động bảo vệ toàn bộ các lần phát triển sau.
 
+- Cập nhật tiến độ vào file theo dõi dự án (`checkpoint.md` hoặc Task Tracker).
+- Nếu phát hiện lỗi mới (ví dụ: payload cảm biến trả về chuỗi thay vì số, hoặc mã thẻ RFID có khoảng trắng): Lập tức bổ sung case kiểm thử vào [contract.test.js](file:///c:/Users/rivea/Documents/GitHub/esp32_smart_home/mobile_app/src/__tests__/contract.test.js) hoặc [scripts/validate-contract.js](file:///c:/Users/rivea/Documents/GitHub/esp32_smart_home/mobile_app/scripts/validate-contract.js) để biến nó thành chốt chặn tự động bảo vệ toàn bộ các lần phát triển sau.

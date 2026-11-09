@@ -1,11 +1,5 @@
 import React, { useState } from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  ScrollView,
-  TouchableOpacity,
-} from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
 import { useDevice } from '../context/DeviceContext';
 import { useTheme } from '../context/ThemeContext';
 import { useI18n } from '../context/I18nContext';
@@ -21,7 +15,9 @@ export const DashboardScreen: React.FC = () => {
   const { theme, isDarkMode } = useTheme();
   const { t } = useI18n();
 
-  const [activeTab, setActiveTab] = useState<'living' | 'security' | 'bedroom' | 'kitchen'>('living');
+  const [activeTab, setActiveTab] = useState<'living' | 'security' | 'bedroom' | 'kitchen'>(
+    'living'
+  );
 
   const tabs = [
     { key: 'living', label: t('tabLiving') },
@@ -56,8 +52,12 @@ export const DashboardScreen: React.FC = () => {
                   styles.tabChip,
                   {
                     backgroundColor: isActive
-                      ? isDarkMode ? '#FFFFFF' : '#111216'
-                      : isDarkMode ? 'rgba(255, 255, 255, 0.06)' : 'rgba(0, 0, 0, 0.04)',
+                      ? isDarkMode
+                        ? '#FFFFFF'
+                        : '#111216'
+                      : isDarkMode
+                        ? 'rgba(255, 255, 255, 0.06)'
+                        : 'rgba(0, 0, 0, 0.04)',
                   },
                 ]}
                 activeOpacity={0.7}
@@ -66,9 +66,7 @@ export const DashboardScreen: React.FC = () => {
                   style={[
                     styles.tabChipText,
                     {
-                      color: isActive
-                        ? isDarkMode ? '#111216' : '#FFFFFF'
-                        : theme.textSecondary,
+                      color: isActive ? (isDarkMode ? '#111216' : '#FFFFFF') : theme.textSecondary,
                       fontWeight: isActive ? '700' : '500',
                     },
                   ]}
@@ -125,4 +123,3 @@ const styles = StyleSheet.create({
     gap: 12,
   },
 });
-

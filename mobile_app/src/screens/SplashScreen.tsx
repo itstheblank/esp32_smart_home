@@ -1,12 +1,5 @@
 import React, { useRef, useEffect } from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  TouchableOpacity,
-  Animated,
-  Platform,
-} from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Animated, Platform } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useTheme } from '../context/ThemeContext';
 import { useI18n } from '../context/I18nContext';
@@ -54,12 +47,7 @@ export const SplashScreen: React.FC<SplashScreenProps> = ({ onUnlock }) => {
   const subtleBg = isDarkMode ? 'rgba(255, 255, 255, 0.08)' : 'rgba(0, 0, 0, 0.05)';
 
   return (
-    <SafeAreaView
-      style={[
-        styles.safeArea,
-        { backgroundColor: theme.appBackground },
-      ]}
-    >
+    <SafeAreaView style={[styles.safeArea, { backgroundColor: theme.appBackground }]}>
       {/* Top Bar with Language & Mode */}
       <View style={styles.topBar}>
         <View style={styles.brandRow}>
@@ -107,7 +95,9 @@ export const SplashScreen: React.FC<SplashScreenProps> = ({ onUnlock }) => {
           onPress={onUnlock}
           activeOpacity={0.88}
         >
-          <Text style={[styles.enterButtonText, { color: oppositeMonochrome }]}>{t('btnEnterDash')}</Text>
+          <Text style={[styles.enterButtonText, { color: oppositeMonochrome }]}>
+            {t('btnEnterDash')}
+          </Text>
         </TouchableOpacity>
       </View>
     </SafeAreaView>
@@ -232,4 +222,3 @@ const styles = StyleSheet.create({
     fontWeight: '800',
   },
 });
-

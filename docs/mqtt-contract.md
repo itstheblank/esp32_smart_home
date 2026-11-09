@@ -16,15 +16,15 @@ App gửi lệnh thành công chưa có nghĩa thiết bị đã thực hiện. 
 
 ## 2. Bảng topic/payload
 
-| Topic | Ai gửi → ai nhận | Payload | Retain |
-|---|---|---|---|
-| `smarthome/cmd/light` | App → ESP32 | `ON`, `OFF` | false |
-| `smarthome/cmd/door` | App → ESP32 | `OPEN`, `CLOSE` | false |
-| `smarthome/state/light` | ESP32 → App | `ON`, `OFF` | true |
-| `smarthome/state/door` | ESP32 → App | `OPEN`, `CLOSED` | true |
-| `smarthome/state/motion` | ESP32 → App | `DETECTED`, `CLEAR` | true |
-| `smarthome/state/online` | ESP32/broker → App | `ONLINE`, `OFFLINE` | true |
-| `smarthome/event/access` | ESP32 → App | JSON `uid` và `result` | false |
+| Topic                    | Ai gửi → ai nhận   | Payload                | Retain |
+| ------------------------ | ------------------ | ---------------------- | ------ |
+| `smarthome/cmd/light`    | App → ESP32        | `ON`, `OFF`            | false  |
+| `smarthome/cmd/door`     | App → ESP32        | `OPEN`, `CLOSE`        | false  |
+| `smarthome/state/light`  | ESP32 → App        | `ON`, `OFF`            | true   |
+| `smarthome/state/door`   | ESP32 → App        | `OPEN`, `CLOSED`       | true   |
+| `smarthome/state/motion` | ESP32 → App        | `DETECTED`, `CLEAR`    | true   |
+| `smarthome/state/online` | ESP32/broker → App | `ONLINE`, `OFFLINE`    | true   |
+| `smarthome/event/access` | ESP32 → App        | JSON `uid` và `result` | false  |
 
 **Lệnh đóng cửa là `CLOSE`. Trạng thái cửa đã đóng là `CLOSED`.**
 
@@ -57,11 +57,11 @@ App gửi `CLOSE` vào `smarthome/cmd/door`; sau khi đóng cửa, firmware gử
 RFID gửi vào `smarthome/event/access`, Retain false:
 
 ```json
-{"uid":"A1B2C3D4","result":"GRANTED"}
+{ "uid": "A1B2C3D4", "result": "GRANTED" }
 ```
 
 ```json
-{"uid":"11223344","result":"DENIED"}
+{ "uid": "11223344", "result": "DENIED" }
 ```
 
 - `uid`: mã thẻ dạng hex chữ hoa, không có dấu cách hoặc dấu phân cách.
@@ -84,13 +84,13 @@ Retained state là trạng thái cuối đã biết. Khi kiểm thử board onli
 
 ## 5. Ai cần làm gì
 
-| Member | Phần cần dùng/triển khai |
-|---|---|
-| 1 | Dùng đúng topic, gọi actuator, gửi state, thêm Last Will và giao diện publish event |
-| 2 | Báo motion và kết quả RFID qua giao diện member 1 |
-| 3 | Cung cấp actuator đèn/cửa và trạng thái điều khiển |
-| 4 | Gửi command, nhận state/event và cập nhật giao diện |
-| 5 | Giữ contract chung và kiểm thử giao tiếp |
+| Member | Phần cần dùng/triển khai                                                            |
+| ------ | ----------------------------------------------------------------------------------- |
+| 1      | Dùng đúng topic, gọi actuator, gửi state, thêm Last Will và giao diện publish event |
+| 2      | Báo motion và kết quả RFID qua giao diện member 1                                   |
+| 3      | Cung cấp actuator đèn/cửa và trạng thái điều khiển                                  |
+| 4      | Gửi command, nhận state/event và cập nhật giao diện                                 |
+| 5      | Giữ contract chung và kiểm thử giao tiếp                                            |
 
 Firmware hiện đã subscribe và parse bốn lệnh, nhưng actuator còn TODO. State đèn/cửa/PIR chưa publish; chỉ có `ONLINE` retained, chưa có `OFFLINE`/Last Will.
 

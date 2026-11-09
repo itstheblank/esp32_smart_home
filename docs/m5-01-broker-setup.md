@@ -6,11 +6,11 @@ Tình trạng cập nhật ngày 13/10/2026: EMQX 6.3.1 đang chạy trên lapto
 
 ## 1. Chuẩn bị ứng dụng
 
-| Thiết bị | Ứng dụng | Công việc |
-|---|---|---|
-| Laptop Windows | Docker Desktop, Linux containers | Chạy broker EMQX |
-| Laptop Windows | MQTTX Desktop | Gửi và nhận MQTT để kiểm tra broker |
-| Android | MyMQTT | Kiểm tra kết nối qua Wi-Fi/hotspot |
+| Thiết bị       | Ứng dụng                         | Công việc                           |
+| -------------- | -------------------------------- | ----------------------------------- |
+| Laptop Windows | Docker Desktop, Linux containers | Chạy broker EMQX                    |
+| Laptop Windows | MQTTX Desktop                    | Gửi và nhận MQTT để kiểm tra broker |
+| Android        | MyMQTT                           | Kiểm tra kết nối qua Wi-Fi/hotspot  |
 
 Mở Docker Desktop, đợi Engine khởi động, rồi mở PowerShell:
 
@@ -50,10 +50,10 @@ Gói EMQX này có sẵn Community License cho một node; không cần xin Tria
 
 Profile `legacy` được chọn để dùng cấu hình thử nghiệm MQTT không có username/password, tương thích với firmware hiện tại chỉ gửi Client ID khi kết nối. Đây là cấu hình cho mạng nội bộ của nhóm. [Security profiles EMQX](https://docs.emqx.com/en/emqx/latest/guides/access-control/security-profile.html).
 
-| Cổng laptop | Mục đích |
-|---|---|
-| TCP `1883` | MQTTX, điện thoại và ESP32 truy cập MQTT |
-| `127.0.0.1:18083` | Dashboard, chỉ mở từ chính laptop |
+| Cổng laptop       | Mục đích                                 |
+| ----------------- | ---------------------------------------- |
+| TCP `1883`        | MQTTX, điện thoại và ESP32 truy cập MQTT |
+| `127.0.0.1:18083` | Dashboard, chỉ mở từ chính laptop        |
 
 Kiểm tra trạng thái:
 
@@ -76,16 +76,16 @@ Trong phần Clients của Dashboard, kiểm tra các Client ID đang kết nố
 
 ## 4. Tạo hai kết nối trong MQTTX
 
-| Trường | M5 Observer | M5 Sender |
-|---|---|---|
-| Name | `M5 Observer` | `M5 Sender` |
-| Client ID | `m5observer` | `m5sender` |
-| Ô chọn giao thức trước Host | `mqtt://` | `mqtt://` |
-| Ô địa chỉ Host bên phải | `127.0.0.1` | `127.0.0.1` |
-| Port | `1883` | `1883` |
-| MQTT Version | `3.1.1` | `3.1.1` |
-| Username / Password | Để trống | Để trống |
-| SSL/TLS | Tắt | Tắt |
+| Trường                      | M5 Observer   | M5 Sender   |
+| --------------------------- | ------------- | ----------- |
+| Name                        | `M5 Observer` | `M5 Sender` |
+| Client ID                   | `m5observer`  | `m5sender`  |
+| Ô chọn giao thức trước Host | `mqtt://`     | `mqtt://`   |
+| Ô địa chỉ Host bên phải     | `127.0.0.1`   | `127.0.0.1` |
+| Port                        | `1883`        | `1883`      |
+| MQTT Version                | `3.1.1`       | `3.1.1`     |
+| Username / Password         | Để trống      | Để trống    |
+| SSL/TLS                     | Tắt           | Tắt         |
 
 **Nếu MQTTX có ô chọn `mqtt://` riêng, ô địa chỉ chỉ nhập `127.0.0.1`.** Nhập thêm `mqtt://` vào ô địa chỉ sẽ lặp giao thức và có thể gây lỗi `getaddrinfo ENOTFOUND mqtt`.
 
@@ -97,12 +97,12 @@ Nhấn **Connect** cho cả hai kết nối. Chọn **M5 Observer**, bấm **New
 
 Chọn **M5 Sender** ở danh sách bên trái. Trong khung soạn tin ở cuối cửa sổ, chọn **Plaintext**, **QoS 0**, bỏ chọn **Retain**. Nhập Topic và nội dung rồi bấm nút gửi màu xanh ở góc dưới bên phải, từng lần một.
 
-| Lần gửi | Topic | Nội dung payload chính xác |
-|---|---|---|
-| 1 | `smarthome/cmd/light` | `ON` |
-| 2 | `smarthome/cmd/light` | `OFF` |
-| 3 | `smarthome/cmd/door` | `OPEN` |
-| 4 | `smarthome/cmd/door` | `CLOSE` |
+| Lần gửi | Topic                 | Nội dung payload chính xác |
+| ------- | --------------------- | -------------------------- |
+| 1       | `smarthome/cmd/light` | `ON`                       |
+| 2       | `smarthome/cmd/light` | `OFF`                      |
+| 3       | `smarthome/cmd/door`  | `OPEN`                     |
+| 4       | `smarthome/cmd/door`  | `CLOSE`                    |
 
 **Chỉ nhập chữ viết hoa trong ô nội dung. Không thêm dấu ngoặc kép, JSON, khoảng trắng hoặc xuống dòng sau lệnh.** Ví dụ, `ON` chỉ gồm hai ký tự `O` và `N`; `ON` có thêm ký tự xuống dòng sẽ không khớp với điều kiện so sánh trong [main.cpp](../src/main.cpp).
 
@@ -135,11 +135,11 @@ ipconfig
 
 Lấy IPv4 của adapter thuộc mạng mà điện thoại sẽ kết nối. Nếu dùng router, lấy adapter Wi-Fi/Ethernet nối router đó; nếu dùng hotspot, lấy adapter hotspot. Không lấy IP adapter Docker/WSL.
 
-| Client | Địa chỉ Host |
-|---|---|
-| MQTTX trên laptop chạy broker | `127.0.0.1` |
-| MyMQTT trên Android | IPv4 thực tế của laptop trong mạng chung |
-| ESP32 | Cùng IPv4 đó |
+| Client                        | Địa chỉ Host                             |
+| ----------------------------- | ---------------------------------------- |
+| MQTTX trên laptop chạy broker | `127.0.0.1`                              |
+| MyMQTT trên Android           | IPv4 thực tế của laptop trong mạng chung |
+| ESP32                         | Cùng IPv4 đó                             |
 
 Trong lần kiểm tra ngày 13/10/2026, Wi-Fi laptop có IPv4 **`192.168.88.173`**, subnet mask `255.255.255.0`, gateway `192.168.88.1`; adapter hotspot đang ngắt kết nối. Android đã thử thành công trên cùng mạng Wi-Fi. IP cũ ngày 12/10 là `192.168.0.102`, không dùng cho mạng hiện tại. IP có thể thay đổi do DHCP; kiểm tra lại `ipconfig` nếu đổi mạng hoặc kết nối lại. `127.0.0.1` trên Android trỏ về chính điện thoại, không trỏ về laptop.
 
@@ -163,15 +163,15 @@ Khi IP hoặc mạng thay đổi, xác định lại IPv4, subnet và adapter r�
 
 Cài [MyMQTT trên Google Play](https://play.google.com/store/apps/details?id=at.tripwire.mqtt.client), rồi kết nối Android vào mạng chung đã chọn. Cấu hình ứng dụng:
 
-| Trường | Giá trị |
-|---|---|
-| Host / Broker | IPv4 thực tế của laptop; lần kiểm tra ngày 13/10 là `192.168.88.173` |
-| Port | `1883` |
-| Transport, nếu có | MQTT TCP |
-| Client ID, nếu có | `m5phone` |
-| MQTT Version, nếu có | `3.1.1` |
-| Username / Password | Để trống |
-| SSL/TLS | Tắt |
+| Trường               | Giá trị                                                              |
+| -------------------- | -------------------------------------------------------------------- |
+| Host / Broker        | IPv4 thực tế của laptop; lần kiểm tra ngày 13/10 là `192.168.88.173` |
+| Port                 | `1883`                                                               |
+| Transport, nếu có    | MQTT TCP                                                             |
+| Client ID, nếu có    | `m5phone`                                                            |
+| MQTT Version, nếu có | `3.1.1`                                                              |
+| Username / Password  | Để trống                                                             |
+| SSL/TLS              | Tắt                                                                  |
 
 Kết nối, rồi subscribe `smarthome/test/m5` trên điện thoại. Observer trên laptop đã subscribe `smarthome/#`, nên cũng nhận được topic thử này.
 
@@ -196,15 +196,15 @@ Kết quả cần kiểm tra:
 
 ## 9. Lưu kết quả và khởi động cho buổi sau
 
-| Kiểm tra | Bằng chứng cần có | Tiến độ |
-|---|---|---|
-| EMQX chạy trên laptop | Container `Up`, node status và Dashboard | Đã xác nhận container EMQX 6.3.1 đang chạy, cổng 1883 được publish |
-| MQTTX kết nối local | Hai Client ID khác nhau cùng kết nối | Người dùng đã báo kết nối thành công |
-| Chuyển tiếp bốn lệnh | Observer nhận đúng topic và payload, hoặc báo cáo test tự động | Đạt 4/4; MQTTX Observer nhận đủ lúc 23:02:48 ngày 12/10/2026 |
-| Firewall cho Android | Rule TCP 1883 giới hạn IP, subnet và adapter | Đã tạo và xác minh ngày 13/10: `192.168.88.173`, nguồn `/24`, Wi-Fi, Public |
-| Android hai chiều | `HELLO_PHONE` ở laptop và `HELLO_PC` ở điện thoại | Đạt theo xác nhận người dùng ngày 13/10; chưa lưu ảnh bằng chứng |
-| ESP32 | Dashboard client và Serial log bốn lệnh | Board đang ở member 1; chờ kiểm tra cùng mạng |
-| Khôi phục sau restart | Broker chạy lại và client kết nối lại | Chờ kiểm tra trong phiên phù hợp |
+| Kiểm tra              | Bằng chứng cần có                                              | Tiến độ                                                                     |
+| --------------------- | -------------------------------------------------------------- | --------------------------------------------------------------------------- |
+| EMQX chạy trên laptop | Container `Up`, node status và Dashboard                       | Đã xác nhận container EMQX 6.3.1 đang chạy, cổng 1883 được publish          |
+| MQTTX kết nối local   | Hai Client ID khác nhau cùng kết nối                           | Người dùng đã báo kết nối thành công                                        |
+| Chuyển tiếp bốn lệnh  | Observer nhận đúng topic và payload, hoặc báo cáo test tự động | Đạt 4/4; MQTTX Observer nhận đủ lúc 23:02:48 ngày 12/10/2026                |
+| Firewall cho Android  | Rule TCP 1883 giới hạn IP, subnet và adapter                   | Đã tạo và xác minh ngày 13/10: `192.168.88.173`, nguồn `/24`, Wi-Fi, Public |
+| Android hai chiều     | `HELLO_PHONE` ở laptop và `HELLO_PC` ở điện thoại              | Đạt theo xác nhận người dùng ngày 13/10; chưa lưu ảnh bằng chứng            |
+| ESP32                 | Dashboard client và Serial log bốn lệnh                        | Board đang ở member 1; chờ kiểm tra cùng mạng                               |
+| Khôi phục sau restart | Broker chạy lại và client kết nối lại                          | Chờ kiểm tra trong phiên phù hợp                                            |
 
 Lưu ảnh kiểm tra và báo cáo test; không đưa mật khẩu vào ảnh hoặc file được commit. Chỉ đánh dấu toàn bộ M5-01 `Done` sau khi MQTTX, Android và ESP32 đã truy cập thành công.
 
@@ -224,12 +224,12 @@ Sau đó kết nối lại các client và kiểm tra gửi/nhận. IP laptop c�
 
 ## Xử lý lỗi thường gặp
 
-| Biểu hiện | Kiểm tra và cách xử lý |
-|---|---|
-| Tin demo chạy liên tục | Client đang dùng `broker.emqx.io`; đổi cả hai client về `127.0.0.1`, port `1883` |
-| `getaddrinfo ENOTFOUND mqtt` | Ô Host bên phải có thừa `mqtt://`; giữ giao thức ở ô chọn bên trái, nhập lại địa chỉ thuần, ngắt rồi kết nối lại |
-| `ECONNREFUSED 127.0.0.1:1883` | Kiểm tra Docker Engine, container và publish port 1883 |
-| Hai client lần lượt bị ngắt | Kiểm tra Client ID khác nhau |
-| Sender có lịch sử gửi nhưng Observer không có tin mới | Cả hai phải kết nối cùng broker; Observer phải subscribe `smarthome/#` trước khi gửi |
-| Android không kết nối được | Kiểm tra cùng mạng, Host là IP laptop, port 1883, rule firewall đúng IP; nếu dùng router, kiểm tra chế độ cách ly client |
-| ESP32 nhận tin nhưng báo lệnh không hợp lệ | Payload phải đúng chữ hoa, không có khoảng trắng hoặc xuống dòng |
+| Biểu hiện                                             | Kiểm tra và cách xử lý                                                                                                   |
+| ----------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------ |
+| Tin demo chạy liên tục                                | Client đang dùng `broker.emqx.io`; đổi cả hai client về `127.0.0.1`, port `1883`                                         |
+| `getaddrinfo ENOTFOUND mqtt`                          | Ô Host bên phải có thừa `mqtt://`; giữ giao thức ở ô chọn bên trái, nhập lại địa chỉ thuần, ngắt rồi kết nối lại         |
+| `ECONNREFUSED 127.0.0.1:1883`                         | Kiểm tra Docker Engine, container và publish port 1883                                                                   |
+| Hai client lần lượt bị ngắt                           | Kiểm tra Client ID khác nhau                                                                                             |
+| Sender có lịch sử gửi nhưng Observer không có tin mới | Cả hai phải kết nối cùng broker; Observer phải subscribe `smarthome/#` trước khi gửi                                     |
+| Android không kết nối được                            | Kiểm tra cùng mạng, Host là IP laptop, port 1883, rule firewall đúng IP; nếu dùng router, kiểm tra chế độ cách ly client |
+| ESP32 nhận tin nhưng báo lệnh không hợp lệ            | Payload phải đúng chữ hoa, không có khoảng trắng hoặc xuống dòng                                                         |

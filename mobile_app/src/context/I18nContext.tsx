@@ -1,12 +1,12 @@
-import React, { createContext, useContext, useState, useEffect, useCallback } from "react";
-import { Platform } from "react-native";
-import AsyncStorage from "@react-native-async-storage/async-storage";
+import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
+import { Platform } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import {
   translations,
   formatTranslation,
   LanguageCode,
   TranslationKey,
-} from "../constants/translations";
+} from '../constants/translations';
 
 interface I18nContextType {
   currentLang: LanguageCode;
@@ -15,18 +15,19 @@ interface I18nContextType {
   t: (key: TranslationKey, params?: Record<string, string | number>) => string;
 }
 
-const STORAGE_KEY = "APP_LANG_CODE";
+const STORAGE_KEY = 'APP_LANG_CODE';
 
 const I18nContext = createContext<I18nContextType | null>(null);
 
 export const I18nProvider: React.FC<{
   children: React.ReactNode;
   initialLang?: LanguageCode;
-}> = ({ children, initialLang = "vi" }) => {
+}> = ({ children, initialLang = 'vi' }) => {
   // Synchronous web hydration to prevent VI/EN language flash on reload
   const [currentLang, setCurrentLang] = useState<LanguageCode>(() => {
     if (Platform.OS === 'web' && typeof window !== 'undefined' && window.localStorage) {
-      const saved = window.localStorage.getItem(STORAGE_KEY) || window.localStorage.getItem('esp32_lang');
+      const saved =
+        window.localStorage.getItem(STORAGE_KEY) || window.localStorage.getItem('esp32_lang');
       if (saved === 'vi' || saved === 'en') return saved;
     }
     return initialLang;
@@ -35,7 +36,7 @@ export const I18nProvider: React.FC<{
   useEffect(() => {
     AsyncStorage.getItem(STORAGE_KEY)
       .then((saved) => {
-        if (saved === "vi" || saved === "en") {
+        if (saved === 'vi' || saved === 'en') {
           setCurrentLang(saved);
         }
       })
@@ -53,7 +54,7 @@ export const I18nProvider: React.FC<{
 
   const toggleLang = useCallback(() => {
     setCurrentLang((prev) => {
-      const next: LanguageCode = prev === "vi" ? "en" : "vi";
+      const next: LanguageCode = prev === 'vi' ? 'en' : 'vi';
       AsyncStorage.setItem(STORAGE_KEY, next).catch(() => {});
       if (Platform.OS === 'web' && typeof window !== 'undefined' && window.localStorage) {
         window.localStorage.setItem(STORAGE_KEY, next);
@@ -86,7 +87,7 @@ export const useI18n = (): I18nContextType => {
   const context = useContext(I18nContext);
   if (!context) {
     return {
-      currentLang: "vi",
+      currentLang: 'vi',
       setLang: () => {},
       toggleLang: () => {},
       t: (key: TranslationKey, params: Record<string, string | number> = {}) => {
@@ -97,4 +98,3 @@ export const useI18n = (): I18nContextType => {
   }
   return context;
 };
-

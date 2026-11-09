@@ -16,11 +16,15 @@ export const MotionRadarCard: React.FC = () => {
 
   const iconBg = isDetected
     ? 'rgba(249, 115, 22, 0.15)'
-    : isDarkMode ? 'rgba(255, 255, 255, 0.05)' : 'rgba(0, 0, 0, 0.04)';
+    : isDarkMode
+      ? 'rgba(255, 255, 255, 0.05)'
+      : 'rgba(0, 0, 0, 0.04)';
 
   const pillBg = isDetected
     ? 'rgba(249, 115, 22, 0.15)'
-    : isDarkMode ? 'rgba(255, 255, 255, 0.08)' : 'rgba(0, 0, 0, 0.05)';
+    : isDarkMode
+      ? 'rgba(255, 255, 255, 0.08)'
+      : 'rgba(0, 0, 0, 0.05)';
 
   const pillColor = isDetected ? '#F97316' : theme.textSecondary;
 
@@ -33,17 +37,16 @@ export const MotionRadarCard: React.FC = () => {
           backgroundColor: theme.surfaceCard,
           borderColor: isDetected
             ? 'rgba(249, 115, 22, 0.3)'
-            : isDarkMode ? 'rgba(255, 255, 255, 0.08)' : 'rgba(0, 0, 0, 0.05)',
+            : isDarkMode
+              ? 'rgba(255, 255, 255, 0.08)'
+              : 'rgba(0, 0, 0, 0.05)',
           borderWidth: 1,
         },
       ]}
     >
       <View style={styles.headerRow}>
         <View style={[styles.iconWrapper, { backgroundColor: iconBg }]}>
-          <AppIcons.MotionSensor
-            size={26}
-            color={isDetected ? '#F97316' : '#9CA3AF'}
-          />
+          <AppIcons.MotionSensor size={26} color={isDetected ? '#F97316' : '#9CA3AF'} />
         </View>
 
         <View style={styles.actionSlot}>
@@ -66,9 +69,7 @@ export const MotionRadarCard: React.FC = () => {
         <View style={styles.statusRow}>
           <View style={[styles.statusPill, { backgroundColor: pillBg }]}>
             <Text style={[styles.statusText, { color: pillColor }]}>
-              {isDetected
-                ? t('motionDetected').toUpperCase()
-                : t('motionClear').toUpperCase()}
+              {isDetected ? t('motionDetected').toUpperCase() : t('motionClear').toUpperCase()}
             </Text>
           </View>
         </View>
@@ -130,4 +131,3 @@ const styles = StyleSheet.create({
     letterSpacing: 0.5,
   },
 });
-

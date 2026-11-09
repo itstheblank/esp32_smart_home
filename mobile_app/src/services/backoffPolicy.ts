@@ -26,4 +26,3 @@ export function calculateBackoffWithJitter(
   const jitter = Math.floor(randomFn() * config.jitterMs);
   return capped + jitter;
 }
-

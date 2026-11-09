@@ -9,12 +9,7 @@ import {
   RfidAccessCard,
   EnergyBanner,
 } from '../components/cards';
-import {
-  SplashScreen,
-  DashboardScreen,
-  ActivityLogScreen,
-  SettingsScreen,
-} from '../screens';
+import { SplashScreen, DashboardScreen, ActivityLogScreen, SettingsScreen } from '../screens';
 import { FloatingDockBar } from '../components/navigation/FloatingDockBar';
 import { SafeShield } from '../components/navigation/SafeShield';
 import { AppHeader } from '../components/navigation/AppHeader';
@@ -75,4 +70,3 @@ describe('Component Module & UI Exports Integrity', () => {
     expect(translations.vi.quickActionLightsOff).toBeDefined();
   });
 });
-

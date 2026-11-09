@@ -8,10 +8,14 @@ on:
       - feat/ui-dashboard
       - "feat/**"
       - "fix/**"
+      - "member*/**"
     paths:
       - "mobile_app/**"
+      - "packages/**"
       - ".github/workflows/mobile-ci.yml"
       - "docs/mqtt-contract.json"
+      - "pnpm-lock.yaml"
+      - "package.json"
   pull_request:
     branches:
       - main
@@ -19,8 +23,11 @@ on:
       - feat/ui-dashboard
     paths:
       - "mobile_app/**"
+      - "packages/**"
       - ".github/workflows/mobile-ci.yml"
       - "docs/mqtt-contract.json"
+      - "pnpm-lock.yaml"
+      - "package.json"
 
 permissions:
   contents: read
@@ -35,84 +42,81 @@ jobs:
     name: Lint & Format Check
     runs-on: ubuntu-latest
     timeout-minutes: 10
-    defaults:
-      run:
-        working-directory: mobile_app
 
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
 
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+
       - name: Setup Node.js 20 LTS
         uses: actions/setup-node@v4
         with:
           node-version: 20
-          cache: "npm"
-          cache-dependency-path: mobile_app/package-lock.json
+          cache: "pnpm"
 
       - name: Install dependencies
-        run: npm ci
+        run: pnpm install --frozen-lockfile
 
       - name: Run ESLint
-        run: npm run lint
+        run: pnpm --filter mobile_app run lint
 
       - name: Check Prettier formatting
-        run: npm run format:check
+        run: pnpm --filter mobile_app run format:check
 
       - name: Validate MQTT Contract Integrity
-        run: npm run validate:contract
+        run: pnpm --filter mobile_app run validate:contract
 
   # ─── 2. SDK & Dependency Health (Expo Doctor) ──────────────────────────────
   doctor:
     name: Expo Doctor (SDK Compatibility)
     runs-on: ubuntu-latest
     timeout-minutes: 10
-    defaults:
-      run:
-        working-directory: mobile_app
 
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
 
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+
       - name: Setup Node.js 20 LTS
         uses: actions/setup-node@v4
         with:
           node-version: 20
-          cache: "npm"
-          cache-dependency-path: mobile_app/package-lock.json
+          cache: "pnpm"
 
       - name: Install dependencies
-        run: npm ci
+        run: pnpm install --frozen-lockfile
 
       - name: Run Expo Doctor Diagnostics
-        run: npm run doctor
+        run: pnpm --filter mobile_app run doctor
 
   # ─── 3. Unit Tests (Vitest) ────────────────────────────────────────────────
   test:
     name: Unit Tests (Vitest)
     runs-on: ubuntu-latest
     timeout-minutes: 10
-    defaults:
-      run:
-        working-directory: mobile_app
 
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
 
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+
       - name: Setup Node.js 20 LTS
         uses: actions/setup-node@v4
         with:
           node-version: 20
-          cache: "npm"
-          cache-dependency-path: mobile_app/package-lock.json
+          cache: "pnpm"
 
       - name: Install dependencies
-        run: npm ci
+        run: pnpm install --frozen-lockfile
 
       - name: Run Unit Tests
-        run: npm test
+        run: pnpm turbo run test
 
   # ─── 4. Export & Metro Bundle Verification ─────────────────────────────────
   build-check:
@@ -120,23 +124,22 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 15
     needs: [lint, test]
-    defaults:
-      run:
-        working-directory: mobile_app
 
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
 
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+
       - name: Setup Node.js 20 LTS
         uses: actions/setup-node@v4
         with:
           node-version: 20
-          cache: "npm"
-          cache-dependency-path: mobile_app/package-lock.json
+          cache: "pnpm"
 
       - name: Install dependencies
-        run: npm ci
+        run: pnpm install --frozen-lockfile
 
       - name: Verify Android Production Bundle Export
-        run: npx expo export --platform android --output-dir dist
+        run: pnpm --filter mobile_app exec expo export --platform android --output-dir dist

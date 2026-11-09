@@ -69,4 +69,3 @@ describe('EnergyBanner Prototype-Aligned Component Tests', () => {
     expect(html).toContain('ESP32:');
   });
 });
-

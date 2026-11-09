@@ -18,26 +18,22 @@ export const RfidAccessCard: React.FC = () => {
   const iconBg = isDenied
     ? 'rgba(239, 68, 68, 0.15)'
     : isGranted
-    ? 'rgba(34, 197, 94, 0.15)'
-    : isDarkMode ? 'rgba(255, 255, 255, 0.05)' : 'rgba(0, 0, 0, 0.04)';
+      ? 'rgba(34, 197, 94, 0.15)'
+      : isDarkMode
+        ? 'rgba(255, 255, 255, 0.05)'
+        : 'rgba(0, 0, 0, 0.04)';
 
-  const iconColor = isDenied
-    ? '#EF4444'
-    : isGranted
-    ? '#22C55E'
-    : theme.textSecondary;
+  const iconColor = isDenied ? '#EF4444' : isGranted ? '#22C55E' : theme.textSecondary;
 
   const pillBg = isDenied
     ? 'rgba(239, 68, 68, 0.15)'
     : isGranted
-    ? 'rgba(34, 197, 94, 0.15)'
-    : isDarkMode ? 'rgba(255, 255, 255, 0.08)' : 'rgba(0, 0, 0, 0.05)';
+      ? 'rgba(34, 197, 94, 0.15)'
+      : isDarkMode
+        ? 'rgba(255, 255, 255, 0.08)'
+        : 'rgba(0, 0, 0, 0.05)';
 
-  const pillColor = isDenied
-    ? '#EF4444'
-    : isGranted
-    ? '#22C55E'
-    : theme.textSecondary;
+  const pillColor = isDenied ? '#EF4444' : isGranted ? '#22C55E' : theme.textSecondary;
 
   return (
     <View
@@ -48,7 +44,9 @@ export const RfidAccessCard: React.FC = () => {
           backgroundColor: theme.surfaceCard,
           borderColor: isSecurityAlert
             ? '#EF4444'
-            : isDarkMode ? 'rgba(255, 255, 255, 0.08)' : 'rgba(0, 0, 0, 0.05)',
+            : isDarkMode
+              ? 'rgba(255, 255, 255, 0.08)'
+              : 'rgba(0, 0, 0, 0.05)',
           borderWidth: isSecurityAlert ? 2 : 1,
         },
       ]}
@@ -88,8 +86,8 @@ export const RfidAccessCard: React.FC = () => {
               {isDenied
                 ? t('rfidDenied').toUpperCase()
                 : isGranted
-                ? t('rfidStatus').toUpperCase()
-                : t('rfidWaiting').toUpperCase()}
+                  ? t('rfidStatus').toUpperCase()
+                  : t('rfidWaiting').toUpperCase()}
             </Text>
           </View>
         </View>
@@ -161,4 +159,3 @@ const styles = StyleSheet.create({
     letterSpacing: 0.5,
   },
 });
-

@@ -1,16 +1,9 @@
-import React, { useEffect, useRef } from "react";
-import { View, StyleSheet, Animated, Platform } from "react-native";
-import { primitiveColors } from "@repo/design-tokens";
+import React, { useEffect, useRef } from 'react';
+import { View, StyleSheet, Animated, Platform } from 'react-native';
+import { primitiveColors } from '@repo/design-tokens';
 
 export type StatusDotVariant =
-  | "ONLINE"
-  | "WARNING"
-  | "ALERT"
-  | "DISCONNECTED"
-  | "online"
-  | "warning"
-  | "alert"
-  | "offline";
+  'ONLINE' | 'WARNING' | 'ALERT' | 'DISCONNECTED' | 'online' | 'warning' | 'alert' | 'offline';
 
 interface LiveStatusDotProps {
   status: StatusDotVariant;
@@ -26,12 +19,12 @@ export const LiveStatusDot: React.FC<LiveStatusDotProps> = ({
   const pulseAnim = useRef(new Animated.Value(1)).current;
 
   useEffect(() => {
-    if (!pulsing || status === "DISCONNECTED") {
+    if (!pulsing || status === 'DISCONNECTED') {
       pulseAnim.setValue(1);
       return;
     }
 
-    const useNativeDriver = Platform.OS !== "web";
+    const useNativeDriver = Platform.OS !== 'web';
     const animation = Animated.loop(
       Animated.sequence([
         Animated.timing(pulseAnim, {
@@ -54,14 +47,14 @@ export const LiveStatusDot: React.FC<LiveStatusDotProps> = ({
   const getColor = (): string => {
     const normalized = status.toUpperCase();
     switch (normalized) {
-      case "ONLINE":
+      case 'ONLINE':
         return primitiveColors.emerald500;
-      case "WARNING":
+      case 'WARNING':
         return primitiveColors.amber400;
-      case "ALERT":
+      case 'ALERT':
         return primitiveColors.red500;
-      case "DISCONNECTED":
-      case "OFFLINE":
+      case 'DISCONNECTED':
+      case 'OFFLINE':
       default:
         return primitiveColors.gray400;
     }
@@ -71,7 +64,7 @@ export const LiveStatusDot: React.FC<LiveStatusDotProps> = ({
 
   return (
     <View style={[styles.container, { width: size * 2, height: size * 2 }]}>
-      {pulsing && status !== "DISCONNECTED" && (
+      {pulsing && status !== 'DISCONNECTED' && (
         <Animated.View
           style={[
             styles.halo,
@@ -102,15 +95,14 @@ export const LiveStatusDot: React.FC<LiveStatusDotProps> = ({
 
 const styles = StyleSheet.create({
   container: {
-    alignItems: "center",
-    justifyContent: "center",
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   halo: {
-    position: "absolute",
+    position: 'absolute',
     opacity: 0.25,
   },
   dot: {
     zIndex: 2,
   },
 });
-

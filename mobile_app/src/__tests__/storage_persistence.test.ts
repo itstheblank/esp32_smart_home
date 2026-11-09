@@ -78,4 +78,3 @@ describe('Storage Persistence System Verification', () => {
     expect(await AsyncStorage.getItem(GUIDE_KEY)).toBe('true');
   });
 });
-

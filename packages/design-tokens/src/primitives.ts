@@ -59,7 +59,8 @@ export const radius = radii;
 
 export const typography = {
   fontFamily: {
-    heading: "'Plus Jakarta Sans', PlusJakartaSans_700Bold, -apple-system, sans-serif",
+    heading:
+      "'Plus Jakarta Sans', PlusJakartaSans_700Bold, -apple-system, sans-serif",
     body: "'Plus Jakarta Sans', PlusJakartaSans_400Regular, -apple-system, sans-serif",
     plusJakarta: "'Plus Jakarta Sans', PlusJakartaSans_400Regular, sans-serif",
     mono: "monospace",

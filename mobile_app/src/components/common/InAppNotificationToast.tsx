@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef } from 'react';
 import {
   View,
   Text,
@@ -7,12 +7,12 @@ import {
   Animated,
   Dimensions,
   Platform,
-} from "react-native";
-import { useAppTheme } from "../../context/ThemeContext";
-import { LiveStatusDot, StatusDotVariant } from "./LiveStatusDot";
-import { AppIcons } from "./AppIcons";
+} from 'react-native';
+import { useAppTheme } from '../../context/ThemeContext';
+import { LiveStatusDot, StatusDotVariant } from './LiveStatusDot';
+import { AppIcons } from './AppIcons';
 
-const USE_NATIVE_DRIVER = Platform.OS == "web";
+const USE_NATIVE_DRIVER = Platform.OS == 'web';
 
 export interface ToastData {
   id: string;
@@ -27,23 +27,23 @@ export interface ToastData {
 export interface InAppNotificationToastProps {
   data?: ToastData | null;
   visible?: boolean;
-  type?: "success" | "warning" | "error" | "info";
+  type?: 'success' | 'warning' | 'error' | 'info';
   title?: string;
   description?: string;
   onPress?: () => void;
   onDismiss: () => void;
 }
 
-function mapTypeToVariant(type?: "success" | "warning" | "error" | "info"): StatusDotVariant {
+function mapTypeToVariant(type?: 'success' | 'warning' | 'error' | 'info'): StatusDotVariant {
   switch (type) {
-    case "error":
-      return "ALERT";
-    case "warning":
-      return "WARNING";
-    case "success":
-    case "info":
+    case 'error':
+      return 'ALERT';
+    case 'warning':
+      return 'WARNING';
+    case 'success':
+    case 'info':
     default:
-      return "ONLINE";
+      return 'ONLINE';
   }
 }
 
@@ -64,14 +64,14 @@ export const InAppNotificationToast: React.FC<InAppNotificationToastProps> = ({
     data !== undefined
       ? data
       : visible && title
-      ? {
-          id: `${type ?? "info"}-${title}`,
-          variant: mapTypeToVariant(type),
-          title,
-          message: description ?? "",
-          onPress,
-        }
-      : null;
+        ? {
+            id: `${type ?? 'info'}-${title}`,
+            variant: mapTypeToVariant(type),
+            title,
+            message: description ?? '',
+            onPress,
+          }
+        : null;
 
   useEffect(() => {
     if (!resolvedData) {
@@ -124,9 +124,7 @@ export const InAppNotificationToast: React.FC<InAppNotificationToastProps> = ({
         {
           transform: [{ translateY: slideAnim }],
           backgroundColor: theme.surfaceCard,
-          borderColor: isDarkMode
-            ? "rgba(255, 255, 255, 0.12)"
-            : "rgba(0, 0, 0, 0.08)",
+          borderColor: isDarkMode ? 'rgba(255, 255, 255, 0.12)' : 'rgba(0, 0, 0, 0.08)',
         },
       ]}
     >
@@ -143,16 +141,10 @@ export const InAppNotificationToast: React.FC<InAppNotificationToastProps> = ({
         </View>
 
         <View style={styles.textBox}>
-          <Text
-            style={[styles.title, { color: theme.textPrimary }]}
-            numberOfLines={1}
-          >
+          <Text style={[styles.title, { color: theme.textPrimary }]} numberOfLines={1}>
             {resolvedData.title}
           </Text>
-          <Text
-            style={[styles.message, { color: theme.textSecondary }]}
-            numberOfLines={2}
-          >
+          <Text style={[styles.message, { color: theme.textSecondary }]} numberOfLines={2}>
             {resolvedData.message}
           </Text>
         </View>
@@ -176,9 +168,9 @@ export const InAppNotificationToast: React.FC<InAppNotificationToastProps> = ({
             {
               width: progressAnim.interpolate({
                 inputRange: [0, 1],
-                outputRange: ["0%", "100%"],
+                outputRange: ['0%', '100%'],
               }),
-              backgroundColor: isDarkMode ? "#60A5FA" : "#2563EB",
+              backgroundColor: isDarkMode ? '#60A5FA' : '#2563EB',
             },
           ]}
         />
@@ -187,27 +179,27 @@ export const InAppNotificationToast: React.FC<InAppNotificationToastProps> = ({
   );
 };
 
-const screenWidth = Dimensions.get("window").width;
+const screenWidth = Dimensions.get('window').width;
 
 const styles = StyleSheet.create({
   container: {
-    position: "absolute",
+    position: 'absolute',
     left: 16,
     right: 16,
     width: screenWidth - 32,
     zIndex: 1000,
     borderRadius: 20,
     borderWidth: 1,
-    overflow: "hidden",
-    shadowColor: "#000000",
+    overflow: 'hidden',
+    shadowColor: '#000000',
     shadowOffset: { width: 0, height: 10 },
     shadowOpacity: 0.15,
     shadowRadius: 20,
     elevation: 12,
   },
   contentRow: {
-    flexDirection: "row",
-    alignItems: "center",
+    flexDirection: 'row',
+    alignItems: 'center',
     padding: 14,
   },
   dotBox: {
@@ -218,7 +210,7 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 14,
-    fontWeight: "700",
+    fontWeight: '700',
     marginBottom: 2,
   },
   message: {
@@ -231,11 +223,10 @@ const styles = StyleSheet.create({
   },
   progressTrack: {
     height: 3,
-    backgroundColor: "rgba(0, 0, 0, 0.05)",
-    width: "100%",
+    backgroundColor: 'rgba(0, 0, 0, 0.05)',
+    width: '100%',
   },
   progressBar: {
-    height: "100%",
+    height: '100%',
   },
 });
-

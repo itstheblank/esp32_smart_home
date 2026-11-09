@@ -21,7 +21,8 @@ export const ThemeProvider: React.FC<{
   // Synchronous web hydration to prevent dark/light flash on reload
   const [isDarkMode, setIsDarkMode] = useState<boolean>(() => {
     if (Platform.OS === 'web' && typeof window !== 'undefined' && window.localStorage) {
-      const saved = window.localStorage.getItem(STORAGE_KEY) || window.localStorage.getItem('esp32_theme');
+      const saved =
+        window.localStorage.getItem(STORAGE_KEY) || window.localStorage.getItem('esp32_theme');
       if (saved) return saved === 'DARK' || saved === 'dark';
     }
     return initialDark;
@@ -87,4 +88,3 @@ export const useAppTheme = (): ThemeContextType => {
 };
 
 export const useTheme = useAppTheme;
-

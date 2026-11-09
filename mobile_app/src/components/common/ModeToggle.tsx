@@ -1,7 +1,7 @@
-import React, { useRef, useEffect } from "react";
-import { TouchableOpacity, StyleSheet, Animated, Platform } from "react-native";
-import { useAppTheme } from "../../context/ThemeContext";
-import { AppIcons } from "./AppIcons";
+import React, { useRef, useEffect } from 'react';
+import { TouchableOpacity, StyleSheet, Animated, Platform } from 'react-native';
+import { useAppTheme } from '../../context/ThemeContext';
+import { AppIcons } from './AppIcons';
 
 export const ModeToggle: React.FC<{ size?: number }> = ({ size = 36 }) => {
   const { isDarkMode, toggleTheme, theme } = useAppTheme();
@@ -12,13 +12,13 @@ export const ModeToggle: React.FC<{ size?: number }> = ({ size = 36 }) => {
       toValue: isDarkMode ? 1 : 0,
       friction: 6,
       tension: 40,
-      useNativeDriver: Platform.OS !== "web",
+      useNativeDriver: Platform.OS !== 'web',
     }).start();
   }, [isDarkMode, rotateAnim]);
 
   const spin = rotateAnim.interpolate({
     inputRange: [0, 1],
-    outputRange: ["0deg", "90deg"],
+    outputRange: ['0deg', '90deg'],
   });
 
   const scale = rotateAnim.interpolate({
@@ -37,7 +37,7 @@ export const ModeToggle: React.FC<{ size?: number }> = ({ size = 36 }) => {
           height: size,
           borderRadius: size / 2,
           backgroundColor: theme.surfaceCard,
-          borderColor: isDarkMode ? "rgba(255, 255, 255, 0.08)" : "rgba(0, 0, 0, 0.06)",
+          borderColor: isDarkMode ? 'rgba(255, 255, 255, 0.08)' : 'rgba(0, 0, 0, 0.06)',
         },
       ]}
     >
@@ -54,14 +54,13 @@ export const ModeToggle: React.FC<{ size?: number }> = ({ size = 36 }) => {
 
 const styles = StyleSheet.create({
   container: {
-    alignItems: "center",
-    justifyContent: "center",
+    alignItems: 'center',
+    justifyContent: 'center',
     borderWidth: 1,
-    shadowColor: "#000",
+    shadowColor: '#000',
     shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.05,
     shadowRadius: 2,
     elevation: 1,
   },
 });
-

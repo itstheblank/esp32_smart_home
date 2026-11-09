@@ -30,13 +30,15 @@ export const LightControlCard: React.FC = () => {
   };
 
   // Card theme styling
-  const cardBg = isOn
-    ? isDarkMode ? '#090D16' : '#111216'
-    : theme.surfaceCard;
+  const cardBg = isOn ? (isDarkMode ? '#090D16' : '#111216') : theme.surfaceCard;
 
   const cardBorder = isOn
-    ? isDarkMode ? 'rgba(251, 191, 36, 0.4)' : 'transparent'
-    : isDarkMode ? 'rgba(255, 255, 255, 0.08)' : 'rgba(0, 0, 0, 0.05)';
+    ? isDarkMode
+      ? 'rgba(251, 191, 36, 0.4)'
+      : 'transparent'
+    : isDarkMode
+      ? 'rgba(255, 255, 255, 0.08)'
+      : 'rgba(0, 0, 0, 0.05)';
 
   const primaryTextColor = isOn ? '#FFFFFF' : theme.textPrimary;
   const secondaryTextColor = isOn ? '#9CA3AF' : theme.textSecondary;
@@ -64,8 +66,8 @@ export const LightControlCard: React.FC = () => {
               backgroundColor: isOn
                 ? 'rgba(251, 191, 36, 0.2)'
                 : isDarkMode
-                ? 'rgba(255, 255, 255, 0.05)'
-                : 'rgba(0, 0, 0, 0.04)',
+                  ? 'rgba(255, 255, 255, 0.05)'
+                  : 'rgba(0, 0, 0, 0.04)',
             },
           ]}
         >
@@ -85,11 +87,7 @@ export const LightControlCard: React.FC = () => {
               style={[
                 styles.switchTrack,
                 {
-                  backgroundColor: isOn
-                    ? '#FFFFFF'
-                    : isDarkMode
-                    ? '#334155'
-                    : '#D1D5DB',
+                  backgroundColor: isOn ? '#FFFFFF' : isDarkMode ? '#334155' : '#D1D5DB',
                 },
               ]}
             >
@@ -123,22 +121,13 @@ export const LightControlCard: React.FC = () => {
                 backgroundColor: isOn
                   ? 'rgba(251, 191, 36, 0.2)'
                   : isDarkMode
-                  ? 'rgba(255, 255, 255, 0.08)'
-                  : 'rgba(0, 0, 0, 0.05)',
+                    ? 'rgba(255, 255, 255, 0.08)'
+                    : 'rgba(0, 0, 0, 0.05)',
               },
             ]}
           >
-            <Text
-              style={[
-                styles.statusText,
-                { color: isOn ? '#FBBF24' : secondaryTextColor },
-              ]}
-            >
-              {isPending
-                ? '...'
-                : isOn
-                ? t('on').toUpperCase()
-                : t('off').toUpperCase()}
+            <Text style={[styles.statusText, { color: isOn ? '#FBBF24' : secondaryTextColor }]}>
+              {isPending ? '...' : isOn ? t('on').toUpperCase() : t('off').toUpperCase()}
             </Text>
           </View>
         </View>
@@ -217,4 +206,3 @@ const styles = StyleSheet.create({
     letterSpacing: 0.5,
   },
 });
-

@@ -45,9 +45,7 @@ export const SafeShield: React.FC = () => {
             styles.shieldContainer,
             {
               backgroundColor: theme.appBackground,
-              borderTopColor: isDarkMode
-                ? 'rgba(255, 255, 255, 0.05)'
-                : 'rgba(0, 0, 0, 0.03)',
+              borderTopColor: isDarkMode ? 'rgba(255, 255, 255, 0.05)' : 'rgba(0, 0, 0, 0.03)',
             },
           ]}
           pointerEvents="auto"

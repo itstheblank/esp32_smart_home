@@ -82,20 +82,14 @@ export const SystemAuditCard: React.FC = () => {
       ]}
     >
       <View style={styles.eventSummaryInfo}>
-        <Text style={[styles.label, { color: theme.textSecondary }]}>
-          {t('auditLabel')}
-        </Text>
+        <Text style={[styles.label, { color: theme.textSecondary }]}>{t('auditLabel')}</Text>
 
         <View style={styles.valueRow}>
-          <Text style={[styles.valueText, { color: statusColor }]}>
-            {statusTitle}
-          </Text>
+          <Text style={[styles.valueText, { color: statusColor }]}>{statusTitle}</Text>
           <LiveStatusDot status={dotVariant} size={8} />
         </View>
 
-        <Text style={[styles.subText, { color: theme.textMuted }]}>
-          {subtitleText}
-        </Text>
+        <Text style={[styles.subText, { color: theme.textMuted }]}>{subtitleText}</Text>
 
         {/* Dynamic Action Buttons matching prototype lines 705-761 */}
         {showBrokerReconnect && (
@@ -110,11 +104,7 @@ export const SystemAuditCard: React.FC = () => {
         )}
 
         {showRetry && (
-          <TouchableOpacity
-            style={styles.auditRetryBtn}
-            onPress={reconnect}
-            activeOpacity={0.8}
-          >
+          <TouchableOpacity style={styles.auditRetryBtn} onPress={reconnect} activeOpacity={0.8}>
             <AppIcons.Refresh size={12} color="#FFFFFF" />
             <Text style={styles.actionBtnText}>{t('auditRetryText')}</Text>
           </TouchableOpacity>
@@ -133,12 +123,7 @@ export const SystemAuditCard: React.FC = () => {
             activeOpacity={0.8}
           >
             <AppIcons.Check size={12} color={isDarkMode ? '#111216' : '#FFFFFF'} />
-            <Text
-              style={[
-                styles.actionBtnText,
-                { color: isDarkMode ? '#111216' : '#FFFFFF' },
-              ]}
-            >
+            <Text style={[styles.actionBtnText, { color: isDarkMode ? '#111216' : '#FFFFFF' }]}>
               {t('auditAckText')}
             </Text>
           </TouchableOpacity>

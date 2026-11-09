@@ -39,8 +39,12 @@ export const EnergyBanner: React.FC<EnergyBannerProps> = ({ percent = '+35%' }) 
   };
 
   const statusColor = isHealthy
-    ? (isDarkMode ? '#4ADE80' : '#22C55E')
-    : (isDarkMode ? '#F87171' : '#EF4444');
+    ? isDarkMode
+      ? '#4ADE80'
+      : '#22C55E'
+    : isDarkMode
+      ? '#F87171'
+      : '#EF4444';
 
   const energyGreen = isDarkMode ? '#4ADE80' : '#22C55E';
   const yellowLight = isDarkMode ? '#FACC15' : '#FFC700';
@@ -57,18 +61,12 @@ export const EnergyBanner: React.FC<EnergyBannerProps> = ({ percent = '+35%' }) 
       ]}
     >
       <View style={styles.energyInfo}>
-        <Text style={[styles.label, { color: theme.textSecondary }]}>
-          {t('energyTitle')}
-        </Text>
-        <Text style={[styles.value, { color: energyGreen }]}>
-          {percent}
-        </Text>
+        <Text style={[styles.label, { color: theme.textSecondary }]}>{t('energyTitle')}</Text>
+        <Text style={[styles.value, { color: energyGreen }]}>{percent}</Text>
         <Text style={[styles.sub, { color: theme.textMuted }]}>
           ESP32:{' '}
-          <Text style={[styles.statusHighlight, { color: statusColor }]}>
-            {getStatusBadge()}
-          </Text>{' '}
-           {getStatusSuffix()}
+          <Text style={[styles.statusHighlight, { color: statusColor }]}>{getStatusBadge()}</Text>{' '}
+          {getStatusSuffix()}
         </Text>
       </View>
 

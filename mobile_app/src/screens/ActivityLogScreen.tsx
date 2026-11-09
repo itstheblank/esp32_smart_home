@@ -1,12 +1,5 @@
 import React from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  FlatList,
-  TouchableOpacity,
-  ScrollView,
-} from 'react-native';
+import { View, Text, StyleSheet, FlatList, TouchableOpacity, ScrollView } from 'react-native';
 import { useAppLogs } from '../context/LogContext';
 import { useTheme } from '../context/ThemeContext';
 import { useI18n } from '../context/I18nContext';
@@ -82,9 +75,7 @@ export const ActivityLogScreen: React.FC = () => {
             </Text>
           </View>
 
-          <Text style={[styles.messageText, { color: theme.textPrimary }]}>
-            {message}
-          </Text>
+          <Text style={[styles.messageText, { color: theme.textPrimary }]}>{message}</Text>
 
           {item.rawTopic && (
             <Text style={[styles.topicSub, { color: theme.textSecondary }]}>
@@ -101,9 +92,7 @@ export const ActivityLogScreen: React.FC = () => {
       {/* Header Bar */}
       <View style={styles.headerBar}>
         <View style={styles.headerTitleCol}>
-          <Text style={[styles.title, { color: theme.textPrimary }]}>
-            {t('eventPageTitle')}
-          </Text>
+          <Text style={[styles.title, { color: theme.textPrimary }]}>{t('eventPageTitle')}</Text>
           <Text style={[styles.subtitle, { color: theme.textSecondary }]}>
             {t('logCountLabel')} {logs.length}/50
           </Text>
@@ -132,9 +121,7 @@ export const ActivityLogScreen: React.FC = () => {
         style={[
           styles.filterBar,
           {
-            borderBottomColor: isDarkMode
-              ? 'rgba(255, 255, 255, 0.08)'
-              : 'rgba(0, 0, 0, 0.06)',
+            borderBottomColor: isDarkMode ? 'rgba(255, 255, 255, 0.08)' : 'rgba(0, 0, 0, 0.06)',
           },
         ]}
       >
@@ -165,9 +152,7 @@ export const ActivityLogScreen: React.FC = () => {
                   style={[
                     styles.filterTabText,
                     {
-                      color: isSelected
-                        ? theme.textPrimary
-                        : theme.textSecondary,
+                      color: isSelected ? theme.textPrimary : theme.textSecondary,
                       fontWeight: isSelected ? '700' : '500',
                     },
                   ]}
@@ -327,4 +312,3 @@ const styles = StyleSheet.create({
     lineHeight: 18,
   },
 });
-

@@ -3,24 +3,26 @@
 ## 1. Báo Cáo Tiến Độ Công Việc Của Member 4 (Limi - Mobile Lead)
 
 ### 1.1. Tổng Quan Tiến Độ
+
 - Mã thành viên: Member 4 (Mobile Lead / Lập trình viên Ứng dụng Di động).
 - Nhánh phát triển: `feat/ui-dashboard`.
 - Ngày cập nhật: 17/10/2026.
 - Tiến độ tổng thể: Đạt 88% toàn bộ khối lượng công việc; hoàn thành 100% các hạng mục Nền tảng (Foundation) và Xây dựng Module (Module Build); sẵn sàng 100% để tích hợp phần cứng thực tế cùng Member 1, 2, 3 và Broker EMQX của Member 5.
 
 ### 1.2. Chi Tiết Công Việc Theo Bảng Nhiệm Vụ (M4-01 đến M4-10)
-| Mã Task | Hạng Mục | Trạng Thái | Tiến Độ | Ngày Hoàn Thành | Kết Quả Triển Khai Cụ Thể |
-| :--- | :--- | :---: | :---: | :---: | :--- |
-| **M4-01** | Mobile App Project Foundation | Done | 100% | 17/10/2026 | Khởi tạo dự án React Native Expo (`mobile_app`), cấu hình đầy đủ TypeScript, NativeWind, Vitest, linting và chuẩn hóa cấu trúc thư mục. |
-| **M4-02** | Mobile UI Dashboard SSOT | Done | 100% | 17/10/2026 | Xây dựng bản Interactive Prototype chuẩn Figma SSOT (Frame 2-199 và 2-115) tại `mobile_app/prototype.html` hỗ trợ song ngữ Việt/Anh và hai chế độ Sáng/Tối. |
-| **M4-03** | MQTT Mobile Connection | Done | 100% | 17/10/2026 | Tích hợp MQTT qua giao thức WebSocket, thuật toán tự động kết nối lại với cơ chế Giảm dần lũy thừa (Exponential Backoff) và Nhiễu ngẫu nhiên (Jitter) nhằm ngăn chặn hiện tượng bão kết nối (reconnection storms). |
-| **M4-04** | Command Publish | Done | 100% | 17/10/2026 | Tuân thủ 100% Hợp đồng dữ liệu MQTT Contract v1.0.0: phát lệnh Đèn (`smart_home/commands/light`), Cửa (`smart_home/commands/door`), tích hợp cơ chế khóa giao diện chống bấm lặp (debounce lock). |
-| **M4-05** | Device State Subscription | Done | 100% | 17/10/2026 | Đăng ký lắng nghe phản hồi phản ứng (reactive) từ các topic: `smart_home/state/light`, `smart_home/state/door`, `smart_home/state/motion`, `smart_home/events/access`, giao diện cập nhật ngay lập tức mà không cần cơ chế Polling định kỳ. |
-| **M4-06** | Dual-Layer State Machine & Guard | Done | 100% | 17/10/2026 | Thiết kế tách biệt độc lập Máy trạng thái hai tầng: Tầng 1 (Kết nối Broker EMQX) và Tầng 2 (Node cảm biến ESP32 qua LWT); cơ chế Device Guard khóa tương tác và rung thẻ cảnh báo khi ngoại tuyến. |
-| **M4-07** | Bounded Ring Buffer Event Log | Done | 100% | 17/10/2026 | Xây dựng bộ đệm nhật ký sự kiện giới hạn tối đa 50 phần tử với độ phức tạp thu hồi O(1), bộ lọc linh hoạt theo danh mục (Tất cả, An ninh, Thiết bị, Hệ thống), ngăn ngừa hoàn toàn rò rỉ bộ nhớ RAM. |
-| **M4-08** | Physical ESP32 Integration | In Progress | 60% | -- | Đã kiểm thử trơn tru trên bộ giả lập Chế độ Thủ công (Manual Mode) và công cụ MQTTX. Sẵn sàng nạp firmware và ghép nối thiết bị thực tế cùng Member 1 và Member 3. |
-| **M4-09** | UX Polish & Vibe Code Cleansing | Done | 100% | 17/10/2026 | Loại bỏ 100% emoji và dấu hiệu vibe code; giao diện đạt chuẩn thiết kế Figma với Thanh điều hướng nổi (Floating Navbar) kèm Lớp chắn vùng an toàn (Safe Area Shield), vi tương tác phản hồi mượt mà. |
-| **M4-10** | Mobile Regression & Async Lab | In Progress | 80% | -- | Hoàn thiện Phòng thí nghiệm Bất đồng bộ (Async Lab) với 8/8 kịch bản kiểm thử: Bộ đếm thời gian giám sát (Watchdog), Khóa chống xung đột (Race Condition Guard), Xử lý kẹt cửa (Servo Jam), Chống dội thẻ RFID, Thời gian hồi cảm biến chuyển động (PIR Cooldown). |
+
+| Mã Task   | Hạng Mục                         | Trạng Thái  | Tiến Độ | Ngày Hoàn Thành | Kết Quả Triển Khai Cụ Thể                                                                                                                                                                                                                                          |
+| :-------- | :------------------------------- | :---------: | :-----: | :-------------: | :----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **M4-01** | Mobile App Project Foundation    |    Done     |  100%   |   17/10/2026    | Khởi tạo dự án React Native Expo (`mobile_app`), cấu hình đầy đủ TypeScript, NativeWind, Vitest, linting và chuẩn hóa cấu trúc thư mục.                                                                                                                            |
+| **M4-02** | Mobile UI Dashboard SSOT         |    Done     |  100%   |   17/10/2026    | Xây dựng bản Interactive Prototype chuẩn Figma SSOT (Frame 2-199 và 2-115) tại `mobile_app/prototype.html` hỗ trợ song ngữ Việt/Anh và hai chế độ Sáng/Tối.                                                                                                        |
+| **M4-03** | MQTT Mobile Connection           |    Done     |  100%   |   17/10/2026    | Tích hợp MQTT qua giao thức WebSocket, thuật toán tự động kết nối lại với cơ chế Giảm dần lũy thừa (Exponential Backoff) và Nhiễu ngẫu nhiên (Jitter) nhằm ngăn chặn hiện tượng bão kết nối (reconnection storms).                                                 |
+| **M4-04** | Command Publish                  |    Done     |  100%   |   17/10/2026    | Tuân thủ 100% Hợp đồng dữ liệu MQTT Contract v1.0.0: phát lệnh Đèn (`smart_home/commands/light`), Cửa (`smart_home/commands/door`), tích hợp cơ chế khóa giao diện chống bấm lặp (debounce lock).                                                                  |
+| **M4-05** | Device State Subscription        |    Done     |  100%   |   17/10/2026    | Đăng ký lắng nghe phản hồi phản ứng (reactive) từ các topic: `smart_home/state/light`, `smart_home/state/door`, `smart_home/state/motion`, `smart_home/events/access`, giao diện cập nhật ngay lập tức mà không cần cơ chế Polling định kỳ.                        |
+| **M4-06** | Dual-Layer State Machine & Guard |    Done     |  100%   |   17/10/2026    | Thiết kế tách biệt độc lập Máy trạng thái hai tầng: Tầng 1 (Kết nối Broker EMQX) và Tầng 2 (Node cảm biến ESP32 qua LWT); cơ chế Device Guard khóa tương tác và rung thẻ cảnh báo khi ngoại tuyến.                                                                 |
+| **M4-07** | Bounded Ring Buffer Event Log    |    Done     |  100%   |   17/10/2026    | Xây dựng bộ đệm nhật ký sự kiện giới hạn tối đa 50 phần tử với độ phức tạp thu hồi O(1), bộ lọc linh hoạt theo danh mục (Tất cả, An ninh, Thiết bị, Hệ thống), ngăn ngừa hoàn toàn rò rỉ bộ nhớ RAM.                                                               |
+| **M4-08** | Physical ESP32 Integration       | In Progress |   60%   |       --        | Đã kiểm thử trơn tru trên bộ giả lập Chế độ Thủ công (Manual Mode) và công cụ MQTTX. Sẵn sàng nạp firmware và ghép nối thiết bị thực tế cùng Member 1 và Member 3.                                                                                                 |
+| **M4-09** | UX Polish & Vibe Code Cleansing  |    Done     |  100%   |   17/10/2026    | Loại bỏ 100% emoji và dấu hiệu vibe code; giao diện đạt chuẩn thiết kế Figma với Thanh điều hướng nổi (Floating Navbar) kèm Lớp chắn vùng an toàn (Safe Area Shield), vi tương tác phản hồi mượt mà.                                                               |
+| **M4-10** | Mobile Regression & Async Lab    | In Progress |   80%   |       --        | Hoàn thiện Phòng thí nghiệm Bất đồng bộ (Async Lab) với 8/8 kịch bản kiểm thử: Bộ đếm thời gian giám sát (Watchdog), Khóa chống xung đột (Race Condition Guard), Xử lý kẹt cửa (Servo Jam), Chống dội thẻ RFID, Thời gian hồi cảm biến chuyển động (PIR Cooldown). |
 
 ---
 
@@ -32,6 +34,7 @@ Bản Prototype tương tác được lưu trữ tại đường dẫn:
 Các thành viên có thể mở tệp trực tiếp bằng trình duyệt Google Chrome, Microsoft Edge hoặc thông qua tiện ích mở rộng Live Server trong Visual Studio Code.
 
 ### 2.1. Các Khu Vực Giao Diện Chính
+
 1. **Thanh Tiêu Đề (Top Bar)**:
    - Nhận diện thương hiệu "Limi Smart Home".
    - Chấm trạng thái sống (Live Status Dot): Chuyển xanh lá khi Trực tuyến (Online), vàng khi Đang kết nối / Cảnh báo (Connecting / Warning), đỏ khi Có sự cố an ninh / Ngoại tuyến (Security Alert / Offline), xám khi Mất kết nối Máy chủ (Broker Disconnected).
@@ -54,6 +57,7 @@ Các thành viên có thể mở tệp trực tiếp bằng trình duyệt Googl
    - Giúp các Member 1, 2, 3 và 5 có thể chủ động kích hoạt các tình huống đầu vào và đầu ra của phần cứng thực tế trước khi tiến hành đấu dây.
 
 ### 2.2. Hướng Dẫn Thực Hiện Các Kịch Bản Kiểm Thử
+
 1. **Kịch bản 1: Điều khiển Bật/Tắt Đèn bất đồng bộ**:
    - Nhấn vào Thẻ Đèn trên Bảng điều khiển.
    - Quan sát: Thẻ lập tức chuyển sang trạng thái Đang xử lý (Pending, hiển thị biểu tượng xoay), nút bấm tạm thời bị khóa nhằm ngăn chặn bấm nhiều lần.
@@ -129,6 +133,7 @@ mobile_app/
 ```
 
 ### Kế Hoạch Triển Khai Cụ Thể:
+
 - **Ngày 1**: Ánh xạ toàn bộ hệ thống Token thiết kế, màu sắc, phông chữ từ HTML/Tailwind sang cấu trúc React Native NativeWind.
 - **Ngày 2**: Tích hợp thư viện MQTT Client qua cổng WebSocket `8083` đã được mở sẵn trong [docker-compose.yml](file:///c:/Users/rivea/Documents/GitHub/esp32_smart_home/docker-compose.yml).
 - **Ngày 3**: Tiến hành ghép nối và kiểm thử đồng bộ hai chiều trực tiếp với phần cứng ESP32 thực tế của Member 1 và Member 3.
@@ -141,9 +146,10 @@ mobile_app/
 Để đảm bảo hệ thống vận hành hoàn hảo trên mô hình vật lý thực tế mà không phát sinh lỗi sụt nguồn hay quá tải Broker ngoài dự kiến, đề nghị từng thành viên phụ trách đánh giá và phản hồi các nội dung then chốt sau:
 
 ### 5.1. Gửi Member 1 (Phụ trách Lõi Firmware ESP32)
+
 1. **Thời gian chờ Watchdog Timeout cho lệnh Đèn (Light) và Cửa (Door)**:
    - Trên ứng dụng di động hiện đang thiết lập thời gian chờ là **3000ms cho Đèn** và **4000ms cho Cửa**.
-   - *Câu hỏi đánh giá*: Thời gian xử lý thực tế của ESP32 từ lúc nhận bản tin MQTT lệnh đến khi kích hoạt Relay / quay Servo và xuất bản tin trạng thái về Broker thường mất bao lâu? Có trường hợp nào mạng chập chờn cần nâng mức chờ lên 5000ms hay không?
+   - _Câu hỏi đánh giá_: Thời gian xử lý thực tế của ESP32 từ lúc nhận bản tin MQTT lệnh đến khi kích hoạt Relay / quay Servo và xuất bản tin trạng thái về Broker thường mất bao lâu? Có trường hợp nào mạng chập chờn cần nâng mức chờ lên 5000ms hay không?
 2. **Cơ chế Di Chúc LWT (Last Will and Testament)**:
    - Firmware ESP32 đã cài đặt gửi bản tin LWT với nội dung `offline` về topic `smart_home/status` kèm cờ `retain = true` hay chưa?
    - Chu kỳ gửi gói tin giữ kết nối (Keep-Alive ping) hiện tại đang được cấu hình là bao nhiêu giây (15 giây hay 60 giây)?
@@ -151,19 +157,22 @@ mobile_app/
    - Mô hình cửa cơ học hiện tại có gắn công tắc hành trình (reed switch hoặc limit switch) để xác nhận cửa đã đóng khít thật sự hay chưa, hay ESP32 chỉ phát trạng thái dựa trên thời gian trễ quay động cơ Servo?
 
 ### 5.2. Gửi Member 2 (Phụ trách Cảm Biến và Logic RFID)
+
 1. **Thời gian chống dội thẻ RFID (Debounce 1500ms)**:
    - Ứng dụng di động đang khóa chặn việc nhận thẻ trùng lặp trong vòng 1.5 giây.
-   - *Câu hỏi đánh giá*: Module đọc thẻ RC522 trên ESP32 đã được cài đặt thuật toán chống dội bằng ngắt phần cứng (interrupt) hoặc biến đếm thời gian `millis()` chưa, hay mỗi lần áp thẻ vào là ESP32 gửi liên tục các bản tin MQTT lên máy chủ?
+   - _Câu hỏi đánh giá_: Module đọc thẻ RC522 trên ESP32 đã được cài đặt thuật toán chống dội bằng ngắt phần cứng (interrupt) hoặc biến đếm thời gian `millis()` chưa, hay mỗi lần áp thẻ vào là ESP32 gửi liên tục các bản tin MQTT lên máy chủ?
 2. **Cơ chế Kích hoạt và Hủy Cảnh Báo An Ninh (Security Alert)**:
    - Khi phát hiện quẹt thẻ không hợp lệ (Invalid RFID), ngoài việc gửi bản tin sự kiện `smart_home/events/access` với nội dung `DENIED`, phần cứng ESP32 có tự động hú còi chip (buzzer) không?
    - Nút bấm "Khôi Phục An Ninh (Resolve Alert)" trên ứng dụng di động có cần phát thêm một lệnh MQTT xuống ESP32 để tắt còi và hoàn trả đèn LED về trạng thái bình thường hay không (ví dụ topic: `smart_home/commands/security`, nội dung: `CLEAR`)?
 
 ### 5.3. Gửi Member 3 (Phụ trách Độ Tin Cậy Phần Cứng và Nguồn Điện)
+
 1. **Hiện tượng Sụt Áp và Khởi Động Lại Do Động Cơ Servo (Brownout Reset)**:
    - Khi động cơ SG90 quay đồng thời với thời điểm bật Relay đèn, nguồn điện 5V (dùng chung hay tách riêng với ESP32) có bị sụt áp đột ngột dẫn đến việc ESP32 bị khởi động lại ngoài ý muốn không?
    - Cơ chế tự động thử lại 5 lần (mỗi lần 3 giây) của ứng dụng có khớp với khoảng thời gian khởi động lại và kết nối lại mạng Wi-Fi thực tế của mạch ESP32 hay không?
 
 ### 5.4. Gửi Member 5 (Phụ trách MQTT Broker và Hợp Đồng Hệ Thống)
+
 1. **Cổng Kết Nối WebSocket 8083**:
    - Member 4 đã bổ sung mở cổng `8083:8083` vào tệp [docker-compose.yml](file:///c:/Users/rivea/Documents/GitHub/esp32_smart_home/docker-compose.yml) của EMQX. Nhờ Member 5 kiểm tra và xác nhận cấu hình vùng chứa EMQX trên máy tính đã kích hoạt trình lắng nghe WebSocket trên cổng 8083 này hay chưa.
 2. **Cấu Hình Cờ Lưu Trữ Retain và Chất Lượng Dịch Vụ QoS**:

@@ -1,29 +1,22 @@
-import React from "react";
-import { View, StyleSheet, TouchableOpacity } from "react-native";
-import Svg, { Circle, Rect, Path, G } from "react-native-svg";
-import { useDevice } from "../../context/DeviceContext";
-import { useMqtt } from "../../context/MqttContext";
-import { useAppTheme } from "../../context/ThemeContext";
+import React from 'react';
+import { View, StyleSheet, TouchableOpacity } from 'react-native';
+import Svg, { Circle, Rect, Path, G } from 'react-native-svg';
+import { useDevice } from '../../context/DeviceContext';
+import { useMqtt } from '../../context/MqttContext';
+import { useAppTheme } from '../../context/ThemeContext';
 
 interface RobotAvatarProps {
   size?: number;
   onPress?: () => void;
 }
 
-export const RobotAvatar: React.FC<RobotAvatarProps> = ({
-  size = 44,
-  onPress,
-}) => {
+export const RobotAvatar: React.FC<RobotAvatarProps> = ({ size = 44, onPress }) => {
   const { isConnected } = useMqtt();
   const { esp32Online } = useDevice();
   const { theme, isDarkMode } = useAppTheme();
 
   const isHealthy = isConnected && esp32Online;
-  const statusColor = isHealthy
-    ? "#22C55E"
-    : isConnected
-    ? "#FFC700"
-    : "#EF4444";
+  const statusColor = isHealthy ? '#22C55E' : isConnected ? '#FFC700' : '#EF4444';
 
   return (
     <TouchableOpacity
@@ -81,13 +74,13 @@ const LineDivider = ({ x }: { x: string }) => (
 
 const styles = StyleSheet.create({
   container: {
-    position: "relative",
+    position: 'relative',
     borderRadius: 22,
-    alignItems: "center",
-    justifyContent: "center",
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   statusDot: {
-    position: "absolute",
+    position: 'absolute',
     bottom: -1,
     right: -1,
     width: 12,
@@ -96,4 +89,3 @@ const styles = StyleSheet.create({
     borderWidth: 2,
   },
 });
-

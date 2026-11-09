@@ -19,10 +19,7 @@ interface FloatingDockBarProps {
  * Fully responsive bottom dock navigation with 100% equal spacing distribution.
  * Constrained with maxWidth for tablet/desktop viewports and fluid 25% flex slots.
  */
-export const FloatingDockBar: React.FC<FloatingDockBarProps> = ({
-  currentTab,
-  onSelectTab,
-}) => {
+export const FloatingDockBar: React.FC<FloatingDockBarProps> = ({ currentTab, onSelectTab }) => {
   const { isDarkMode } = useTheme();
   const { t } = useI18n();
   const [quickActionsVisible, setQuickActionsVisible] = useState(false);
@@ -38,9 +35,7 @@ export const FloatingDockBar: React.FC<FloatingDockBarProps> = ({
             styles.dockContainer,
             {
               backgroundColor: isDarkMode ? '#1E293B' : '#FFFFFF',
-              borderColor: isDarkMode
-                ? 'rgba(255, 255, 255, 0.1)'
-                : 'rgba(0, 0, 0, 0.06)',
+              borderColor: isDarkMode ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.06)',
               shadowOpacity: isDarkMode ? 0.45 : 0.08,
             },
           ]}

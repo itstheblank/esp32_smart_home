@@ -199,10 +199,7 @@ function MainApp() {
       </View>
 
       {/* Bottom Floating Dock Bar */}
-      <FloatingDockBar
-        currentTab={currentTab}
-        onSelectTab={handleSelectTab}
-      />
+      <FloatingDockBar currentTab={currentTab} onSelectTab={handleSelectTab} />
 
       {/* Top Floating Notification Toast */}
       <InAppNotificationToast
@@ -284,4 +281,3 @@ const styles = StyleSheet.create({
     flex: 1,
   },
 });
-

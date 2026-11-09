@@ -3,6 +3,7 @@
 Dự án Firmware cho hệ thống nhà thông minh.
 
 ## Cài đặt (Setup)
+
 1. Cài đặt **VSCode** và extension **PlatformIO IDE**.
 2. Mở thư mục này bằng PlatformIO.
 3. Mở file `src/config.cpp` và thay đổi `WIFI_SSID`, `WIFI_PASSWORD` bằng thông tin mạng Wi-Fi của bạn (hoặc mạng hotspot dùng để test).
@@ -11,6 +12,7 @@ Dự án Firmware cho hệ thống nhà thông minh.
 6. Bấm nút **Serial Monitor** (biểu tượng phích cắm 🔌) để xem log kết nối. Chắc chắn rằng baudrate được đặt là `115200`.
 
 ## Tiến độ Firmware (Member 1)
+
 - [x] **M1-01**: Thiết lập cấu trúc project PlatformIO, cấu hình board, Serial logging (115200) và file config dùng chung.
 - [x] **M1-02**: Định nghĩa tập trung danh sách topic/payload trong `config.h` và `config.cpp`, khớp 100% với MQTT Contract v1.0.0 (`docs/mqtt-contract.md`).
 - [x] **M1-03**: Khởi tạo kết nối Wi-Fi (WIFI_STA), bắt sự kiện mạng (`WiFiEvent`) và tự động reconnect định kỳ không chặn luồng chính (non-blocking).
@@ -35,8 +37,8 @@ Mọi thành viên đều có thể khởi động Broker EMQX nhanh chóng bằ
    docker build -t smart-home-emqx:6.3.1 .
    ```
 
-* Dashboard EMQX: [http://localhost:18083](http://localhost:18083) (User: `admin`, Pass: `public`).
-* Cổng MQTT: `1883` (Hỗ trợ kết nối không cần xác thực cho mạng lab nội bộ).
+- Dashboard EMQX: [http://localhost:18083](http://localhost:18083) (User: `admin`, Pass: `public`).
+- Cổng MQTT: `1883` (Hỗ trợ kết nối không cần xác thực cho mạng lab nội bộ).
 
 ## Member 5: broker và kiểm tra kết nối
 

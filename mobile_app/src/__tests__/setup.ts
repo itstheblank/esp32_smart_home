@@ -46,15 +46,20 @@ vi.mock('react-native', () => ({
   TextInput: () => React.createElement('input'),
   Switch: () => React.createElement('input', { type: 'checkbox' }),
   ActivityIndicator: mockBox('ActivityIndicator'),
-  Modal: ({ visible, children }: any) => (visible ? React.createElement('div', null, children) : null),
+  Modal: ({ visible, children }: any) =>
+    visible ? React.createElement('div', null, children) : null,
   FlatList: ({ data = [], renderItem, ListEmptyComponent }: any) =>
     data.length === 0
-      ? ListEmptyComponent ?? null
+      ? (ListEmptyComponent ?? null)
       : React.createElement(
           'div',
           null,
           data.map((item: any, index: number) =>
-            React.createElement(React.Fragment, { key: item?.id ?? index }, renderItem({ item, index }))
+            React.createElement(
+              React.Fragment,
+              { key: item?.id ?? index },
+              renderItem({ item, index })
+            )
           )
         ),
   Platform: {

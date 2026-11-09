@@ -40,4 +40,3 @@ export class WatchdogEngine {
     this.activeTimers.clear();
   }
 }
-

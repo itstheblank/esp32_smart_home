@@ -1,11 +1,5 @@
 import React from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  TouchableOpacity,
-  ActivityIndicator,
-} from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, ActivityIndicator } from 'react-native';
 import { useDevice } from '../../context/DeviceContext';
 import { useMqttCommand } from '../../hooks/useMqttCommand';
 import { useTheme } from '../../context/ThemeContext';
@@ -35,25 +29,27 @@ export const DoorSecurityCard: React.FC = () => {
 
   const cardBorder = isJammed
     ? '#EF4444'
-    : isDarkMode ? 'rgba(255, 255, 255, 0.08)' : 'rgba(0, 0, 0, 0.05)';
+    : isDarkMode
+      ? 'rgba(255, 255, 255, 0.08)'
+      : 'rgba(0, 0, 0, 0.05)';
 
   const iconBg = isJammed
     ? 'rgba(239, 68, 68, 0.15)'
     : isOpen
-    ? 'rgba(37, 99, 235, 0.15)'
-    : isDarkMode ? 'rgba(255, 255, 255, 0.05)' : 'rgba(0, 0, 0, 0.04)';
+      ? 'rgba(37, 99, 235, 0.15)'
+      : isDarkMode
+        ? 'rgba(255, 255, 255, 0.05)'
+        : 'rgba(0, 0, 0, 0.04)';
 
   const pillBg = isJammed
     ? 'rgba(239, 68, 68, 0.15)'
     : isOpen
-    ? 'rgba(37, 99, 235, 0.12)'
-    : isDarkMode ? 'rgba(255, 255, 255, 0.08)' : 'rgba(0, 0, 0, 0.05)';
+      ? 'rgba(37, 99, 235, 0.12)'
+      : isDarkMode
+        ? 'rgba(255, 255, 255, 0.08)'
+        : 'rgba(0, 0, 0, 0.05)';
 
-  const pillText = isJammed
-    ? '#EF4444'
-    : isOpen
-    ? '#2563EB'
-    : theme.textSecondary;
+  const pillText = isJammed ? '#EF4444' : isOpen ? '#2563EB' : theme.textSecondary;
 
   return (
     <TouchableOpacity
@@ -86,11 +82,7 @@ export const DoorSecurityCard: React.FC = () => {
           {isPending ? (
             <ActivityIndicator size="small" color="#2563EB" />
           ) : isJammed ? (
-            <TouchableOpacity
-              style={styles.jamResetBtn}
-              onPress={resetDoorJam}
-              activeOpacity={0.8}
-            >
+            <TouchableOpacity style={styles.jamResetBtn} onPress={resetDoorJam} activeOpacity={0.8}>
               <Text style={styles.jamResetText}>Reset</Text>
             </TouchableOpacity>
           ) : (
@@ -124,10 +116,10 @@ export const DoorSecurityCard: React.FC = () => {
               {isPending
                 ? '...'
                 : isJammed
-                ? t('doorJammed').toUpperCase()
-                : isOpen
-                ? t('open').toUpperCase()
-                : t('closed').toUpperCase()}
+                  ? t('doorJammed').toUpperCase()
+                  : isOpen
+                    ? t('open').toUpperCase()
+                    : t('closed').toUpperCase()}
             </Text>
           </View>
         </View>
@@ -206,4 +198,3 @@ const styles = StyleSheet.create({
     letterSpacing: 0.5,
   },
 });
-

@@ -20,10 +20,7 @@ interface QuickActionsModalProps {
   onClose: () => void;
 }
 
-export const QuickActionsModal: React.FC<QuickActionsModalProps> = ({
-  visible,
-  onClose,
-}) => {
+export const QuickActionsModal: React.FC<QuickActionsModalProps> = ({ visible, onClose }) => {
   const { resolveSecurityAlert } = useDevice();
   const { sendLightCommand, sendDoorCommand } = useMqttCommand();
   const { brokerConfig, isConnected } = useMqtt();
@@ -46,12 +43,7 @@ export const QuickActionsModal: React.FC<QuickActionsModalProps> = ({
   };
 
   return (
-    <Modal
-      visible={visible}
-      transparent
-      animationType="fade"
-      onRequestClose={onClose}
-    >
+    <Modal visible={visible} transparent animationType="fade" onRequestClose={onClose}>
       <TouchableWithoutFeedback onPress={onClose}>
         <View style={styles.backdrop}>
           <TouchableWithoutFeedback>
@@ -60,9 +52,7 @@ export const QuickActionsModal: React.FC<QuickActionsModalProps> = ({
                 styles.modalCard,
                 {
                   backgroundColor: theme.surfaceCard,
-                  borderColor: isDarkMode
-                    ? 'rgba(255, 255, 255, 0.1)'
-                    : 'rgba(0, 0, 0, 0.05)',
+                  borderColor: isDarkMode ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.05)',
                 },
               ]}
             >
@@ -85,7 +75,16 @@ export const QuickActionsModal: React.FC<QuickActionsModalProps> = ({
                   onPress={handleArmAll}
                   activeOpacity={0.7}
                 >
-                  <View style={[styles.iconCircle, { backgroundColor: isDarkMode ? 'rgba(255, 255, 255, 0.08)' : 'rgba(0, 0, 0, 0.05)' }]}>
+                  <View
+                    style={[
+                      styles.iconCircle,
+                      {
+                        backgroundColor: isDarkMode
+                          ? 'rgba(255, 255, 255, 0.08)'
+                          : 'rgba(0, 0, 0, 0.05)',
+                      },
+                    ]}
+                  >
                     <AppIcons.LockClosed size={20} color={theme.textPrimary} />
                   </View>
                   <View style={styles.actionTextCol}>
@@ -107,7 +106,16 @@ export const QuickActionsModal: React.FC<QuickActionsModalProps> = ({
                   onPress={handleLightsOff}
                   activeOpacity={0.7}
                 >
-                  <View style={[styles.iconCircle, { backgroundColor: isDarkMode ? 'rgba(255, 255, 255, 0.08)' : 'rgba(0, 0, 0, 0.05)' }]}>
+                  <View
+                    style={[
+                      styles.iconCircle,
+                      {
+                        backgroundColor: isDarkMode
+                          ? 'rgba(255, 255, 255, 0.08)'
+                          : 'rgba(0, 0, 0, 0.05)',
+                      },
+                    ]}
+                  >
                     <AppIcons.LightbulbOff size={20} color={theme.textPrimary} />
                   </View>
                   <View style={styles.actionTextCol}>
@@ -129,7 +137,16 @@ export const QuickActionsModal: React.FC<QuickActionsModalProps> = ({
                   onPress={handleClearAlert}
                   activeOpacity={0.7}
                 >
-                  <View style={[styles.iconCircle, { backgroundColor: isDarkMode ? 'rgba(255, 255, 255, 0.08)' : 'rgba(0, 0, 0, 0.05)' }]}>
+                  <View
+                    style={[
+                      styles.iconCircle,
+                      {
+                        backgroundColor: isDarkMode
+                          ? 'rgba(255, 255, 255, 0.08)'
+                          : 'rgba(0, 0, 0, 0.05)',
+                      },
+                    ]}
+                  >
                     <AppIcons.ShieldCheck size={20} color={theme.textPrimary} />
                   </View>
                   <View style={styles.actionTextCol}>
@@ -155,7 +172,8 @@ export const QuickActionsModal: React.FC<QuickActionsModalProps> = ({
                     {t('quickActionDiagnostics')}
                   </Text>
                   <Text style={[styles.diagLine, { color: theme.textPrimary }]}>
-                    Broker: {brokerConfig.host}:{brokerConfig.port} ({isConnected ? 'CONNECTED' : 'OFFLINE'})
+                    Broker: {brokerConfig.host}:{brokerConfig.port} (
+                    {isConnected ? 'CONNECTED' : 'OFFLINE'})
                   </Text>
                   <Text style={[styles.diagLine, { color: theme.textPrimary }]}>
                     QoS: 0 (At most once) • LWT Topic: smarthome/state/online
@@ -242,4 +260,3 @@ const styles = StyleSheet.create({
     marginTop: 2,
   },
 });
-

@@ -116,9 +116,7 @@ export const SettingsScreen: React.FC = () => {
       >
         {/* Header */}
         <View style={styles.header}>
-          <Text style={[styles.title, { color: theme.textPrimary }]}>
-            {t('settingsTitle')}
-          </Text>
+          <Text style={[styles.title, { color: theme.textPrimary }]}>{t('settingsTitle')}</Text>
           <Text style={[styles.subtitle, { color: theme.textSecondary }]}>
             {t('settingsSubtitle')}
           </Text>
@@ -237,12 +235,7 @@ export const SettingsScreen: React.FC = () => {
               activeOpacity={0.8}
             >
               <AppIcons.Refresh size={16} color={isDarkMode ? '#111216' : '#FFFFFF'} />
-              <Text
-                style={[
-                  styles.primaryBtnText,
-                  { color: isDarkMode ? '#111216' : '#FFFFFF' },
-                ]}
-              >
+              <Text style={[styles.primaryBtnText, { color: isDarkMode ? '#111216' : '#FFFFFF' }]}>
                 {t('btnSaveConnect')}
               </Text>
             </TouchableOpacity>
@@ -253,7 +246,9 @@ export const SettingsScreen: React.FC = () => {
                   styles.secondaryBtn,
                   {
                     flex: 1,
-                    backgroundColor: isDarkMode ? 'rgba(255, 255, 255, 0.08)' : 'rgba(0, 0, 0, 0.05)',
+                    backgroundColor: isDarkMode
+                      ? 'rgba(255, 255, 255, 0.08)'
+                      : 'rgba(0, 0, 0, 0.05)',
                     borderColor: isDarkMode ? 'rgba(255, 255, 255, 0.15)' : 'rgba(0, 0, 0, 0.12)',
                   },
                 ]}
@@ -261,10 +256,7 @@ export const SettingsScreen: React.FC = () => {
                 activeOpacity={0.8}
               >
                 <Text
-                  style={[
-                    styles.secondaryBtnText,
-                    { color: isDarkMode ? '#FFFFFF' : '#111216' },
-                  ]}
+                  style={[styles.secondaryBtnText, { color: isDarkMode ? '#FFFFFF' : '#111216' }]}
                 >
                   {t('btnDisconnect')}
                 </Text>
@@ -285,21 +277,13 @@ export const SettingsScreen: React.FC = () => {
             ]}
           >
             <Text style={styles.guideTitle}>{t('guideTitle')}</Text>
-            <Text style={[styles.guideBody, { color: theme.textPrimary }]}>
-              {t('guideBody')}
-            </Text>
-            <TouchableOpacity
-              style={styles.guideGotItBtn}
-              onPress={() => handleToggleGuide(false)}
-            >
+            <Text style={[styles.guideBody, { color: theme.textPrimary }]}>{t('guideBody')}</Text>
+            <TouchableOpacity style={styles.guideGotItBtn} onPress={() => handleToggleGuide(false)}>
               <Text style={styles.guideGotItText}>{t('btnGuideGotItText')}</Text>
             </TouchableOpacity>
           </View>
         ) : (
-          <TouchableOpacity
-            style={styles.restoreGuideBtn}
-            onPress={() => handleToggleGuide(true)}
-          >
+          <TouchableOpacity style={styles.restoreGuideBtn} onPress={() => handleToggleGuide(true)}>
             <Text style={styles.restoreGuideText}>{t('btnRestoreGuide')}</Text>
           </TouchableOpacity>
         )}
@@ -314,7 +298,9 @@ export const SettingsScreen: React.FC = () => {
             },
           ]}
         >
-          <Text style={[styles.sectionTitle, { color: theme.textPrimary, marginBottom: spacing.md }]}>
+          <Text
+            style={[styles.sectionTitle, { color: theme.textPrimary, marginBottom: spacing.md }]}
+          >
             {t('notifHeader')}
           </Text>
 
@@ -356,7 +342,9 @@ export const SettingsScreen: React.FC = () => {
           </View>
 
           {/* Group 2: Security & Network */}
-          <Text style={[styles.groupSubtitle, { color: theme.textSecondary, marginTop: spacing.md }]}>
+          <Text
+            style={[styles.groupSubtitle, { color: theme.textSecondary, marginTop: spacing.md }]}
+          >
             {t('notifSubGroupSecurity')}
           </Text>
 
@@ -422,7 +410,9 @@ export const SettingsScreen: React.FC = () => {
           <Text style={[styles.sectionTitle, { color: theme.textPrimary }]}>
             {t('whitelistHeader')}
           </Text>
-          <Text style={[styles.toggleSub, { color: theme.textSecondary, marginBottom: spacing.md }]}>
+          <Text
+            style={[styles.toggleSub, { color: theme.textSecondary, marginBottom: spacing.md }]}
+          >
             {t('whitelistDesc')}
           </Text>
 
@@ -645,4 +635,3 @@ const styles = StyleSheet.create({
     marginTop: 1,
   },
 });
-
