@@ -27,10 +27,10 @@
 | VCC | 3V3 from the board | **Never 5V** — destroys the module |
 | RST | GPIO33 (`RFID_RST_PIN`) | — |
 | GND | Common ground | — |
-| SDA (SS) | GPIO32 (`RFID_SS_PIN`) | Chip select |
-| MOSI | GPIO17 (`RFID_MOSI_PIN`) | ESP32 → module |
 | MISO | GPIO35 (`RFID_MISO_PIN`) | Module → ESP32; GPIO35 is input-only — exactly the MISO role |
+| MOSI | GPIO17 (`RFID_MOSI_PIN`) | ESP32 → module |
 | SCK | GPIO14 (`RFID_SCK_PIN`) | Clock |
+| SDA (SS) | GPIO32 (`RFID_SS_PIN`) | Chip select |
 | IRQ | Not connected | Code uses polling (`PICC_IsNewCardPresent`) |
 
 ## 4. Actuator — Servo SG90 (door)

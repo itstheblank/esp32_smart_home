@@ -1,0 +1,324 @@
+\documentclass[aspectratio=169,11pt]{beamer}
+
+% Compile with pdfLaTeX. Sources reviewed on 2026-11-09.
+% Sheet: https://docs.google.com/spreadsheets/d/1aQGHk3CCcypYjSrMD-Z9yHB_KMrWZ5OGlXp1mt-CLV8/edit
+% Code snapshots: hardware 8e0a5a3, mobile 23ecf5a, firmware core 6f2c13e.
+% Tracker status, code implementation and physical acceptance are reported separately.
+\usepackage[utf8]{inputenc}
+\usepackage[T5,T1]{fontenc}
+\usepackage[english]{babel}
+\usepackage{lmodern}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{tabularx}
+\usepackage{tikz}
+% Prefer updated project assets. Root uploads also work on Overleaf.
+\graphicspath{{report/}{./}}
+
+\definecolor{DeepBlue}{HTML}{003B70}
+\definecolor{AccentRed}{HTML}{C8102E}
+\definecolor{BodyInk}{HTML}{202B36}
+\definecolor{SoftBlue}{HTML}{EAF1F7}
+\setbeamercolor{normal text}{fg=BodyInk,bg=white}
+\setbeamercolor{structure}{fg=DeepBlue}
+\setbeamercolor{frametitle}{fg=white}
+\setbeamercolor{title}{fg=DeepBlue}
+\setbeamercolor{block title}{fg=white,bg=DeepBlue}
+\setbeamercolor{block body}{fg=BodyInk,bg=SoftBlue}
+\setbeamerfont{frametitle}{series=\bfseries,size=\Large}
+\setbeamertemplate{navigation symbols}{}
+\setbeamertemplate{itemize item}{\color{AccentRed}\textbullet}
+\setbeamertemplate{itemize subitem}{\color{AccentRed}--}
+% Reserve the template's top band and its logo/footer area.
+\setbeamertemplate{headline}{\vspace*{1.25cm}}
+\setbeamertemplate{frametitle}{%
+  \begin{tikzpicture}[remember picture,overlay]
+    \node[anchor=west,inner sep=0pt,text=white,text width=14.2cm,
+      font=\bfseries\fontsize{17}{20}\selectfont]
+      at ([xshift=0.85cm,yshift=-0.39cm]current page.north west)
+      {\insertframetitle};
+  \end{tikzpicture}%
+}
+\setbeamertemplate{footline}{%
+  \vbox{%
+    \vspace*{0.72cm}%
+    \hbox to \paperwidth{\hfill
+      {\color{DeepBlue}\fontsize{8}{10}\selectfont\insertframenumber/\inserttotalframenumber}%
+      \hspace*{0.65cm}}%
+    \vspace*{0.12cm}%
+  }%
+}
+\setbeamersize{text margin left=9mm,text margin right=9mm}
+\setlength{\parskip}{0.35em}
+\renewcommand{\arraystretch}{1.18}
+
+\newcommand{\GroupName}{Project Team}
+\newcommand{\VNname}[1]{{\fontencoding{T5}\selectfont #1}}
+\newcommand{\SheetLink}{https://docs.google.com/spreadsheets/d/1aQGHk3CCcypYjSrMD-Z9yHB_KMrWZ5OGlXp1mt-CLV8/edit}
+\newcommand{\RepoLink}{https://github.com/itstheblank/esp32_smart_home}
+
+% Upload background.png next to main.tex to apply the background to every slide.
+\IfFileExists{background.png}{%
+  \usebackgroundtemplate{\includegraphics[width=\paperwidth,height=\paperheight]{background.png}}%
+}{%
+  \usebackgroundtemplate{%
+    \begin{tikzpicture}[remember picture,overlay]
+      \fill[DeepBlue] (current page.north west)
+        rectangle ([yshift=-0.78cm]current page.north east);
+      \draw[AccentRed,line width=1.2pt]
+        ([yshift=-0.97cm]current page.north west) --
+        ([yshift=-0.97cm]current page.north east);
+    \end{tikzpicture}%
+  }%
+}
+
+\title{ESP32 SMART HOME}
+\subtitle{Checkpoint 1 --- System Design and Demonstration}
+\author{\VNname{Trần Sỹ Nguyên} \and \VNname{Lăng Hồng Nguyệt Anh} \and Luong Ngoc Vu Long \and Ha Duc Duong \and Nguyen Vu Anh Khoa}
+\date{9 November 2026}
+
+\begin{document}
+
+\begin{frame}{CHECKPOINT 1}
+  \begingroup
+  \setlength{\parskip}{0pt}
+  \vfill
+  {\fontsize{28}{32}\selectfont\color{DeepBlue}\bfseries ESP32 SMART HOME}\par
+  \vspace{0.18cm}
+  {\large System Design and Demonstration}\par
+  \vspace{0.45cm}
+  {\normalsize\bfseries \GroupName}\par
+  \vspace{0.15cm}
+  {\small\renewcommand{\arraystretch}{1.3}
+    \begin{tabular}{@{}p{5.1cm}r@{}}
+      \VNname{Trần Sỹ Nguyên} & 20235985 \\
+      \VNname{Lăng Hồng Nguyệt Anh} & 20235885 \\
+      Luong Ngoc Vu Long & 20235967 \\
+      Ha Duc Duong & 20235923 \\
+      Nguyen Vu Anh Khoa & 20235957 \\
+    \end{tabular}\par
+  }
+  \vspace{0.3cm}
+  {\small 9 November 2026}
+  \vfill
+  \endgroup
+\end{frame}
+
+\begin{frame}{Presentation Outline}
+  \vfill
+  {\Large\bfseries\color{AccentRed} 01}\quad {\large\bfseries System Design}\par
+  {\small\hspace{1.0cm} Users, requirements, architecture, budget and team roles}\par
+  \vspace{0.55cm}
+  {\Large\bfseries\color{AccentRed} 02}\quad {\large\bfseries Hardware Demo}\par
+  \vspace{0.55cm}
+  {\Large\bfseries\color{AccentRed} 03}\quad {\large\bfseries App Demo}\par
+  \vfill
+\end{frame}
+
+\begin{frame}{1. Users and the Problem}
+  \begin{columns}[T,onlytextwidth]
+    \begin{column}{0.47\textwidth}
+      {\large\bfseries\color{DeepBlue} Intended users}\par
+      Residents who want to control a room's light and model door from a phone.
+
+      The team demonstrates this use case with a small smart-home model on a shared LAN.
+    \end{column}
+    \begin{column}{0.48\textwidth}
+      {\large\bfseries\color{DeepBlue} Need and expected benefit}\par
+      \begin{itemize}
+        \item Control devices without going to each switch.
+        \item See motion and device activity on the interface.
+        \item Reduce unnecessary lighting through inactivity rules.
+      \end{itemize}
+    \end{column}
+  \end{columns}
+  \vspace{0.35cm}
+  {\small User profile is a working assumption. Energy savings remain unmeasured.}
+\end{frame}
+
+\begin{frame}{1. Scope and Functional Requirements}
+  \small
+  \begin{tabularx}{\textwidth}{@{}lX@{}}
+    \toprule
+    \textbf{ID} & \textbf{Required behavior} \\
+    \midrule
+    FR1 & The phone turns the light ON and OFF. \\
+    FR2 & The phone opens and closes the model door. \\
+    FR3 & PIR detection turns the light on, followed by off after a configurable inactivity period. \\
+    FR4 & RFID checks an allowlist and opens the door for an authorized card. \\
+    FR5 & The app displays light, door, motion and connection state. \\
+    FR6 & The app shows recent sensor, access and device events. \\
+    \bottomrule
+  \end{tabularx}
+  \vspace{0.35cm}
+  {\small These are acceptance requirements from the task sheet. Voice is planned after core acceptance.}
+\end{frame}
+
+\begin{frame}{1. Non-functional Acceptance Targets}
+  \small
+  \begin{tabularx}{\textwidth}{@{}lXX@{}}
+    \toprule
+    \textbf{ID} & \textbf{Quality requirement} & \textbf{Acceptance criterion} \\
+    \midrule
+    NFR1 & Operational stability & Run for 30 minutes without unintended reset or connection loss. \\
+    NFR2 & Mechanical reliability & Complete 20 door cycles without jamming. \\
+    NFR3 & Recovery and consistency & Reconnect after a network/broker interruption and restore current device states. \\
+    NFR4 & Input robustness & Reject and log invalid control payloads while keeping firmware running. \\
+    NFR5 & Reproducibility & All Must acceptance scenarios pass twice consecutively. \\
+    \bottomrule
+  \end{tabularx}
+  \vspace{0.2cm}
+  {\small Targets come from M3-11, M3-08, M1-03/04/10, M1-06 and M5-09. Measurement results are pending.}
+\end{frame}
+
+\begin{frame}{1. Four-layer Architecture}
+  \centering
+  \vfill
+  \includegraphics[width=\textwidth,height=0.58\textheight,keepaspectratio]{architecture.png}
+  \vfill
+  \begin{minipage}{\textwidth}
+    \small
+    The original components form four logical layers. ESP32 acts as the gateway.
+    The mobile connection needs MQTT contract alignment and WebSocket configuration.
+  \end{minipage}
+\end{frame}
+
+\begin{frame}{1. Technology Choices and Rationale}
+  \small
+  \begingroup
+  \renewcommand{\arraystretch}{1.35}
+  \hyphenpenalty=10000
+  \exhyphenpenalty=10000
+  \begin{tabularx}{\textwidth}{@{}>{\raggedright\arraybackslash}p{3.4cm}>{\raggedright\arraybackslash}X@{}}
+    \toprule
+    \textbf{Technology} & \textbf{Rationale for this prototype} \\
+    \midrule
+    ESP32 / PlatformIO & Wi-Fi and device interfaces in a shared firmware project. \\
+    MQTT / EMQX & Pub/sub messaging for commands, states and events. \\
+    React Native / Expo & Shared mobile screens with MQTT connectivity. \\
+    Python + Paho & Test commands and display incoming device logs. \\
+    Docker Compose & Repeatable broker and service setup on a laptop. \\
+    Log storage & Server RAM holds 300 logs. App storage retains 50 logs and settings. \\
+    \bottomrule
+  \end{tabularx}
+  \endgroup
+  \par\vspace{0.3cm}
+  \begin{minipage}{\textwidth}
+    \footnotesize\raggedright
+    Core scope uses session/local logs. Persistent server storage remains a future design decision.
+  \end{minipage}
+\end{frame}
+
+% Availability and listed amounts follow the hardware list supplied by the team.
+% Already available components have no additional purchase cost in this budget.
+\begin{frame}{1. Bill of Materials}
+  \fontsize{10}{12}\selectfont
+  \renewcommand{\arraystretch}{1.0}
+  \begin{tabularx}{\textwidth}{@{}>{\raggedright\arraybackslash}Xr@{}}
+    \toprule
+    \textbf{Component / set} & \textbf{Availability / budget (VND)} \\
+    \midrule
+    ESP32 WT-01 (Ethernet and Wi-Fi) & Available \\
+    USB--TTL CH340 adapter & Available \\
+    MB-102 breadboard & Available \\
+    SG90 servo & 46,116 \\
+    RC522 RFID module & Available \\
+    5V relay & Available \\
+    HC-SR501 PIR sensor & 34,560 \\
+    LM2596 buck module & 45,144 \\
+    Jumper wires (three types) & Available \\
+    12V 2A adapter & 46,116 \\
+    DC power jack & 11,124 \\
+    \midrule
+    \textbf{Budget for remaining items} & \textbf{183,060} \\
+    \bottomrule
+  \end{tabularx}
+  \par\vspace{0.15cm}
+  {\footnotesize\raggedright Available items are already owned. RC522 selection remains to be confirmed.\par}
+\end{frame}
+
+\begin{frame}{1. Light Command and State Feedback}
+  \centering
+  \vfill
+  \includegraphics[width=0.93\textwidth,height=0.62\textheight,keepaspectratio]{mqtt-command-flow.png}
+  \vfill
+  {\small Original contract with topic prefix \texttt{smarthome/}. Alignment with the current JSON schema is pending.}
+\end{frame}
+
+\begin{frame}{1. Current Sensor-to-interface Flow}
+  \centering
+  \vfill
+  \includegraphics[width=\textwidth,height=0.47\textheight,keepaspectratio]{mqtt-flow.png}
+  \vfill
+  \begin{minipage}{\textwidth}
+    \small
+    The hardware branch contains this path in code. The server stores recent logs in RAM and serves the web dashboard.
+
+    Durable database storage is a pending scope decision. Physical sensor-to-screen evidence still needs to be recorded.
+  \end{minipage}
+\end{frame}
+
+\begin{frame}{1. MQTT Contract Alignment}
+  \small
+  \begin{tabularx}{\textwidth}{@{}p{2.8cm}XX@{}}
+    \toprule
+    & \textbf{Hardware / test server} & \textbf{Current mobile code} \\
+    \midrule
+    Command topic & \texttt{smarthome/cmd} & \texttt{smarthome/cmd/light}\newline\texttt{smarthome/cmd/door} \\
+    Feedback topics & \texttt{smarthome/logs} & \texttt{smarthome/state/+}\newline\texttt{smarthome/event/access} \\
+    Payload & JSON command and log schema & Text commands and state values, JSON access events \\
+    Broker transport & MQTT over TCP 1883 & MQTT over WebSocket 8083 \\
+    \bottomrule
+  \end{tabularx}
+  \vspace{0.35cm}
+  \textcolor{AccentRed}{\bfseries Integration priority}\quad Agree one version, update both clients and rerun shared test cases.
+\end{frame}
+
+\begin{frame}{1. Team Roles and Shared Repository}
+  \small
+  \begin{tabularx}{\textwidth}{@{}l >{\raggedright\arraybackslash}p{3.9cm} l >{\raggedright\arraybackslash}X@{}}
+    \toprule
+    \textbf{Member} & \textbf{Name} & \textbf{Student ID} & \textbf{Primary ownership} \\
+    \midrule
+    M1 & \VNname{Trần Sỹ Nguyên} & 20235985 & Wi-Fi/MQTT core and firmware interfaces \\
+    M2 & \VNname{Lăng Hồng Nguyệt Anh} & 20235885 & PIR, RFID authorization and automation \\
+    M3 & Luong Ngoc Vu Long & 20235967 & Power, wiring, actuators and physical model \\
+    M4 & Ha Duc Duong & 20235923 & Mobile dashboard, MQTT control and event UI \\
+    M5 & Nguyen Vu Anh Khoa & 20235957 & Broker, integration, QA and report coordination \\
+    \bottomrule
+  \end{tabularx}
+  \vspace{0.35cm}
+  \href{\RepoLink}{\textbf{github.com/itstheblank/esp32\_smart\_home}}\par
+  \href{\SheetLink}{Shared project sheet}\par
+\end{frame}
+
+% PART 2: The user will add hardware demo assets here.
+\begin{frame}{2. Hardware Demo}
+  \centering
+  \vfill
+  {\Large\color{DeepBlue}\bfseries Hardware Demo}\par
+  \vspace{0.4cm}
+  {\normalsize Add the model photo, wiring view or live demonstration here.}
+  \vfill
+\end{frame}
+
+% PART 3: The user will add app demo assets here.
+\begin{frame}{3. App Demo}
+  \centering
+  \vfill
+  {\Large\color{DeepBlue}\bfseries App Demo}\par
+  \vspace{0.4cm}
+  {\normalsize Add phone screenshots, a recording or the live app here.}
+  \vfill
+\end{frame}
+
+\begin{frame}[plain]
+  \centering
+  \vfill
+  {\Huge\bfseries\color{DeepBlue} Thank You!}\par
+  \vspace{0.4cm}
+  {\large Questions and Discussion}
+  \vfill
+\end{frame}
+
+\end{document}
