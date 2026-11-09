@@ -12,6 +12,7 @@
 \usepackage{booktabs}
 \usepackage{tabularx}
 \usepackage{tikz}
+\usetikzlibrary{arrows.meta}
 % Prefer updated project assets. Root uploads also work on Overleaf.
 \graphicspath{{report/}{./}}
 
@@ -182,95 +183,137 @@
   \small
   \begin{tabularx}{\textwidth}{@{}lX@{}}
     \toprule
-    \textbf{ID} & \textbf{Required behavior} \\
+    \textbf{ID} & \textbf{What the system must do} \\
     \midrule
-    FR1 & The phone turns the light ON and OFF. \\
-    FR2 & The phone opens and closes the model door. \\
-    FR3 & PIR detection turns the light on, followed by off after a configurable inactivity period. \\
-    FR4 & RFID checks an allowlist and opens the door for an authorized card. \\
-    FR5 & The app displays light, door, motion and connection state. \\
-    FR6 & The app shows recent sensor, access and device events. \\
+    FR1 & Turn the light ON and OFF from the dashboard, with the real state confirmed back. \\
+    FR2 & Open and close the model door remotely. \\
+    FR3 & Turn the light on when motion is detected, and off again by itself after a configurable quiet period. \\
+    FR4 & Open the door only for RFID cards on the allowlist; reject and log everyone else. \\
+    FR5 & Show the live state of the light, door, motion sensor and connection on one screen. \\
+    FR6 & Keep a running list of recent sensor readings, access attempts and device events. \\
     \bottomrule
   \end{tabularx}
-  \vspace{0.35cm}
-  {\small These are acceptance requirements from the task sheet. Voice is planned after core acceptance.}
 \end{frame}
 
 \begin{frame}{2. Non-functional Targets}
-  \small
-  \begin{tabularx}{\textwidth}{@{}lXX@{}}
+  \footnotesize
+  \renewcommand{\arraystretch}{1.05}
+  \begin{tabularx}{\textwidth}{@{}lp{2.6cm}X@{}}
     \toprule
-    \textbf{ID} & \textbf{Quality requirement} & \textbf{Acceptance criterion} \\
+    \textbf{ID} & \textbf{Quality} & \textbf{What counts as passing} \\
     \midrule
-    NFR1 & Operational stability & Run for 30 minutes without unintended reset or connection loss. \\
-    NFR2 & Mechanical reliability & Complete 20 door cycles without jamming. \\
-    NFR3 & Recovery and consistency & Reconnect after a network/broker interruption and restore current device states. \\
-    NFR4 & Input robustness & Reject and log invalid control payloads while keeping firmware running. \\
-    NFR5 & Reproducibility & All Must acceptance scenarios pass twice consecutively. \\
+    NFR1 & Stability & Runs 30 minutes with no reset and no dropped connection. \\
+    NFR2 & Mechanism & Door completes 20 open/close cycles without jamming. \\
+    NFR3 & Recovery & After a broker or Wi-Fi outage, the ESP32 reconnects and resumes its state. \\
+    NFR4 & Robustness & Malformed commands are rejected and logged; firmware keeps running. \\
+    NFR5 & Repeatability & Every must-have scenario passes twice in a row. \\
     \bottomrule
   \end{tabularx}
-  \vspace{0.05cm}
-  {\small Targets come from M3-11, M3-08, M1-03/04/10, M1-06 and M5-09. Measurement results are pending.}
+  \vspace{0.35cm}
+  {\small Each target is checked with a short, repeatable test on the physical model --- the results are shown at the demo.}
 \end{frame}
 
-\begin{frame}{3. Four-layer Architecture}
+\begin{frame}{3. Architecture}
   \centering
-  \vfill
-  \includegraphics[width=\textwidth,height=0.58\textheight,keepaspectratio]{architecture.png}
-  \vfill
-  \begin{minipage}{\textwidth}
-    \small
-    The original components form four logical layers. ESP32 acts as the gateway.
-    The mobile connection needs MQTT contract alignment and WebSocket configuration.
-  \end{minipage}
+  \begin{tikzpicture}[
+      font=\scriptsize,
+      layerbox/.style={rounded corners=3pt, draw=DeepBlue!70, line width=0.6pt, fill=SoftBlue!60},
+      comp/.style={rectangle, draw=DeepBlue, line width=0.5pt, fill=white, align=center,
+        inner sep=3pt, minimum height=6.5mm, text width=2.1cm},
+      conn/.style={{Stealth[length=2mm]}-{Stealth[length=2mm]}, line width=0.7pt, DeepBlue},
+      one/.style={{Stealth[length=2mm]}-, line width=0.7pt, DeepBlue},
+      hoplab/.style={font=\tiny\bfseries, text=AccentRed, align=center}
+    ]
+    % ---------- 1. Device layer
+    \draw[layerbox] (0.05,-2.05) rectangle (2.95,2.05);
+    \node[font=\scriptsize\bfseries, text=DeepBlue] at (1.5,1.72) {1. Device layer};
+    \node[comp] (pir)   at (1.5, 1.10) {PIR sensor};
+    \node[comp] (rfid)  at (1.5, 0.40) {RFID reader};
+    \node[comp] (light) at (1.5,-0.35) {Light (relay)};
+    \node[comp] (servo) at (1.5,-1.10) {Door servo};
+
+    % ---------- 2. Gateway layer
+    \draw[layerbox] (3.7,-2.05) rectangle (5.7,2.05);
+    \node[font=\scriptsize\bfseries, text=DeepBlue] at (4.7,1.72) {2. Gateway};
+    \node[comp, text width=1.5cm] (esp) at (4.7,0.1) {ESP32{\tiny\\ Wi-Fi MCU}};
+
+    % ---------- 3. Server layer
+    \draw[layerbox] (6.9,-2.05) rectangle (9.7,2.05);
+    \node[font=\scriptsize\bfseries, text=DeepBlue] at (8.3,1.72) {3. Server layer};
+    \node[comp, text width=1.9cm] (emqx)  at (8.3, 0.90) {EMQX broker};
+    \node[comp, text width=1.9cm] (flask) at (8.3,-0.45) {Flask server{\tiny\\ rules + logs}};
+
+    % ---------- 4. Application layer
+    \draw[layerbox] (11.5,-2.05) rectangle (14.65,2.05);
+    \node[font=\scriptsize\bfseries, text=DeepBlue] at (13.05,1.72) {4. Application};
+    \node[comp, text width=2.2cm] (mobile) at (13.05, 0.90) {Mobile app};
+    \node[comp, text width=2.2cm] (web)    at (13.05,-0.45) {Web dashboard{\tiny\\ browser client}};
+
+    % ---------- device <-> gateway wiring
+    \draw[one] (3.7,0.25) -- (2.65, 1.10);
+    \draw[one] (3.7,0.15) -- (2.65, 0.40);
+    \draw[one] (3.7,0.00) -- (2.65,-0.35);
+    \draw[one] (3.7,-0.15) -- (2.65,-1.10);
+
+    % ---------- gateway <-> server
+    \draw[conn] (5.7,0.90) -- (6.9,0.90);
+    \node[hoplab] at (6.3,1.28) {MQTT / TCP 1883};
+
+    % ---------- inside server
+    \draw[conn] (8.3,0.55) -- (8.3,-0.10);
+    \node[hoplab, anchor=west] at (8.42,0.22) {MQTT};
+
+    % ---------- server <-> application
+    \draw[conn] (9.7,-0.45) -- (11.5,0.90);
+    \node[hoplab] at (10.6,1.28) {MQTT / WebSocket 8083};
+    \draw[conn] (9.7,-0.45) -- (11.5,-0.45);
+    \node[hoplab] at (10.6,-0.75) {HTTP + SSE :5000};
+  \end{tikzpicture}
+
+  \vspace{0.15cm}
 \end{frame}
 
 \begin{frame}{3. MQTT Contract per Hop}
   \small
   \begin{tabularx}{\textwidth}{@{}p{2.8cm}XX@{}}
     \toprule
-    & \textbf{Hardware / test server} & \textbf{Current mobile code} \\
+    & \textbf{Unified contract (firmware + server)} & \textbf{Mobile branch (not yet updated)} \\
     \midrule
-    Command topic & \texttt{smarthome/cmd} & \texttt{smarthome/cmd/light}\newline\texttt{smarthome/cmd/door} \\
-    Feedback topics & \texttt{smarthome/logs} & \texttt{smarthome/state/+}\newline\texttt{smarthome/event/access} \\
-    Payload & JSON command and log schema & Text commands and state values, JSON access events \\
-    Broker transport & MQTT over TCP 1883 & MQTT over WebSocket 8083 \\
+    Command topic & \texttt{smarthome/cmd}, one JSON command for every device & \texttt{smarthome/cmd/light}\newline\texttt{smarthome/cmd/door} as plain text \\
+    Feedback topics & \texttt{smarthome/logs}, one stream for states and events & \texttt{smarthome/state/+}\newline\texttt{smarthome/event/access} \\
+    Payload & JSON for both commands and logs & Text commands, mixed JSON events \\
+    Transport & TCP 1883 for devices and the server & WebSocket 8083 for the app \\
     \bottomrule
   \end{tabularx}
   \vspace{0.35cm}
-  \textcolor{AccentRed}{\bfseries Integration priority}\quad Agree one version, update both clients and rerun shared test cases.
+  \textcolor{AccentRed}{\bfseries Integration priority}\quad Both transports are fine --- only topics and payloads have to match. Updating the mobile branch is the top integration task.
 \end{frame}
 
 \begin{frame}{3. Technology Choices and Rationale}
   \small
   \begingroup
-  \renewcommand{\arraystretch}{1.35}
+  \renewcommand{\arraystretch}{1.25}
   \hyphenpenalty=10000
   \exhyphenpenalty=10000
   \begin{tabularx}{\textwidth}{@{}>{\raggedright\arraybackslash}p{3.4cm}>{\raggedright\arraybackslash}X@{}}
     \toprule
-    \textbf{Technology} & \textbf{Rationale for this prototype} \\
+    \textbf{Technology} & \textbf{Why we picked it} \\
     \midrule
-    ESP32 / PlatformIO & Wi-Fi and device interfaces in a shared firmware project. \\
-    MQTT / EMQX & Pub/sub messaging for commands, states and events. \\
-    React Native / Expo & Shared mobile screens with MQTT connectivity. \\
-    Python + Paho & Test commands and display incoming device logs. \\
-    Docker Compose & Repeatable broker and service setup on a laptop. \\
-    Log storage & Server RAM holds 300 logs. App storage retains 50 logs and settings. \\
+    ESP32 / PlatformIO & One cheap chip drives every sensor and actuator and has Wi-Fi built in. \\
+    MQTT / EMQX & Pub/sub decouples devices, server and app; EMQX serves TCP and WebSocket from one broker. \\
+    Flask + Paho (Python) & A small server is enough for the rules engine, live log stream (SSE) and dashboard. \\
+    React Native / Expo & One codebase for both phones; MQTT over WebSocket connects straight to the broker. \\
+    Docker Compose & Broker and server start with a single command on any laptop. \\
+    Storage & Rules persist in \texttt{rules.json}; recent events stay in a RAM buffer of 300. \\
     \bottomrule
   \end{tabularx}
   \endgroup
-  \par\vspace{0.3cm}
-  \begin{minipage}{\textwidth}
-    \footnotesize\raggedright
-    Core scope uses session/local logs. Persistent server storage remains a future design decision.
-  \end{minipage}
 \end{frame}
 
 % Availability and listed amounts follow the hardware list supplied by the team.
 % Already available components have no additional purchase cost in this budget.
 \begin{frame}{4. Bill of Materials}
-  \fontsize{9}{11}\selectfont
+  \fontsize{9}{10.5}\selectfont
   \setlength{\parskip}{0.15em}
   \renewcommand{\arraystretch}{1.0}
   \begin{tabularx}{\textwidth}{@{}>{\raggedright\arraybackslash}Xr@{}}
@@ -292,8 +335,8 @@
     \textbf{Budget for remaining items} & \textbf{183,060} \\
     \bottomrule
   \end{tabularx}
-  \par\vspace{0.15cm}
-  {\footnotesize\raggedright Available items are already owned. RC522 selection remains to be confirmed.\par}
+  \par\vspace{0.05cm}
+  {\footnotesize\raggedright Most parts were already owned; the remaining spend is 183,060 VND (about 7 USD) --- a fraction of a commercial smart-home kit.\par}
 \end{frame}
 
 \begin{frame}{5. End-to-end Data Flow}
@@ -303,9 +346,11 @@
   \vfill
   \begin{minipage}{\textwidth}
     \small
-    The hardware branch contains this path in code. The server stores recent logs in RAM and serves the web dashboard.
-
-    Durable database storage is a pending scope decision. Physical sensor-to-screen evidence still needs to be recorded.
+    PIR and RFID events travel from the ESP32 through the broker into the
+    server's log store and appear on the dashboard in real time; commands
+    take the same path in reverse. The rules engine evaluates every message
+    on the way. Next step: record a live sensor-to-screen demo on the
+    physical model.
   \end{minipage}
 \end{frame}
 
@@ -314,30 +359,30 @@
   \vfill
   \includegraphics[width=0.93\textwidth,height=0.62\textheight,keepaspectratio]{mqtt-command-flow.png}
   \vfill
-  {\small Original contract with topic prefix \texttt{smarthome/}. Alignment with the current JSON schema is pending.}
+  {\small After the refactor there is one command topic in and one log stream back, so the dashboard always shows what the firmware actually did.}
 \end{frame}
 
-% PART 2: The user will add hardware demo assets here.
+% Demo assets to be added before the presentation.
 \begin{frame}{5. Hardware Demo}
   \centering
   \vfill
   {\Large\color{DeepBlue}\bfseries Hardware Demo}\par
   \vspace{0.4cm}
-  {\normalsize Add the model photo, wiring view or live demonstration here.}
+  {\normalsize Live on the model: PIR-triggered light, RFID door opening and servo actuation, with the dashboard reacting in real time.}
   \vfill
 \end{frame}
 
-% PART 3: The user will add app demo assets here.
+% Demo assets to be added before the presentation.
 \begin{frame}{5. App Demo}
   \centering
   \vfill
   {\Large\color{DeepBlue}\bfseries App Demo}\par
   \vspace{0.4cm}
-  {\normalsize Add phone screenshots, a recording or the live app here.}
+  {\normalsize Live on screen: sending a command, seeing the state change, scrolling the event log and editing a rule.}
   \vfill
 \end{frame}
 
-\begin{frame}{6. Team, Repository and Status}
+\begin{frame}{6. Team and Repository}
   \footnotesize
   \setlength{\parskip}{0.2em}
   \begin{tabularx}{\textwidth}{@{}l >{\raggedright\arraybackslash}p{3.9cm} l >{\raggedright\arraybackslash}X@{}}
@@ -353,7 +398,22 @@
   \end{tabularx}
   \vspace{0.35cm}
   \href{\RepoLink}{\textbf{github.com/itstheblank/esp32\_smart\_home}}\par
-  \href{\SheetLink}{Shared project sheet}\par
+\end{frame}
+
+\begin{frame}{6. Top Problems Right Now}
+  \small
+  \begin{enumerate}
+    \item \textbf{Mobile contract drift.} The app branch still publishes the
+      old text commands and listens to deprecated topics; it must be migrated
+      to \texttt{smarthome/cmd} / \texttt{smarthome/logs} and retested
+      end-to-end.
+    \item \textbf{No recorded proof of the full loop yet.} The path works in
+      code, but we still need a live sensor-to-screen recording on the
+      physical model for the demo.
+    \item \textbf{Event history is volatile.} Logs live in a RAM buffer of
+      300 entries; we have to decide whether checkpoint 2 needs
+      database-backed storage.
+  \end{enumerate}
 \end{frame}
 
 \begin{frame}[plain]
