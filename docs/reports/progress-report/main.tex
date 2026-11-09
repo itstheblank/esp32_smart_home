@@ -74,7 +74,7 @@
 
 \title{ESP32 SMART HOME}
 \subtitle{Checkpoint 1 --- System Design and Demonstration}
-\author{\VNname{Trần Sỹ Nguyên} \and \VNname{Lăng Hồng Nguyệt Anh} \and Luong Ngoc Vu Long \and Ha Duc Duong \and Nguyen Vu Anh Khoa}
+\author{\VNname{Trần Sỹ Nguyên} \and \VNname{Lăng Hồng Nguyệt Anh} \and \VNname{Lương Ngọc Vũ Long} \and \VNname{Hà Đức Dương} \and \VNname{Nguyễn Vũ Anh Khoa}}
 \date{9 November 2026}
 
 \begin{document}
@@ -93,50 +93,92 @@
     \begin{tabular}{@{}p{5.1cm}r@{}}
       \VNname{Trần Sỹ Nguyên} & 20235985 \\
       \VNname{Lăng Hồng Nguyệt Anh} & 20235885 \\
-      Luong Ngoc Vu Long & 20235967 \\
-      Ha Duc Duong & 20235923 \\
-      Nguyen Vu Anh Khoa & 20235957 \\
+      \VNname{Lương Ngọc Vũ Long} & 20235967 \\
+      \VNname{Hà Đức Dương} & 20235923 \\
+      \VNname{Nguyễn Vũ Anh Khoa} & 20235957 \\
     \end{tabular}\par
   }
   \vspace{0.3cm}
-  {\small 9 November 2026}
   \vfill
   \endgroup
 \end{frame}
 
 \begin{frame}{Presentation Outline}
   \vfill
-  {\Large\bfseries\color{AccentRed} 01}\quad {\large\bfseries System Design}\par
-  {\small\hspace{1.0cm} Users, requirements, architecture, budget and team roles}\par
-  \vspace{0.55cm}
-  {\Large\bfseries\color{AccentRed} 02}\quad {\large\bfseries Hardware Demo}\par
-  \vspace{0.55cm}
-  {\Large\bfseries\color{AccentRed} 03}\quad {\large\bfseries App Demo}\par
+  {\Large\bfseries\color{AccentRed} 01}\quad {\large\bfseries Introduction}\par
+  \vspace{0.45cm}
+  {\Large\bfseries\color{AccentRed} 02}\quad {\large\bfseries Requirements}\par
+  \vspace{0.45cm}
+  {\Large\bfseries\color{AccentRed} 03}\quad {\large\bfseries System Design}\par
+  \vspace{0.45cm}
+  {\Large\bfseries\color{AccentRed} 04}\quad {\large\bfseries Budget}\par
+  \vspace{0.45cm}
+  {\Large\bfseries\color{AccentRed} 05}\quad {\large\bfseries Progress and Demo}\par
+  \vspace{0.45cm}
+  {\Large\bfseries\color{AccentRed} 06}\quad {\large\bfseries Team and Status}\par
   \vfill
 \end{frame}
 
-\begin{frame}{1. Users and the Problem}
+\begin{frame}{1. Problem and Users}
+  \small
+  \begin{block}{The problem}
+    In most homes, turning on a light still means walking to the switch.
+    Even with a smart app, you still have to press the button yourself ---
+    there is no way to tell the system when the light should turn on, so it
+    can never act automatically.
+  \end{block}
+  \vspace{0.1cm}
+  \small
   \begin{columns}[T,onlytextwidth]
     \begin{column}{0.47\textwidth}
       {\large\bfseries\color{DeepBlue} Intended users}\par
-      Residents who want to control a room's light and model door from a phone.
-
-      The team demonstrates this use case with a small smart-home model on a shared LAN.
+      Homeowners and renters who want everyday devices controllable from a phone, with no technical knowledge required.
     \end{column}
     \begin{column}{0.48\textwidth}
-      {\large\bfseries\color{DeepBlue} Need and expected benefit}\par
+      {\large\bfseries\color{DeepBlue} Why it matters}\par
       \begin{itemize}
         \item Control devices without going to each switch.
-        \item See motion and device activity on the interface.
-        \item Reduce unnecessary lighting through inactivity rules.
+        \item See device state live, with history for monitoring.
+        \item Automate device control through customizable rules.
       \end{itemize}
     \end{column}
   \end{columns}
-  \vspace{0.35cm}
-  {\small User profile is a working assumption. Energy savings remain unmeasured.}
 \end{frame}
 
-\begin{frame}{1. Scope and Functional Requirements}
+\begin{frame}{1. Checkpoint 1 Scope}
+  \footnotesize
+  \setlength{\parskip}{0.2em}
+  \begin{columns}[T,onlytextwidth]
+    \begin{column}{0.48\textwidth}
+      {\large\bfseries\color{DeepBlue} In scope now}\par
+      \begin{itemize}
+        \item Light ON/OFF and door open/close over MQTT
+          (\texttt{smarthome/cmd}) from the web dashboard.
+        \item PIR motion turns the light on, auto-off after inactivity.
+        \item RFID allowlist opens the door; unknown cards are rejected and
+          logged.
+        \item Live web dashboard: SSE stream of the last 300 events, device
+          state at a glance.
+        \item Rules engine: trigger/condition/action rules, persisted in
+          \texttt{rules.json} across restarts.
+      \end{itemize}
+    \end{column}
+    \begin{column}{0.48\textwidth}
+      {\large\bfseries\color{DeepBlue} Deliberately deferred}\par
+      \begin{itemize}
+        \item Mobile app on the unified contract --- alignment with the
+          refactored topics is in progress.
+        \item Voice control (planned after core acceptance).
+        \item Database-backed event history; logs stay in a RAM buffer
+          (only rules persist).
+        \item Cloud/remote access; the demo runs on a shared LAN.
+        \item Energy-saving measurement.
+      \end{itemize}
+    \end{column}
+  \end{columns}
+\end{frame}
+
+\begin{frame}{2. Functional Requirements}
   \small
   \begin{tabularx}{\textwidth}{@{}lX@{}}
     \toprule
@@ -154,7 +196,7 @@
   {\small These are acceptance requirements from the task sheet. Voice is planned after core acceptance.}
 \end{frame}
 
-\begin{frame}{1. Non-functional Acceptance Targets}
+\begin{frame}{2. Non-functional Targets}
   \small
   \begin{tabularx}{\textwidth}{@{}lXX@{}}
     \toprule
@@ -167,11 +209,11 @@
     NFR5 & Reproducibility & All Must acceptance scenarios pass twice consecutively. \\
     \bottomrule
   \end{tabularx}
-  \vspace{0.2cm}
+  \vspace{0.05cm}
   {\small Targets come from M3-11, M3-08, M1-03/04/10, M1-06 and M5-09. Measurement results are pending.}
 \end{frame}
 
-\begin{frame}{1. Four-layer Architecture}
+\begin{frame}{3. Four-layer Architecture}
   \centering
   \vfill
   \includegraphics[width=\textwidth,height=0.58\textheight,keepaspectratio]{architecture.png}
@@ -183,7 +225,23 @@
   \end{minipage}
 \end{frame}
 
-\begin{frame}{1. Technology Choices and Rationale}
+\begin{frame}{3. MQTT Contract per Hop}
+  \small
+  \begin{tabularx}{\textwidth}{@{}p{2.8cm}XX@{}}
+    \toprule
+    & \textbf{Hardware / test server} & \textbf{Current mobile code} \\
+    \midrule
+    Command topic & \texttt{smarthome/cmd} & \texttt{smarthome/cmd/light}\newline\texttt{smarthome/cmd/door} \\
+    Feedback topics & \texttt{smarthome/logs} & \texttt{smarthome/state/+}\newline\texttt{smarthome/event/access} \\
+    Payload & JSON command and log schema & Text commands and state values, JSON access events \\
+    Broker transport & MQTT over TCP 1883 & MQTT over WebSocket 8083 \\
+    \bottomrule
+  \end{tabularx}
+  \vspace{0.35cm}
+  \textcolor{AccentRed}{\bfseries Integration priority}\quad Agree one version, update both clients and rerun shared test cases.
+\end{frame}
+
+\begin{frame}{3. Technology Choices and Rationale}
   \small
   \begingroup
   \renewcommand{\arraystretch}{1.35}
@@ -211,8 +269,9 @@
 
 % Availability and listed amounts follow the hardware list supplied by the team.
 % Already available components have no additional purchase cost in this budget.
-\begin{frame}{1. Bill of Materials}
-  \fontsize{10}{12}\selectfont
+\begin{frame}{4. Bill of Materials}
+  \fontsize{9}{11}\selectfont
+  \setlength{\parskip}{0.15em}
   \renewcommand{\arraystretch}{1.0}
   \begin{tabularx}{\textwidth}{@{}>{\raggedright\arraybackslash}Xr@{}}
     \toprule
@@ -237,15 +296,7 @@
   {\footnotesize\raggedright Available items are already owned. RC522 selection remains to be confirmed.\par}
 \end{frame}
 
-\begin{frame}{1. Light Command and State Feedback}
-  \centering
-  \vfill
-  \includegraphics[width=0.93\textwidth,height=0.62\textheight,keepaspectratio]{mqtt-command-flow.png}
-  \vfill
-  {\small Original contract with topic prefix \texttt{smarthome/}. Alignment with the current JSON schema is pending.}
-\end{frame}
-
-\begin{frame}{1. Current Sensor-to-interface Flow}
+\begin{frame}{5. End-to-end Data Flow}
   \centering
   \vfill
   \includegraphics[width=\textwidth,height=0.47\textheight,keepaspectratio]{mqtt-flow.png}
@@ -258,42 +309,16 @@
   \end{minipage}
 \end{frame}
 
-\begin{frame}{1. MQTT Contract Alignment}
-  \small
-  \begin{tabularx}{\textwidth}{@{}p{2.8cm}XX@{}}
-    \toprule
-    & \textbf{Hardware / test server} & \textbf{Current mobile code} \\
-    \midrule
-    Command topic & \texttt{smarthome/cmd} & \texttt{smarthome/cmd/light}\newline\texttt{smarthome/cmd/door} \\
-    Feedback topics & \texttt{smarthome/logs} & \texttt{smarthome/state/+}\newline\texttt{smarthome/event/access} \\
-    Payload & JSON command and log schema & Text commands and state values, JSON access events \\
-    Broker transport & MQTT over TCP 1883 & MQTT over WebSocket 8083 \\
-    \bottomrule
-  \end{tabularx}
-  \vspace{0.35cm}
-  \textcolor{AccentRed}{\bfseries Integration priority}\quad Agree one version, update both clients and rerun shared test cases.
-\end{frame}
-
-\begin{frame}{1. Team Roles and Shared Repository}
-  \small
-  \begin{tabularx}{\textwidth}{@{}l >{\raggedright\arraybackslash}p{3.9cm} l >{\raggedright\arraybackslash}X@{}}
-    \toprule
-    \textbf{Member} & \textbf{Name} & \textbf{Student ID} & \textbf{Primary ownership} \\
-    \midrule
-    M1 & \VNname{Trần Sỹ Nguyên} & 20235985 & Wi-Fi/MQTT core and firmware interfaces \\
-    M2 & \VNname{Lăng Hồng Nguyệt Anh} & 20235885 & PIR, RFID authorization and automation \\
-    M3 & Luong Ngoc Vu Long & 20235967 & Power, wiring, actuators and physical model \\
-    M4 & Ha Duc Duong & 20235923 & Mobile dashboard, MQTT control and event UI \\
-    M5 & Nguyen Vu Anh Khoa & 20235957 & Broker, integration, QA and report coordination \\
-    \bottomrule
-  \end{tabularx}
-  \vspace{0.35cm}
-  \href{\RepoLink}{\textbf{github.com/itstheblank/esp32\_smart\_home}}\par
-  \href{\SheetLink}{Shared project sheet}\par
+\begin{frame}{5. Light Command and State Feedback}
+  \centering
+  \vfill
+  \includegraphics[width=0.93\textwidth,height=0.62\textheight,keepaspectratio]{mqtt-command-flow.png}
+  \vfill
+  {\small Original contract with topic prefix \texttt{smarthome/}. Alignment with the current JSON schema is pending.}
 \end{frame}
 
 % PART 2: The user will add hardware demo assets here.
-\begin{frame}{2. Hardware Demo}
+\begin{frame}{5. Hardware Demo}
   \centering
   \vfill
   {\Large\color{DeepBlue}\bfseries Hardware Demo}\par
@@ -303,13 +328,32 @@
 \end{frame}
 
 % PART 3: The user will add app demo assets here.
-\begin{frame}{3. App Demo}
+\begin{frame}{5. App Demo}
   \centering
   \vfill
   {\Large\color{DeepBlue}\bfseries App Demo}\par
   \vspace{0.4cm}
   {\normalsize Add phone screenshots, a recording or the live app here.}
   \vfill
+\end{frame}
+
+\begin{frame}{6. Team, Repository and Status}
+  \footnotesize
+  \setlength{\parskip}{0.2em}
+  \begin{tabularx}{\textwidth}{@{}l >{\raggedright\arraybackslash}p{3.9cm} l >{\raggedright\arraybackslash}X@{}}
+    \toprule
+    \textbf{Member} & \textbf{Name} & \textbf{Student ID} & \textbf{Primary ownership} \\
+    \midrule
+    M1 & \VNname{Trần Sỹ Nguyên} & 20235985 & Wi-Fi/MQTT core and firmware interfaces \\
+    M2 & \VNname{Lăng Hồng Nguyệt Anh} & 20235885 & PIR, RFID authorization and automation \\
+    M3 & \VNname{Lương Ngọc Vũ Long} & 20235967 & Power, wiring, actuators and physical model \\
+    M4 & \VNname{Hà Đức Dương} & 20235923 & Mobile dashboard, MQTT control and event UI \\
+    M5 & \VNname{Nguyễn Vũ Anh Khoa} & 20235957 & Broker, integration, QA and report coordination \\
+    \bottomrule
+  \end{tabularx}
+  \vspace{0.35cm}
+  \href{\RepoLink}{\textbf{github.com/itstheblank/esp32\_smart\_home}}\par
+  \href{\SheetLink}{Shared project sheet}\par
 \end{frame}
 
 \begin{frame}[plain]

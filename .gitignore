@@ -23,8 +23,9 @@ docs/archived/
 *.out
 *.run.xml
 *.snm
-*.synctex.gz
-*.synctex
+*.snv
+*.synctex*
 *.toc
 *.vrb
 *.xdv
+*.dvi

@@ -4,13 +4,13 @@
 // NETWORK (WiFi)
 // ==========================================
 // Set these locally before flashing. Do not commit real credentials.
-const char *WIFI_SSID = "Iphone X";
-const char *WIFI_PASSWORD = "camonquykhach";
+const char *WIFI_SSID = "Trk95";
+const char *WIFI_PASSWORD = "12345678";
 
 // ==========================================
 // MQTT BROKER
 // ==========================================
-const char *MQTT_BROKER = "192.168.2.6"; // IP of the computer running local MQTT Broker (from Wi-Fi wlp0s20f3)
+const char *MQTT_BROKER = "172.20.10.3"; // IP of the computer running local MQTT Broker (WiFi Trk95 hotspot)
 const int MQTT_PORT = 1883;
 const char *MQTT_CLIENT_ID = "ESP32_SmartHome_Core";
 
