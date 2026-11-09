@@ -1,11 +1,27 @@
-%% Four logical layers reviewed against the project sheet and branches on 2026-11-09.
-%% ESP32 performs the gateway role. Mobile MQTT contract and WS exposure remain pending.
-%%{init: {'theme': 'base', 'themeVariables': {'fontFamily': 'Arial', 'fontSize': '23px', 'primaryColor': '#eaf1f7', 'primaryTextColor': '#17324d', 'primaryBorderColor': '#003b70', 'lineColor': '#003b70', 'edgeLabelBackground': '#ffffff'}, 'flowchart': {'curve': 'linear', 'nodeSpacing': 30, 'rankSpacing': 48, 'padding': 16}}}%%
-flowchart LR
-    D["<b>1. DEVICES</b><br/>PIR / RFID<br/>Light / SG90"]
-    G["<b>2. GATEWAY</b><br/>ESP32<br/>Wi-Fi connection"]
-    S["<b>3. SERVER</b><br/>EMQX broker<br/>Python test service"]
-    A["<b>4. APPLICATION</b><br/>React Native app<br/>Web test dashboard"]
-    D <-->|"GPIO / SPI<br/>PWM"| G
-    G <-->|"MQTT / TCP 1883<br/>over Wi-Fi"| S
-    S <-.->|"Mobile MQTT / WS 8083<br/>Web HTTP / SSE 5000"| A
+%% Original system components, grouped into four logical layers.
+%% MQTT mobile integration remains pending contract and WebSocket alignment.
+%%{init: {'theme': 'base', 'themeVariables': {'fontFamily': 'Arial', 'fontSize': '23px', 'primaryColor': '#eaf1f7', 'primaryTextColor': '#17324d', 'primaryBorderColor': '#003b70', 'lineColor': '#003b70', 'edgeLabelBackground': '#ffffff', 'clusterBkg': '#fafcfe', 'clusterBorder': '#8da8c1'}, 'flowchart': {'curve': 'linear', 'nodeSpacing': 25, 'rankSpacing': 45, 'padding': 14}}}%%
+flowchart RL
+    subgraph D["1. DEVICE LAYER"]
+        PIR["PIR sensor"]
+        RFID["RFID reader"]
+        LIGHT["Light"]
+        DOOR["Door servo"]
+    end
+    subgraph G["2. GATEWAY LAYER"]
+        ESP["ESP32"]
+    end
+    subgraph S["3. SERVER LAYER"]
+        BROKER["MQTT Broker<br/>EMQX"]
+    end
+    subgraph A["4. APPLICATION LAYER"]
+        APP["Mobile App"]
+    end
+    PIR -->|"GPIO input"| ESP
+    RFID -->|"SPI"| ESP
+    ESP -->|"GPIO output"| LIGHT
+    ESP -->|"PWM"| DOOR
+    ESP <-->|"MQTT / TCP 1883<br/>over Wi-Fi"| BROKER
+    BROKER <-.->|"MQTT / WebSocket 8083<br/>over LAN"| APP
+    classDef hardware fill:#ffffff,stroke:#c8102e,stroke-width:2px,color:#17324d;
+    class PIR,RFID,LIGHT,DOOR hardware;

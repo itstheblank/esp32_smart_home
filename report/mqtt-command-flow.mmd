@@ -1,0 +1,11 @@
+%% Original app -> broker -> ESP32 command/state example.
+%% The current hardware branch has migrated to JSON cmd/log topics.
+%%{init: {'theme': 'base', 'themeVariables': {'fontFamily': 'Arial', 'fontSize': '22px', 'actorBkg': '#eaf1f7', 'actorBorder': '#003b70', 'actorTextColor': '#17324d', 'actorLineColor': '#003b70', 'signalColor': '#003b70', 'signalTextColor': '#17324d'}, 'sequence': {'actorMargin': 90, 'messageMargin': 34, 'mirrorActors': false}}}%%
+sequenceDiagram
+    participant A as Mobile App
+    participant B as EMQX Broker
+    participant E as ESP32
+    A->>B: cmd/light: ON
+    B->>E: cmd/light: ON
+    E->>B: state/light: ON
+    B->>A: state/light: ON

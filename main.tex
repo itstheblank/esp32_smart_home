@@ -11,7 +11,8 @@
 \usepackage{graphicx}
 \usepackage{booktabs}
 \usepackage{tabularx}
-\graphicspath{{./}{report/}}
+% Prefer updated project assets. Root uploads also work on Overleaf.
+\graphicspath{{report/}{./}}
 
 \definecolor{DeepBlue}{HTML}{003B70}
 \definecolor{AccentRed}{HTML}{C8102E}
@@ -141,8 +142,8 @@
   \vfill
   \begin{minipage}{\textwidth}
     \small
-    ESP32 performs the logical gateway role between physical devices and the broker.
-    The mobile path needs contract alignment and WebSocket exposure. The Python service provides the web test path.
+    The original components form four logical layers. ESP32 acts as the gateway.
+    The mobile connection needs MQTT contract alignment and WebSocket configuration.
   \end{minipage}
 \end{frame}
 
@@ -187,6 +188,14 @@
   \end{tabularx}
   \vspace{0.12cm}
   {\scriptsize Retail estimates as of 9 Nov 2026. Board, quantities and power design need confirmation. Model materials, programming adapter, LED/resistor, any extra cards and delivery need separate quotes.}
+\end{frame}
+
+\begin{frame}{1. Light Command and State Feedback}
+  \centering
+  \vfill
+  \includegraphics[width=0.93\textwidth,height=0.62\textheight,keepaspectratio]{mqtt-command-flow.png}
+  \vfill
+  {\small Original contract with topic prefix \texttt{smarthome/}. Alignment with the current JSON schema is pending.}
 \end{frame}
 
 \begin{frame}{1. Current Sensor-to-interface Flow}
