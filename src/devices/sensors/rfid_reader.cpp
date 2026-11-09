@@ -11,7 +11,9 @@ void RfidReader::init(uint8_t deviceId, uint8_t chipSelectPin, uint8_t resetPin)
   rstPin = resetPin;
   SPI.begin(RFID_SCK_PIN, RFID_MISO_PIN, RFID_MOSI_PIN, ssPin);
   reader.PCD_Init(ssPin, rstPin);
+  byte version = reader.PCD_ReadRegister(MFRC522::VersionReg);
   Serial.printf("=> RC522 initialized (id=%u, SS=%u, RST=%u)\n", id, ssPin, rstPin);
+  Serial.printf("=> RC522 version register: 0x%02X (0x91/0x92 = OK, 0x00/0xFF = wiring/power fault)\n", version);
 }
 
 RfidReaderEventData RfidReader::loop()
