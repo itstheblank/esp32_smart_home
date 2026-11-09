@@ -1,12 +1,14 @@
 import json
 import os
 import queue
+import re
 from http.server import BaseHTTPRequestHandler
 from typing import TYPE_CHECKING
 
 if False:
     from services.log_store import LogStore
     from services.mqtt_service import MqttService
+    from services.rule_engine import RuleEngine
 
 class ApiController(BaseHTTPRequestHandler):
     """HTTP Request Handler routing requests to templates, static files, and APIs."""
@@ -14,6 +16,7 @@ class ApiController(BaseHTTPRequestHandler):
     # Injected dependencies
     log_store = None
     mqtt_service = None
+    rule_engine = None
     base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
     def log_message(self, format, *args):
@@ -29,7 +32,12 @@ class ApiController(BaseHTTPRequestHandler):
             template_path = os.path.join(self.base_dir, "templates", "index.html")
             self._serve_file(template_path, "text/html; charset=utf-8")
 
-        # 2. Static Assets (CSS, JS)
+        # 2. Rules Engine Page
+        elif self.path in ("/rules", "/rules.html"):
+            template_path = os.path.join(self.base_dir, "templates", "rules.html")
+            self._serve_file(template_path, "text/html; charset=utf-8")
+
+        # 3. Static Assets (CSS, JS)
         elif self.path.startswith("/static/"):
             rel_path = self.path.removeprefix("/static/")
             file_path = os.path.join(self.base_dir, "static", rel_path)
@@ -40,7 +48,7 @@ class ApiController(BaseHTTPRequestHandler):
                 content_type = "application/javascript"
             self._serve_file(file_path, content_type)
 
-        # 3. API: Broker Info
+        # 4. API: Broker Info
         elif self.path == "/api/info":
             info = {
                 "broker": self.mqtt_service.broker_host,
@@ -49,12 +57,20 @@ class ApiController(BaseHTTPRequestHandler):
             }
             self._send_json(200, info)
 
-        # 4. API: Logs History
+        # 5. API: Logs History
         elif self.path.startswith("/api/logs"):
             logs = self.log_store.get_logs()
             self._send_json(200, logs)
 
-        # 5. API: Server-Sent Events (SSE) Stream
+        # 6. API: Rules (list)
+        elif self.path == "/api/rules":
+            self._send_json(200, self.rule_engine.list_rules())
+
+        # 7. API: Rule Trigger Events
+        elif self.path == "/api/rules/events":
+            self._send_json(200, self.rule_engine.list_events())
+
+        # 8. API: Server-Sent Events (SSE) Stream
         elif self.path == "/api/stream":
             self.send_response(200)
             self.send_header("Content-Type", "text/event-stream")
@@ -87,10 +103,7 @@ class ApiController(BaseHTTPRequestHandler):
         # 1. API: Command Dispatch
         if self.path == "/api/cmd":
             try:
-                content_len = int(self.headers.get("Content-Length", 0))
-                body = self.rfile.read(content_len).decode("utf-8")
-                req = json.loads(body)
-
+                req = self._read_json()
                 device = req.get("device", "LIGHT")
                 device_id = int(req.get("id", 1))
                 action = req.get("action", "ON")
@@ -109,8 +122,74 @@ class ApiController(BaseHTTPRequestHandler):
             self.log_store.clear()
             self._send_json(200, {"status": "ok"})
 
+        # 3. API: Create Rule
+        elif self.path == "/api/rules":
+            try:
+                rule = self.rule_engine.create_rule(self._read_json())
+                self._send_json(201, {"status": "ok", "rule": rule})
+            except ValueError as e:
+                self._send_json(400, {"status": "error", "message": str(e)})
+            except Exception as e:
+                self._send_json(500, {"status": "error", "message": str(e)})
+
+        # 4. API: Toggle Rule Enabled
+        elif re.match(r"^/api/rules/[A-Za-z0-9_-]+/toggle$", self.path):
+            rule_id = self.path.split("/")[3]
+            current = next((r for r in self.rule_engine.list_rules() if r["id"] == rule_id), None)
+            if not current:
+                self._send_json(404, {"status": "error", "message": "Rule not found"})
+                return
+            rule = self.rule_engine.set_enabled(rule_id, not current.get("enabled", False))
+            self._send_json(200, {"status": "ok", "rule": rule})
+
+        # 5. API: Dry-Run Rule Against Sample Log
+        elif self.path == "/api/rules/test":
+            try:
+                req = self._read_json()
+                result = self.rule_engine.test_rule(req.get("rule") or {}, req.get("sample") or {})
+                self._send_json(200, {"status": "ok", "result": result})
+            except ValueError as e:
+                self._send_json(400, {"status": "error", "message": str(e)})
+            except Exception as e:
+                self._send_json(500, {"status": "error", "message": str(e)})
+
         else:
             self._send_json(404, {"error": "Not Found"})
+
+    def do_PUT(self):
+        # API: Update Rule
+        match = re.match(r"^/api/rules/([A-Za-z0-9_-]+)$", self.path)
+        if match:
+            rule_id = match.group(1)
+            try:
+                rule = self.rule_engine.update_rule(rule_id, self._read_json())
+                if rule:
+                    self._send_json(200, {"status": "ok", "rule": rule})
+                else:
+                    self._send_json(404, {"status": "error", "message": "Rule not found"})
+            except ValueError as e:
+                self._send_json(400, {"status": "error", "message": str(e)})
+            except Exception as e:
+                self._send_json(500, {"status": "error", "message": str(e)})
+        else:
+            self._send_json(404, {"error": "Not Found"})
+
+    def do_DELETE(self):
+        # API: Delete Rule
+        match = re.match(r"^/api/rules/([A-Za-z0-9_-]+)$", self.path)
+        if match:
+            rule_id = match.group(1)
+            if self.rule_engine.delete_rule(rule_id):
+                self._send_json(200, {"status": "ok"})
+            else:
+                self._send_json(404, {"status": "error", "message": "Rule not found"})
+        else:
+            self._send_json(404, {"error": "Not Found"})
+
+    def _read_json(self) -> dict:
+        content_len = int(self.headers.get("Content-Length", 0))
+        body = self.rfile.read(content_len).decode("utf-8")
+        return json.loads(body)
 
     def _serve_file(self, file_path: str, content_type: str):
         if not os.path.exists(file_path):

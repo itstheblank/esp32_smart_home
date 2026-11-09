@@ -1,0 +1,77 @@
+[
+  {
+    "name": "Card read - Light ON 2s",
+    "enabled": true,
+    "match": {
+      "device": "RFID_READER",
+      "id": null
+    },
+    "logic": "AND",
+    "conditions": [
+      {
+        "field": "data.tagId",
+        "operator": "neq",
+        "value": "C44E0307"
+      }
+    ],
+    "actions": [
+      {
+        "type": "command",
+        "device": "LIGHT",
+        "id": 1,
+        "action": "ON",
+        "data": {},
+        "durationSec": 2.0,
+        "offAction": "OFF"
+      }
+    ],
+    "cooldownSec": 0.0,
+    "id": "770100c3",
+    "createdAt": "2026-11-09 04:45:35",
+    "lastTriggered": "2026-11-09 04:45:42",
+    "triggerCount": 1,
+    "lastTriggeredTs": 1794199542.3956635
+  },
+  {
+    "name": "Master card C44E0307 - Light 5s + Door 5s",
+    "enabled": true,
+    "match": {
+      "device": "RFID_READER",
+      "id": null
+    },
+    "logic": "AND",
+    "conditions": [
+      {
+        "field": "data.tagId",
+        "operator": "eq",
+        "value": "C44E0307"
+      }
+    ],
+    "actions": [
+      {
+        "type": "command",
+        "device": "LIGHT",
+        "id": 1,
+        "action": "ON",
+        "data": {},
+        "durationSec": 5.0,
+        "offAction": "OFF"
+      },
+      {
+        "type": "command",
+        "device": "DOOR",
+        "id": 1,
+        "action": "OPEN",
+        "data": {},
+        "durationSec": 5.0,
+        "offAction": "CLOSE"
+      }
+    ],
+    "cooldownSec": 0.0,
+    "id": "6e7d0d57",
+    "createdAt": "2026-11-09 04:45:35",
+    "lastTriggered": "2026-11-09 04:45:45",
+    "triggerCount": 1,
+    "lastTriggeredTs": 1794199545.3965793
+  }
+]

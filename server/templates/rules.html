@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Smart Home - Rules Engine</title>
+  <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+  <div class="container container-wide">
+    <header>
+      <div>
+        <h1>📐 Rules Engine</h1>
+        <small class="text-muted">Watch incoming telemetry, evaluate conditions &amp; trigger actions</small>
+      </div>
+      <div class="header-right">
+        <nav class="top-nav">
+          <a href="/">Dashboard</a>
+          <a href="/rules" class="active">Rules</a>
+        </nav>
+      </div>
+    </header>
+
+    <!-- Rule Builder -->
+    <div class="card">
+      <div class="card-title">🛠️ Rule Builder <span id="builderMode" class="tag tag-cmd">NEW</span></div>
+
+      <div class="form-row">
+        <div class="form-group flex-grow">
+          <label for="ruleName">Rule Name</label>
+          <input type="text" id="ruleName" placeholder="e.g. High temperature alert">
+        </div>
+        <div class="form-group" style="width: 120px;">
+          <label for="ruleCooldown">Cooldown (sec)</label>
+          <input type="number" id="ruleCooldown" value="0" min="0" step="1">
+        </div>
+        <div class="form-group">
+          <label>&nbsp;</label>
+          <label class="switch-label"><input type="checkbox" id="ruleEnabled" checked> Enabled</label>
+        </div>
+      </div>
+
+      <!-- Trigger Match -->
+      <div class="section-title">🎯 When (trigger match)</div>
+      <div class="form-row">
+        <div class="form-group">
+          <label for="matchDevice">Device</label>
+          <select id="matchDevice">
+            <option value="">Any device</option>
+            <option value="LIGHT">LIGHT</option>
+            <option value="DOOR">DOOR</option>
+            <option value="MOTION_SENSOR">MOTION_SENSOR</option>
+            <option value="RFID_READER">RFID_READER</option>
+            <option value="SYSTEM">SYSTEM</option>
+          </select>
+        </div>
+        <div class="form-group" style="width: 90px;">
+          <label for="matchId">Device ID</label>
+          <input type="number" id="matchId" placeholder="Any" min="0">
+        </div>
+      </div>
+
+      <!-- Conditions -->
+      <div class="section-title">📊 Conditions</div>
+      <div class="form-row" style="margin-bottom: 8px;">
+        <div class="form-group">
+          <label for="ruleLogic">Combine conditions with</label>
+          <select id="ruleLogic">
+            <option value="AND">ALL must match (AND)</option>
+            <option value="OR">ANY may match (OR)</option>
+          </select>
+        </div>
+      </div>
+      <div id="conditionsList"></div>
+      <button class="btn btn-small" onclick="addConditionRow()">+ Add Condition</button>
+
+      <!-- Actions -->
+      <div class="section-title">⚡ Then (actions)</div>
+      <div id="actionsList"></div>
+      <button class="btn btn-small" onclick="addActionRow()">+ Add Action</button>
+
+      <div class="btn-group" style="margin-top: 16px;">
+        <button class="btn btn-primary" onclick="saveRule()">💾 Save Rule</button>
+        <button class="btn btn-secondary" onclick="resetBuilder()">↺ Reset</button>
+        <button class="btn btn-small" onclick="toggleTestArea()">🧪 Test Rule</button>
+      </div>
+
+      <!-- Test Area -->
+      <div id="testArea" class="test-area hidden">
+        <label for="testSample">Sample log entry (JSON) to evaluate against</label>
+        <textarea id="testSample" rows="5">{
+  "device": "MOTION_SENSOR",
+  "id": 1,
+  "action": "MOTION",
+  "data": {"temperature": 31.5, "humidity": 40}
+}</textarea>
+        <button class="btn btn-primary btn-small" onclick="testRule()">Run Test</button>
+        <pre id="testResult" class="hidden"></pre>
+      </div>
+    </div>
+
+    <!-- Rules List -->
+    <div class="card">
+      <div class="log-header">
+        <div class="card-title no-margin">📋 Rules</div>
+        <button class="btn btn-small" onclick="loadRules()">Refresh</button>
+      </div>
+      <div class="table-container">
+        <table>
+          <thead>
+            <tr>
+              <th style="width: 180px;">Name</th>
+              <th>When</th>
+              <th>Then</th>
+              <th style="width: 70px;">Triggers</th>
+              <th style="width: 80px;">Status</th>
+              <th style="width: 130px;">Actions</th>
+            </tr>
+          </thead>
+          <tbody id="rulesBody">
+            <tr><td colspan="6" class="empty-state">Loading rules...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Trigger History -->
+    <div class="card">
+      <div class="card-title">🔔 Trigger History <small class="text-muted">(latest events)</small></div>
+      <div class="table-container">
+        <table>
+          <thead>
+            <tr>
+              <th style="width: 85px;">Time</th>
+              <th style="width: 160px;">Rule</th>
+              <th>Triggered By</th>
+              <th>Action Results</th>
+            </tr>
+          </thead>
+          <tbody id="eventsBody">
+            <tr><td colspan="4" class="empty-state">No rules triggered yet.</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <div id="toast"></div>
+
+  <script src="/static/js/rules.js"></script>
+</body>
+</html>

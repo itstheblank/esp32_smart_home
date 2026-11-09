@@ -12,6 +12,7 @@ from socketserver import ThreadingMixIn
 from config import Config
 from services.log_store import LogStore
 from services.mqtt_service import MqttService
+from services.rule_engine import RuleEngine
 from controllers.api_controller import ApiController
 
 try:
@@ -78,15 +79,25 @@ def main():
         broker_host=Config.BROKER_HOST,
         broker_port=Config.BROKER_PORT
     )
+    rule_engine = RuleEngine(
+        mqtt_service=mqtt_service,
+        log_store=log_store,
+        rules_file=Config.RULES_FILE,
+        max_events=Config.MAX_RULE_EVENTS
+    )
 
     # 2. Inject dependencies into Controller
     ApiController.log_store = log_store
     ApiController.mqtt_service = mqtt_service
+    ApiController.rule_engine = rule_engine
 
-    # 3. Start MQTT loop in background
+    # 3. Evaluate every incoming log against the rules
+    log_store.add_listener(rule_engine.handle_log)
+
+    # 4. Start MQTT loop in background
     mqtt_service.start()
 
-    # 4. Start HTTP Server
+    # 5. Start HTTP Server
     server_address = (Config.WEB_HOST, Config.WEB_PORT)
     httpd = ThreadedHTTPServer(server_address, ApiController)
 

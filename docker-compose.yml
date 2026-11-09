@@ -31,6 +31,8 @@ services:
       - MQTT_PORT=1883
       - WEB_HOST=0.0.0.0
       - WEB_PORT=5000
+    volumes:
+      - ./server/data:/app/data   # Persist rules across container restarts
     ports:
       - "5000:5000"               # Web Dashboard (access via http://localhost:5000)
 

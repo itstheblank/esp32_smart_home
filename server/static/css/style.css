@@ -244,3 +244,165 @@ tr:last-child td {
   display: none;
   z-index: 1000;
 }
+
+/* ------------------ Rules Engine ------------------ */
+.container-wide {
+  max-width: 1100px;
+}
+
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.top-nav {
+  display: flex;
+  gap: 4px;
+}
+
+.top-nav a {
+  text-decoration: none;
+  color: #586069;
+  font-size: 14px;
+  font-weight: 500;
+  padding: 6px 12px;
+  border-radius: 4px;
+}
+
+.top-nav a:hover {
+  background: #eaecef;
+}
+
+.top-nav a.active {
+  background: #0366d6;
+  color: #ffffff;
+}
+
+.section-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: #586069;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  margin: 14px 0 8px 0;
+  padding-top: 12px;
+  border-top: 1px solid #eaecef;
+}
+
+.cond-row,
+.action-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.cond-field {
+  width: 220px;
+}
+
+.cond-op {
+  width: 180px;
+}
+
+.cond-value {
+  width: 140px;
+}
+
+.action-fields {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+  flex: 1;
+}
+
+.action-fields-command .cmd-id {
+  width: 70px;
+}
+
+.action-fields-command .cmd-action {
+  width: 110px;
+}
+
+.btn-danger {
+  background: #d73a49;
+  color: #ffffff;
+}
+
+.btn-danger:hover {
+  background: #c22635;
+}
+
+.tag-edit {
+  background: #fff5b1;
+  color: #735c0f;
+}
+
+.switch-label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  font-weight: 500;
+  color: #24292e;
+  cursor: pointer;
+}
+
+.row-actions {
+  white-space: nowrap;
+}
+
+.row-actions .btn {
+  margin-right: 4px;
+}
+
+.test-area {
+  margin-top: 14px;
+  padding: 12px;
+  background: #f6f8fa;
+  border: 1px solid #e1e4e8;
+  border-radius: 4px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.test-area textarea {
+  border: 1px solid #d1d5da;
+  border-radius: 4px;
+  padding: 8px 10px;
+  font-size: 13px;
+  font-family: "SFMono-Regular", Consolas, monospace;
+  resize: vertical;
+}
+
+.test-area textarea:focus {
+  outline: none;
+  border-color: #0366d6;
+}
+
+.test-area pre {
+  margin: 0;
+  padding: 10px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-family: "SFMono-Regular", Consolas, monospace;
+  white-space: pre-wrap;
+}
+
+.test-ok {
+  background: #d4edda;
+  color: #155724;
+}
+
+.test-fail {
+  background: #f8d7da;
+  color: #721c24;
+}
+
+.hidden {
+  display: none !important;
+}

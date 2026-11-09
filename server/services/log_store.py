@@ -1,7 +1,7 @@
 import json
 import queue
 import threading
-from typing import List, Dict, Optional
+from typing import List, Dict, Optional, Callable
 
 class LogStore:
     """Thread-safe in-memory store for MQTT telemetry and SSE subscriber manager."""
@@ -12,9 +12,11 @@ class LogStore:
         self._lock = threading.Lock()
         self._subscribers: List[queue.Queue] = []
         self._subs_lock = threading.Lock()
+        self._listeners: List[Callable[[Dict], None]] = []
+        self._listeners_lock = threading.Lock()
 
     def add_log(self, entry: Dict) -> None:
-        """Adds a log entry and notifies all SSE subscribers."""
+        """Adds a log entry, notifies all SSE subscribers and internal listeners."""
         with self._lock:
             self._history.append(entry)
             if len(self._history) > self.max_history:
@@ -31,6 +33,26 @@ class LogStore:
             for s in stale:
                 if s in self._subscribers:
                     self._subscribers.remove(s)
+
+        # Notify internal listeners (e.g. RuleEngine)
+        with self._listeners_lock:
+            listeners = list(self._listeners)
+        for listener in listeners:
+            try:
+                listener(entry)
+            except Exception as e:
+                print(f"Log listener error: {e}")
+
+    def add_listener(self, callback: Callable[[Dict], None]) -> None:
+        """Registers a callback invoked for every new log entry."""
+        with self._listeners_lock:
+            self._listeners.append(callback)
+
+    def remove_listener(self, callback: Callable[[Dict], None]) -> None:
+        """Unregisters a previously added callback."""
+        with self._listeners_lock:
+            if callback in self._listeners:
+                self._listeners.remove(callback)
 
     def get_logs(self, device: Optional[str] = None, limit: Optional[int] = None) -> List[Dict]:
         """Returns recent logs in reverse chronological order (newest first)."""
