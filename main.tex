@@ -11,6 +11,7 @@
 \usepackage{graphicx}
 \usepackage{booktabs}
 \usepackage{tabularx}
+\usepackage{tikz}
 % Prefer updated project assets. Root uploads also work on Overleaf.
 \graphicspath{{report/}{./}}
 
@@ -20,7 +21,7 @@
 \definecolor{SoftBlue}{HTML}{EAF1F7}
 \setbeamercolor{normal text}{fg=BodyInk,bg=white}
 \setbeamercolor{structure}{fg=DeepBlue}
-\setbeamercolor{frametitle}{fg=white,bg=DeepBlue}
+\setbeamercolor{frametitle}{fg=white}
 \setbeamercolor{title}{fg=DeepBlue}
 \setbeamercolor{block title}{fg=white,bg=DeepBlue}
 \setbeamercolor{block body}{fg=BodyInk,bg=SoftBlue}
@@ -28,7 +29,25 @@
 \setbeamertemplate{navigation symbols}{}
 \setbeamertemplate{itemize item}{\color{AccentRed}\textbullet}
 \setbeamertemplate{itemize subitem}{\color{AccentRed}--}
-\setbeamertemplate{footline}[frame number]
+% Reserve the template's top band and its logo/footer area.
+\setbeamertemplate{headline}{\vspace*{1.25cm}}
+\setbeamertemplate{frametitle}{%
+  \begin{tikzpicture}[remember picture,overlay]
+    \node[anchor=west,inner sep=0pt,text=white,text width=14.2cm,
+      font=\bfseries\fontsize{17}{20}\selectfont]
+      at ([xshift=0.85cm,yshift=-0.39cm]current page.north west)
+      {\insertframetitle};
+  \end{tikzpicture}%
+}
+\setbeamertemplate{footline}{%
+  \vbox{%
+    \vspace*{0.72cm}%
+    \hbox to \paperwidth{\hfill
+      {\color{DeepBlue}\fontsize{8}{10}\selectfont\insertframenumber/\inserttotalframenumber}%
+      \hspace*{0.65cm}}%
+    \vspace*{0.12cm}%
+  }%
+}
 \setbeamersize{text margin left=9mm,text margin right=9mm}
 \setlength{\parskip}{0.35em}
 \renewcommand{\arraystretch}{1.18}
@@ -41,7 +60,17 @@
 % Upload background.png next to main.tex to apply the background to every slide.
 \IfFileExists{background.png}{%
   \usebackgroundtemplate{\includegraphics[width=\paperwidth,height=\paperheight]{background.png}}%
-}{}
+}{%
+  \usebackgroundtemplate{%
+    \begin{tikzpicture}[remember picture,overlay]
+      \fill[DeepBlue] (current page.north west)
+        rectangle ([yshift=-0.78cm]current page.north east);
+      \draw[AccentRed,line width=1.2pt]
+        ([yshift=-0.97cm]current page.north west) --
+        ([yshift=-0.97cm]current page.north east);
+    \end{tikzpicture}%
+  }%
+}
 
 \title{ESP32 SMART HOME}
 \subtitle{Checkpoint 1 --- System Design and Demonstration}
@@ -50,17 +79,18 @@
 
 \begin{document}
 
-\begin{frame}[plain]
+\begin{frame}{CHECKPOINT 1}
+  \begingroup
+  \setlength{\parskip}{0pt}
   \vfill
-  {\large\color{AccentRed}\bfseries CHECKPOINT 1}\par
-  \vspace{0.25cm}
-  {\Huge\color{DeepBlue}\bfseries ESP32 SMART HOME}\par
-  {\color{AccentRed}\rule{0.16\textwidth}{2pt}}\par
+  {\fontsize{28}{32}\selectfont\color{DeepBlue}\bfseries ESP32 SMART HOME}\par
+  \vspace{0.18cm}
   {\large System Design and Demonstration}\par
-  \vspace{0.25cm}
+  \vspace{0.45cm}
   {\normalsize\bfseries \GroupName}\par
-  {\small
-    \begin{tabular}{@{}lr@{}}
+  \vspace{0.15cm}
+  {\small\renewcommand{\arraystretch}{1.3}
+    \begin{tabular}{@{}p{5.1cm}r@{}}
       \VNname{Trần Sỹ Nguyên} & 20235985 \\
       \VNname{Lăng Hồng Nguyệt Anh} & 20235885 \\
       Luong Ngoc Vu Long & 20235967 \\
@@ -68,9 +98,10 @@
       Nguyen Vu Anh Khoa & 20235957 \\
     \end{tabular}\par
   }
-  \vspace{0.2cm}
+  \vspace{0.3cm}
   {\small 9 November 2026}
   \vfill
+  \endgroup
 \end{frame}
 
 \begin{frame}{Presentation Outline}
