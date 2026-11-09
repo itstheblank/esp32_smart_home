@@ -1,0 +1,11 @@
+packages:
+  - "packages/*"
+  - "mobile_app"
+  - "apps/*"
+
+allowBuilds:
+  esbuild: true
+
+onlyBuiltDependencies:
+  - esbuild
+

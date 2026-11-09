@@ -1,0 +1,38 @@
+#!/bin/sh
+# pre-push: local quality gates before pushing to remote
+
+# 0. Gitflow protection — no direct pushes to trunk branches (use PR)
+while read local_ref local_sha remote_ref remote_sha; do
+  for branch in main dev develop; do
+    if [ "$remote_ref" = "refs/heads/$branch" ]; then
+      echo "🚫 Không được push thẳng vào '$branch'. Hãy dùng Pull Request."
+      exit 1
+    fi
+  done
+done
+
+# 1. Validate branch name: allow feat/..., fix/..., chore/..., docs/..., etc.
+CURRENT_BRANCH=$(git branch --show-current)
+PATTERN="^(feat|fix|hotfix|docs|style|refactor|perf|test|build|ci|chore|release)\/[a-z0-9][a-z0-9-]*[a-z0-9]$|^main$|^dev$"
+if ! echo "$CURRENT_BRANCH" | grep -Eq "$PATTERN"; then
+  echo "❌ Tên nhánh '$CURRENT_BRANCH' không đúng chuẩn!"
+  echo "Quy chuẩn: <type>/<description> (Ví dụ: feat/ui-dashboard, fix/mqtt-reconnect)"
+  exit 1
+fi
+echo "✅ Tên nhánh '$CURRENT_BRANCH' hợp lệ."
+
+# 2. If mobile_app changed, run bundle export check
+if git diff --name-only origin/main...HEAD 2>/dev/null | grep -q "^mobile_app/"; then
+  echo "⏳ Verifying Expo bundle export..."
+  cd mobile_app && npx expo export --platform android
+  STATUS=$?
+  cd ..
+  if [ $STATUS -ne 0 ]; then
+    echo "❌ Expo bundle export failed. Fix build errors before pushing."
+    exit 1
+  fi
+  echo "✅ Expo bundle export passed."
+fi
+
+echo "🚀 Tất cả kiểm tra pre-push thành công. Đang push..."
+

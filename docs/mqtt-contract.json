@@ -9,69 +9,45 @@
     {
       "topic": "smarthome/cmd/light",
       "type": "command",
-      "payloads": [
-        "ON",
-        "OFF"
-      ],
+      "payloads": ["ON", "OFF"],
       "retain": false
     },
     {
       "topic": "smarthome/cmd/door",
       "type": "command",
-      "payloads": [
-        "OPEN",
-        "CLOSE"
-      ],
+      "payloads": ["OPEN", "CLOSE"],
       "retain": false
     },
     {
       "topic": "smarthome/state/light",
       "type": "state",
-      "payloads": [
-        "ON",
-        "OFF"
-      ],
+      "payloads": ["ON", "OFF"],
       "retain": true
     },
     {
       "topic": "smarthome/state/door",
       "type": "state",
-      "payloads": [
-        "OPEN",
-        "CLOSED"
-      ],
+      "payloads": ["OPEN", "CLOSED"],
       "retain": true
     },
     {
       "topic": "smarthome/state/motion",
       "type": "state",
-      "payloads": [
-        "DETECTED",
-        "CLEAR"
-      ],
+      "payloads": ["DETECTED", "CLEAR"],
       "retain": true
     },
     {
       "topic": "smarthome/state/online",
       "type": "state",
-      "payloads": [
-        "ONLINE",
-        "OFFLINE"
-      ],
+      "payloads": ["ONLINE", "OFFLINE"],
       "retain": true
     },
     {
       "topic": "smarthome/event/access",
       "type": "event",
       "format": "json",
-      "fields": [
-        "uid",
-        "result"
-      ],
-      "results": [
-        "GRANTED",
-        "DENIED"
-      ],
+      "fields": ["uid", "result"],
+      "results": ["GRANTED", "DENIED"],
       "example": {
         "uid": "A1B2C3D4",
         "result": "GRANTED"
