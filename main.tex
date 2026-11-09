@@ -209,29 +209,32 @@
   \end{minipage}
 \end{frame}
 
-% Budget assumptions are separate from actual purchases. One of each item/set.
-% Retail pages reviewed 2026-11-09. Each item links to its price source.
-\begin{frame}{1. Indicative Bill of Materials}
-  \small
-  \begin{tabularx}{\textwidth}{@{}Xrr@{}}
+% Availability and listed amounts follow the hardware list supplied by the team.
+% Already available components have no additional purchase cost in this budget.
+\begin{frame}{1. Bill of Materials}
+  \fontsize{10}{12}\selectfont
+  \renewcommand{\arraystretch}{1.0}
+  \begin{tabularx}{\textwidth}{@{}>{\raggedright\arraybackslash}Xr@{}}
     \toprule
-    \textbf{Component / set} & \textbf{Qty} & \textbf{Estimate (VND)} \\
+    \textbf{Component / set} & \textbf{Availability / budget (VND)} \\
     \midrule
-    \href{https://lkcg.vn/module-esp32-ethernet-lan8720-wt32-eth01}{WT32-ETH01 board} & 1 & 165,000 \\
-    \href{https://dientuductho.com/san-pham/hc-sr501-cam-bien-chuyen-dong}{HC-SR501 motion sensor} & 1 & 18,000 \\
-    \href{https://hshop.vn/mach-rfid-rc522-nfc-13-56mhz}{RC522 RFID module} & 1 & 36,000 \\
-    \href{https://dientuachau.com/sg90-mini-180-degrees}{SG90 servo} & 1 & 25,000 \\
-    \href{https://hshop.vn/mach-giamop-dc-lm2596-3a}{LM2596 buck module} & 1 & 20,000 \\
-    \href{https://hshop.vn/mach-1-relay-opto-chon-muc-kich-high-low-5-12-24vdc}{5V relay module} & 1 & 23,000 \\
-    \href{https://lkcg.vn/breadboard-mb102-thi-nghiem}{Breadboard, 830 points} & 1 & 26,000 \\
-    \href{https://caka.vn/day-cam-breadboard}{Jumper wire set, 40 wires} & 1 & 22,000 \\
-    \href{https://linhkienthanhcong.com/nguon-adapter-5v-2a}{5V 2A adapter} & 1 & 40,000 \\
+    ESP32 WT-01 (Ethernet and Wi-Fi) & Available \\
+    USB--TTL CH340 adapter & Available \\
+    MB-102 breadboard & Available \\
+    SG90 servo & 46,116 \\
+    RC522 RFID module & Available \\
+    5V relay & Available \\
+    HC-SR501 PIR sensor & 34,560 \\
+    LM2596 buck module & 45,144 \\
+    Jumper wires (three types) & Available \\
+    12V 2A adapter & 46,116 \\
+    DC power jack & 11,124 \\
     \midrule
-    \textbf{Indicative basket total} & & \textbf{375,000} \\
+    \textbf{Budget for remaining items} & \textbf{183,060} \\
     \bottomrule
   \end{tabularx}
-  \vspace{0.12cm}
-  {\scriptsize Retail estimates as of 9 Nov 2026. Board, quantities and power design need confirmation. Model materials, programming adapter, LED/resistor, any extra cards and delivery need separate quotes.}
+  \par\vspace{0.15cm}
+  {\footnotesize\raggedright Available items are already owned. RC522 selection remains to be confirmed.\par}
 \end{frame}
 
 \begin{frame}{1. Light Command and State Feedback}
