@@ -1,11 +1,8 @@
-%% Mermaid source for switching on a light through MQTT.
-%% State feedback is the target integration flow and needs hardware verification.
-%%{init: {'theme': 'base', 'themeVariables': {'fontFamily': 'Arial', 'fontSize': '22px', 'actorBkg': '#eaf1f7', 'actorBorder': '#003b70', 'actorTextColor': '#17324d', 'actorLineColor': '#003b70', 'signalColor': '#003b70', 'signalTextColor': '#17324d', 'labelBoxBkgColor': '#ffffff', 'labelTextColor': '#17324d', 'sequenceNumberColor': '#17324d'}, 'sequence': {'actorMargin': 90, 'messageMargin': 34, 'mirrorActors': false}}}%%
-sequenceDiagram
-    participant A as Mobile App
-    participant B as EMQX Broker
-    participant E as ESP32
-    A->>B: cmd/light: ON
-    B->>E: cmd/light: ON
-    E->>B: state/light: ON
-    B->>A: state/light: ON
+%% Current sensor-to-dashboard code path on hardware branch 8e0a5a3.
+%% Physical end-to-end test evidence is pending.
+%%{init: {'theme': 'base', 'themeVariables': {'fontFamily': 'Arial', 'fontSize': '23px', 'primaryColor': '#eaf1f7', 'primaryTextColor': '#17324d', 'primaryBorderColor': '#003b70', 'lineColor': '#003b70', 'edgeLabelBackground': '#ffffff'}, 'flowchart': {'curve': 'linear', 'nodeSpacing': 32, 'rankSpacing': 40, 'padding': 14}}}%%
+flowchart LR
+    S["PIR / RFID"] -->|"GPIO / SPI"| E["ESP32<br/>JSON event"]
+    E -->|"MQTT / TCP 1883<br/>smarthome/logs"| B["EMQX"]
+    B -->|"Paho MQTT"| R["Python service<br/>300 logs in RAM"]
+    R -->|"HTTP / SSE 5000"| W["Web dashboard"]

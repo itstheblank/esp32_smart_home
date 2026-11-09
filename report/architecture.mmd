@@ -1,22 +1,11 @@
-%% Overall architecture for the entire system.
-%% One bidirectional link represents two-way MQTT communication.
-%%{init: {'theme': 'base', 'themeVariables': {'fontFamily': 'Arial', 'fontSize': '24px', 'primaryColor': '#eaf1f7', 'primaryTextColor': '#17324d', 'primaryBorderColor': '#003b70', 'lineColor': '#003b70', 'edgeLabelBackground': '#ffffff', 'secondaryColor': '#ffffff', 'tertiaryColor': '#ffffff'}, 'flowchart': {'curve': 'linear', 'nodeSpacing': 20, 'rankSpacing': 30, 'padding': 12}}}%%
+%% Four logical layers reviewed against the project sheet and branches on 2026-11-09.
+%% ESP32 performs the gateway role. Mobile MQTT contract and WS exposure remain pending.
+%%{init: {'theme': 'base', 'themeVariables': {'fontFamily': 'Arial', 'fontSize': '23px', 'primaryColor': '#eaf1f7', 'primaryTextColor': '#17324d', 'primaryBorderColor': '#003b70', 'lineColor': '#003b70', 'edgeLabelBackground': '#ffffff'}, 'flowchart': {'curve': 'linear', 'nodeSpacing': 30, 'rankSpacing': 48, 'padding': 16}}}%%
 flowchart LR
-    APP["Mobile<br/>App"]
-    MQ["Message Queue<br/>MQTT Broker"]
-    ESP["ESP32"]
-    PIR["PIR<br/>Sensor"]
-    RFID["RFID<br/>Reader"]
-    LIGHT["Light"]
-    DOOR["Door Servo"]
-
-    APP <-->|"Commands /<br/>States /<br/>Events"| MQ
-    MQ <-->|"Commands /<br/>States /<br/>Events"| ESP
-
-    PIR -->|"Motion"| ESP
-    RFID -->|"Card UID"| ESP
-    ESP -->|"ON / OFF"| LIGHT
-    ESP -->|"Open / Close"| DOOR
-
-    classDef hardware fill:#ffffff,stroke:#c8102e,stroke-width:2px,color:#17324d;
-    class PIR,RFID,LIGHT,DOOR hardware;
+    D["<b>1. DEVICES</b><br/>PIR / RFID<br/>Light / SG90"]
+    G["<b>2. GATEWAY</b><br/>ESP32<br/>Wi-Fi connection"]
+    S["<b>3. SERVER</b><br/>EMQX broker<br/>Python test service"]
+    A["<b>4. APPLICATION</b><br/>React Native app<br/>Web test dashboard"]
+    D <-->|"GPIO / SPI<br/>PWM"| G
+    G <-->|"MQTT / TCP 1883<br/>over Wi-Fi"| S
+    S <-.->|"Mobile MQTT / WS 8083<br/>Web HTTP / SSE 5000"| A
