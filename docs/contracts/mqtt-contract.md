@@ -149,3 +149,24 @@ The `data` object provides structured context when an event requires extra param
 ### 3.3 Buffer and Serialization Constraints
 - Maximum JSON payload size is **192 bytes**.
 - Payloads are serialized using static stack buffers to avoid heap fragmentation.
+
+---
+
+## 4. Mobile app integration (checkpoint 1)
+
+The mobile app (`mobile/mobile_app/`) talks to the ESP32 only through this contract:
+
+| Direction | Topic | App code |
+|---|---|---|
+| App → ESP32 | `smarthome/cmd` | `useMqttCommand` → `buildCommandPayload()` in `mobile/mobile_app/src/services/mqttLogAdapter.ts` |
+| ESP32 → App | `smarthome/logs` | `DeviceContext` → `parseLogPayload()` + `mapLogToActions()` |
+
+Mapping rules used by the app:
+- `SYSTEM` `ONLINE` / `OFFLINE` (LWT) → ESP32 online flag. Because `ONLINE` is not retained, any `LIGHT`/`DOOR`/`MOTION_SENSOR`/`RFID_READER` log also marks the ESP32 online.
+- `LIGHT` `ON`/`OFF` → light state; `DOOR` `OPEN`/`CLOSE` → door state `OPEN`/`CLOSED`.
+- `success: false` on `LIGHT`/`DOOR` → app rolls the pending command back to the last confirmed state.
+- `MOTION_SENSOR` `MOTION_DETECTED`/`MOTION_CLEAR` → motion `DETECTED`/`CLEAR`.
+- `RFID_READER` `RFID_TAG_DETECTED` → access event with `uid = data.tagId`, `GRANTED` if `success` else `DENIED`.
+- The app connects over MQTT WebSocket (`ws://<broker>:8083/mqtt`), exposed by `docker-compose.yml`.
+
+Machine-readable summary for tests/CI: `docs/contracts/mqtt-contract.json` (version `2.0.0`).

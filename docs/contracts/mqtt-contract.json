@@ -1,0 +1,44 @@
+{
+  "version": "2.0.0",
+  "description": "Machine-readable summary of docs/contracts/mqtt-contract.md (checkpoint 1). Used by mobile/mobile_app tests and CI contract guard.",
+  "connection": {
+    "protocol": "MQTT 3.1.1",
+    "qos": 0,
+    "esp32ClientId": "ESP32_SmartHome_Core",
+    "keepAliveSec": 30,
+    "brokerPorts": { "tcp": 1883, "websocket": 8083 },
+    "lastWill": {
+      "topic": "smarthome/logs",
+      "retain": false,
+      "payload": { "device": "SYSTEM", "id": 0, "action": "OFFLINE", "success": true, "data": {} }
+    }
+  },
+  "topics": [
+    {
+      "topic": "smarthome/cmd",
+      "direction": "app_to_esp32",
+      "retain": false,
+      "format": "json",
+      "schema": { "device": "string", "id": "integer", "action": "string", "data": "object" },
+      "commands": {
+        "LIGHT": ["ON", "OFF"],
+        "DOOR": ["OPEN", "CLOSE"]
+      }
+    },
+    {
+      "topic": "smarthome/logs",
+      "direction": "esp32_to_app",
+      "retain": false,
+      "format": "json",
+      "maxPayloadBytes": 192,
+      "schema": { "device": "string", "id": "integer", "action": "string", "success": "boolean", "data": "object" },
+      "actions": {
+        "LIGHT": ["ON", "OFF"],
+        "DOOR": ["OPEN", "CLOSE"],
+        "MOTION_SENSOR": ["MOTION_DETECTED", "MOTION_CLEAR"],
+        "RFID_READER": ["RFID_TAG_DETECTED"],
+        "SYSTEM": ["ONLINE", "OFFLINE"]
+      }
+    }
+  ]
+}
