@@ -1,0 +1,10 @@
+packages:
+  - "packages/*"
+  - "mobile_app"
+  - "apps/*"
+
+allowBuilds:
+  esbuild: set this to true or false
+
+onlyBuiltDependencies:
+  - esbuild
