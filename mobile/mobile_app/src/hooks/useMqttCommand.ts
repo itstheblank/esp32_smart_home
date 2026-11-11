@@ -1,8 +1,15 @@
 import { useRef, useCallback } from 'react';
-import { MQTT_TOPICS, ASYNC_CONFIG, LightCommand, DoorCommand } from '@repo/contracts';
+import {
+  MQTT_TOPICS,
+  ASYNC_CONFIG,
+  DEFAULT_DEVICE_IDS,
+  LightCommand,
+  DoorCommand,
+} from '@repo/contracts';
 import { useMqtt } from '../context/MqttContext';
 import { useDevice } from '../context/DeviceContext';
 import { WatchdogEngine } from '../services/watchdogEngine';
+import { buildCommandPayload } from '../services/mqttLogAdapter';
 
 export interface CommandExecutionResult {
   success: boolean;
@@ -45,8 +52,13 @@ export function useMqttCommand() {
           },
         });
 
-        // 5. Publish to MQTT
-        await publish(MQTT_TOPICS.CMD_LIGHT, targetCmd, 0, false);
+        // 5. Publish JSON command to smarthome/cmd (contract v2.0.0, retain=false)
+        await publish(
+          MQTT_TOPICS.CMD,
+          buildCommandPayload('LIGHT', targetCmd, DEFAULT_DEVICE_IDS.LIGHT),
+          0,
+          false
+        );
         return { success: true };
       } catch (err: any) {
         watchdogRef.current.disarm('light');
@@ -95,8 +107,13 @@ export function useMqttCommand() {
           },
         });
 
-        // 6. Publish to MQTT
-        await publish(MQTT_TOPICS.CMD_DOOR, targetCmd, 0, false);
+        // 6. Publish JSON command to smarthome/cmd (contract v2.0.0, retain=false)
+        await publish(
+          MQTT_TOPICS.CMD,
+          buildCommandPayload('DOOR', targetCmd, DEFAULT_DEVICE_IDS.DOOR),
+          0,
+          false
+        );
         return { success: true };
       } catch (err: any) {
         watchdogRef.current.disarm('door');

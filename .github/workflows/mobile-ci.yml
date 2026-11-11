@@ -11,7 +11,7 @@ on:
     paths:
       - "mobile/**"
       - ".github/workflows/mobile-ci.yml"
-      - "docs/mqtt-contract.json"
+      - "docs/contracts/mqtt-contract.json"
   pull_request:
     branches:
       - main
@@ -20,7 +20,7 @@ on:
     paths:
       - "mobile/**"
       - ".github/workflows/mobile-ci.yml"
-      - "docs/mqtt-contract.json"
+      - "docs/contracts/mqtt-contract.json"
 
 permissions:
   contents: read

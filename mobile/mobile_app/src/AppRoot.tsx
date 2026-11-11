@@ -133,7 +133,7 @@ function MainApp() {
           'ERROR',
           'LOG_RFID_SCAN',
           { uid: lastAccessEvent.uid, res: 'DENIED' },
-          'smarthome/event/access'
+          'smarthome/logs'
         );
       }
     } else if (!isSecurityAlert) {

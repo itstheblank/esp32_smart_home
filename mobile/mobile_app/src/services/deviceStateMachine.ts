@@ -124,6 +124,9 @@ export function deviceStateReducer(
     }
 
     case 'DOOR_JAMMED': {
+      // Watchdog only means "jammed" if the door is still waiting for confirmation;
+      // a late timer after the ESP32 already confirmed OPEN/CLOSED is ignored.
+      if (state.doorFsm !== 'PENDING_OPEN' && state.doorFsm !== 'PENDING_CLOSE') return state;
       return { ...state, doorFsm: 'JAMMED' };
     }
 

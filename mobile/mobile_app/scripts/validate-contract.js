@@ -1,11 +1,11 @@
 /**
  * MQTT Contract Validator for Mobile App
- * Verifies that topics and payloads used in mobile_app match docs/mqtt-contract.json
+ * Verifies that topics and payloads used in mobile_app match docs/contracts/mqtt-contract.json (v2.0.0)
  */
 const fs = require('fs');
 const path = require('path');
 
-const contractPath = path.resolve(__dirname, '../../docs/mqtt-contract.json');
+const contractPath = path.resolve(__dirname, '../../../docs/contracts/mqtt-contract.json');
 
 console.log('🔍 [Contract Guard] Checking MQTT Contract consistency...');
 
@@ -18,15 +18,7 @@ try {
   const contract = JSON.parse(fs.readFileSync(contractPath, 'utf8'));
   console.log(`✅ [Contract Guard] Loaded contract version ${contract.version || '1.0.0'}`);
 
-  const expectedTopics = [
-    'smarthome/cmd/light',
-    'smarthome/cmd/door',
-    'smarthome/state/light',
-    'smarthome/state/door',
-    'smarthome/state/motion',
-    'smarthome/state/online',
-    'smarthome/event/access',
-  ];
+  const expectedTopics = ['smarthome/cmd', 'smarthome/logs'];
 
   const contractTopics = (contract.topics || []).map((t) => t.topic);
   const missingInContract = expectedTopics.filter((t) => !contractTopics.includes(t));
@@ -41,19 +33,25 @@ try {
     );
   }
 
-  // Scan App.js or src/ for basic string consistency
-  const appJsPath = path.resolve(__dirname, '../App.js');
-  if (fs.existsSync(appJsPath)) {
-    const appSource = fs.readFileSync(appJsPath, 'utf8');
-
-    // Check for common bugs like using CLOSE as state instead of CLOSED
-    if (
-      appSource.includes("'smarthome/state/door'") &&
-      appSource.includes("'CLOSE'") &&
-      !appSource.includes("'CLOSED'")
-    ) {
+  // Guard against regressions to the deprecated v1 per-device topics
+  const legacyTopics = [
+    'smarthome/cmd/light',
+    'smarthome/cmd/door',
+    'smarthome/state/',
+    'smarthome/event/access',
+  ];
+  const srcFiles = [
+    path.resolve(__dirname, '../src/hooks/useMqttCommand.ts'),
+    path.resolve(__dirname, '../src/context/MqttContext.tsx'),
+    path.resolve(__dirname, '../src/context/DeviceContext.tsx'),
+  ];
+  for (const file of srcFiles) {
+    if (!fs.existsSync(file)) continue;
+    const source = fs.readFileSync(file, 'utf8');
+    const hit = legacyTopics.find((t) => source.includes(`'${t}`));
+    if (hit) {
       console.error(
-        "❌ [Contract Guard] Bug detected: Expected state 'CLOSED' for door, but found only 'CLOSE'!"
+        `❌ [Contract Guard] ${path.basename(file)} still uses deprecated v1 topic '${hit}'. Use smarthome/cmd + smarthome/logs.`
       );
       process.exit(1);
     }

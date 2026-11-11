@@ -2,7 +2,7 @@ import React, { createContext, useContext, useState, useEffect, useRef, useCallb
 import { Platform } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Paho from 'paho-mqtt';
-import { BrokerStatus } from '@repo/contracts';
+import { BrokerStatus, MQTT_TOPICS } from '@repo/contracts';
 import { installMqttPolyfill } from '../services/mqttPolyfill';
 import { calculateBackoffWithJitter } from '../services/backoffPolicy';
 import { SubscriptionDispatcher, TopicHandler } from '../services/subscriptionDispatcher';
@@ -143,9 +143,8 @@ export const MqttProvider: React.FC<{
             setReconnectAttempt(0);
             setLastError(null);
 
-            // Subscribe to essential topics
-            client.subscribe('smarthome/state/+');
-            client.subscribe('smarthome/event/access');
+            // Contract v2.0.0: every device state/event arrives on smarthome/logs
+            client.subscribe(MQTT_TOPICS.LOGS);
           },
           onFailure: (err) => {
             setStatus('DISCONNECTED');

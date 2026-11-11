@@ -1,14 +1,6 @@
 import React, { createContext, useContext, useReducer, useEffect, useCallback } from 'react';
-import {
-  MQTT_TOPICS,
-  LightState,
-  DoorState,
-  MotionState,
-  LightFsmState,
-  DoorFsmState,
-  AccessEventPayload,
-} from '@repo/contracts';
-import { parseAccessEventPayload } from '@repo/validators';
+import { MQTT_TOPICS } from '@repo/contracts';
+import { parseLogPayload, mapLogToActions } from '../services/mqttLogAdapter';
 import { useMqtt } from './MqttContext';
 import { useI18n } from './I18nContext';
 import {
@@ -43,56 +35,17 @@ export const DeviceProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     dispatch({ type: 'BROKER_STATUS_CHANGED', connected: isConnected });
   }, [isConnected]);
 
-  // Subscribe to device states & access events
+  // Subscribe to firmware logs (contract v2.0.0: smarthome/logs carries every
+  // state change and event as JSON {device,id,action,success,data})
   useEffect(() => {
-    const unsubState = subscribe('smarthome/state/+', (topic, payload) => {
-      switch (topic) {
-        case MQTT_TOPICS.STATE_ONLINE:
-          dispatch({
-            type: 'ESP32_ONLINE_CHANGED',
-            online: payload.trim().toUpperCase() === 'ONLINE',
-          });
-          break;
-
-        case MQTT_TOPICS.STATE_LIGHT:
-          if (payload === 'ON' || payload === 'OFF') {
-            dispatch({ type: 'LIGHT_STATE_RECEIVED', state: payload as LightState });
-          }
-          break;
-
-        case MQTT_TOPICS.STATE_DOOR:
-          if (payload === 'OPEN' || payload === 'CLOSED') {
-            dispatch({ type: 'DOOR_STATE_RECEIVED', state: payload as DoorState });
-          }
-          break;
-
-        case MQTT_TOPICS.STATE_MOTION:
-          if (payload === 'DETECTED' || payload === 'CLEAR') {
-            dispatch({
-              type: 'MOTION_STATE_RECEIVED',
-              state: payload as MotionState,
-            });
-          }
-          break;
-
-        default:
-          break;
-      }
-    });
-
-    const unsubAccess = subscribe(MQTT_TOPICS.EVENT_ACCESS, (_topic, payload) => {
-      const parsed = parseAccessEventPayload(payload);
-      if (parsed.success && parsed.data) {
-        dispatch({
-          type: 'ACCESS_EVENT_RECEIVED',
-          event: parsed.data as AccessEventPayload,
-        });
-      }
+    const unsubLogs = subscribe(MQTT_TOPICS.LOGS, (_topic, payload) => {
+      const log = parseLogPayload(payload);
+      if (!log) return; // fail-closed: ignore off-contract payloads
+      mapLogToActions(log).forEach((action) => dispatch(action));
     });
 
     return () => {
-      unsubState();
-      unsubAccess();
+      unsubLogs();
     };
   }, [subscribe]);
 

@@ -3,6 +3,7 @@ import fs from "fs";
 import path from "path";
 import {
   MQTT_TOPICS,
+  MQTT_CONTRACT_VERSION,
   LIGHT_COMMANDS,
   LIGHT_STATES,
   DOOR_COMMANDS,
@@ -14,21 +15,18 @@ import {
 describe("Contracts SSOT Validation", () => {
   const contractPath = path.resolve(
     __dirname,
-    "../../../docs/mqtt-contract.json",
+    "../../../../docs/contracts/mqtt-contract.json",
   );
 
-  it("should match all topics defined in docs/mqtt-contract.json", () => {
+  it("should match topics defined in docs/contracts/mqtt-contract.json", () => {
     expect(fs.existsSync(contractPath)).toBe(true);
     const contract = JSON.parse(fs.readFileSync(contractPath, "utf8"));
+    expect(contract.version).toBe(MQTT_CONTRACT_VERSION);
     const docTopics = contract.topics.map((t: { topic: string }) => t.topic);
 
-    expect(docTopics).toContain(MQTT_TOPICS.CMD_LIGHT);
-    expect(docTopics).toContain(MQTT_TOPICS.CMD_DOOR);
-    expect(docTopics).toContain(MQTT_TOPICS.STATE_LIGHT);
-    expect(docTopics).toContain(MQTT_TOPICS.STATE_DOOR);
-    expect(docTopics).toContain(MQTT_TOPICS.STATE_MOTION);
-    expect(docTopics).toContain(MQTT_TOPICS.STATE_ONLINE);
-    expect(docTopics).toContain(MQTT_TOPICS.EVENT_ACCESS);
+    expect(docTopics).toContain(MQTT_TOPICS.CMD);
+    expect(docTopics).toContain(MQTT_TOPICS.LOGS);
+    expect(docTopics).toHaveLength(2);
   });
 
   it("should enforce command CLOSE vs state CLOSED", () => {

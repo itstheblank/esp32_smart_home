@@ -158,7 +158,7 @@ export const QuickActionsModal: React.FC<QuickActionsModalProps> = ({
                     Broker: {brokerConfig.host}:{brokerConfig.port} ({isConnected ? 'CONNECTED' : 'OFFLINE'})
                   </Text>
                   <Text style={[styles.diagLine, { color: theme.textPrimary }]}>
-                    QoS: 0 (At most once) • LWT Topic: smarthome/state/online
+                    QoS: 0 (At most once) • LWT Topic: smarthome/logs
                   </Text>
                 </View>
               </View>
